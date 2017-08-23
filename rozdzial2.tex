@@ -1,0 +1,59 @@
+\chapter{Aproksymacja operacji teoriomnogościowych}
+\thispagestyle{chapterBeginStyle}
+
+W tym rozdziale przyjrzymy się dokładniej naiwnym podejściom do aproksymacji operacji teoriomnogościowych dla szkiców danych zarówno dla algorytmu \texttt{MinCount} jak i \texttt{HyperLogLog}. Takie podejścia są łatwe w implementacji i nie wymagają żadnych modyfikacji istniejących algorytmów ale, zwłaszcza w przypadku przekroju i różnicy, są stosunkowo niedokładne, mogą prowadzić do anomalii oraz w przypadku niektórych algorytmów (np. \texttt{HyperLogLog}) nie pozwalają na zdefiniowanie zamkniętego operatora zwracającego nowy szkic a jedynie na estymację wyniku liczności.
+
+\section{HyperLogLog}
+
+\subsection{Operacja sumy}
+
+Jak już wspomnieliśmy w poprzednim rozdziale, algorytm \texttt{HyperLogLog} posiada naturalną, zamkniętą operację sumy teoriomnogościowej na swoich szkicach. Jest ona wyjątkowo nieskomplikowana i sprowadza się do znalezienia maksimum na każdym z rejestrów spośród sumowanych szkiców \cite{oertl}. Mając dwa szkice \texttt{HyperLogLog-a} rozmiaru $m$ - $K_1 = (K_{11}, ..., K_{1m})$ oraz $K_2 = (K_{21}, ..., K_{2m})$ reprezentujące dwa zbiory $A_1$ oraz odpowiednio $A_2$, procedura tworząca szkic $K_u = (K_{u1}, ..., K_{um})$ reprezentujący sumę $A_1 \cup A_2$ wygląda następująco:
+\begin{equation}
+    K_{ui} = max(K_{1i}, K_{2i}) \quad \textbf{for} \quad i = 1 ... m
+\end{equation}
+
+Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach $p$ i $q$. parametr $p$ kontroluje błąd względny natomiast $q$ określa zakres wartości dla rejestrów. Suma $p + q$ określa liczbę używanych bitów haszu i definiuje tym samym maksymalna liczność jaką możemy wyznaczyć. Warto zauważyć, że jeśli liczność zbioru zbliża się do $2^{p+q}$ kolizje haszy stają się coraz częstsze i błąd znacznie wzrasta. Istnieje jednak możliwość sumowania dwóch szkiców o różnych od siebie parach $(p, q)$ oraz $(p',q')$, albowiem każdy szkic \texttt{HyperLogLog} opisany przez parę $(p, q)$ może zostać zredukowany do szkicu opisanego przez $(p',q')$, jeśli spełniony jest warunek $p' \leq p$ oraz $p' + q' \leq p + q$. Taka transformacja jest bezstratna, tj. powstały szkic jest taki sam jak szkic który powstałby przez dodawanie tych wszystkich elementów od początku do szkicu opisanego przez $(p', q')$ \cite{oertl}.
+
+\subsection{Operacja przekroju i różnicy}
+
+O ile w przypadku operacji sumy Algorytm \texttt{HyperLogLog} sprawdza się całkiem dobrze i jest ona łatwa w implementacji, to niestety nie posiada on naturalnych operacji przekroju oraz różnicy na szkicach. Algorytm ten nie pozwala na zdefiniowanie zamkniętej operacji przekroju, możemy jedynie estymować sam wynik liczności zbioru powstałego z przekroju danych szkiców korzystając z \textit{zasady włączeń i wyłączeń} oraz \textit{podobieństw Jaccarda} które pokrótce opisaliśmy w rozdziale 1. O ile metoda oparta na \textit{zasadzie włączeń i wyłączeń} nie sprawdza się zbyt dobrze i prowadzi do różnych anomalii, to metoda wykorzystująca podobieństwo \textit{Jaccarda} $(2.19)$ do estymacji przekroju jest już bardziej dokładna. Wymaga ona jednak dodatkowej struktury danych pozwalającej na estymację indeksu \textit{Jaccarda} zbiorów. Częstą praktyką jest wykorzystanie do tego algorytmu \texttt{MinHash} \cite{adroll}. Wyniki tej metody zostaną jeszcze omówione w rozdziale 4.
+
+\section{MinCount}
+
+\subsection{Operacja sumy}
+
+Przyjrzyjmy się teraz operacji sumy dla algorytmu \texttt{MinCount}. Załóżmy że posiadamy dwa szkice danych $(S_1, {\tau}_1)$ oraz $(S_2, {\tau}_2)$. Chcemy otrzymac szkic $(S_u, {\tau}_u)$ będący sumą tych dwóch szkiców. Naturalną intuicją jest wykonanie sumy zbiorów $k$ najmniejszych haszy $S_1$ oraz $S_2$ i utworzenie z nich nowego zbioru $S_u$ zawierającego $k$ najmniejszych haszy z sumy $S_1$ i $S_2$ oraz wyznaczenie nowego ${\tau}_u$. Takie podejście jednak odrzuca dużą ilość istotnych informacji wśród zbiorów haszy ze względu na ograniczenie w postaci parametru $k$. Posiadając $2k$ haszy ze zbiorów $S_1$ i $S_2$ odrzucamy połowę z nich - prowadzi to nawet do dwukrotnego zwiększenia wariancji estymatora. Weźmy jako przykład dwa zbiory $A_1$ oraz $A_2$, które są rozłączne i tej samej liczności. Najlepszym estymatorem sumy jest po prostu $\hat{N}(S_1 \cup S_2) = \hat{N}(S_1) + \hat{N}(S_2)$. Jego wariancja wynosi $\frac{|A_1|^2 + |A_2|^2}{k} = \frac{|A_1 \cup A_2|^2}{2k}$. Jednak nasza operacja sumy odrzuca $k$ haszy co powoduje dwukrotny wzrost wariancji do $\frac{|A_1 \cup A_2|^2}{k}$ \cite{ting}.
+
+W pracy \cite{ting} zaproponowana została prosta zmiana dla tej operacji, która w rezultacie zamiast ograniczać nowo powstały szkic do $k$ wartości, tworzy największy możliwy szkic, przez co nie tracimy żadnych istotnych informacji.
+Oznaczmy przez ${\tau}(S)$ największy przechowywany hasz w szkicu $S$, przez $h(S)$ zbiór haszy przechowywanych w szkicu $S$ oraz $h(S, \tau)$ niech będzie zbiorem haszy w szkicu $S$ których wartości są mniejsze bądź równe $\tau$. Nowy operator sumy na szkicach \texttt{MinCount} wygląda następująco:
+\begin{flalign}
+        {\tau}_{min} = \tau(S_1 \cup S_2) = min({\tau}_1, {\tau}_2) \\
+        h(S_1 \cup S_2) = h(S_1, {\tau}_{min}) \cup h(S_2, {\tau}_{min})
+\end{flalign}
+
+W tej modyfikacji algorytmu odrzucamy te wartości które są większe niż wartość graniczna ${\tau}_{min}$, a szkice są następnie łączone poprzez sumę teoriomnogościową na zbiorach pozostałych haszy.
+
+Powstały szkic jest identyczny ze szkicem wielkości $|h(S_1 \cup S_2)|$ skonstruowanym z elementów ze zbioru $A_1 \cup A_2$. Estymator liczności dla tak stworzonego szkicu zdefiniowany jest następująco:
+\begin{equation}
+    {\hat{N}}_{impr}(S_1 \cup S_2) = \frac{|h(S_1 \cup S_2)| - 1}{{\tau}_{min}}
+\end{equation}
+
+\subsection{Operacja przekroju}
+
+Rozpatrzmy teraz operację przekroju dla algorytmu \texttt{MinCount}. W naiwnym podejściu wykorzystujemy zasadę włączeń i wyłączeń, jak zostało to pokrótce opisane we Wprowadzeniu, ale ta metoda nie pozawala nam na zdefiniowanie zamkniętego operatora przekroju, a jedynie na wyznaczenie estymacji liczności przekroju i jest podatna na anomalie oraz posiada duży błąd.
+
+Możemy jednak zdefiniować operator przekroju w podobny sposób, jak zdefiniowaliśmy ulepszony operator sumy w poprzednim podrozdziale. Tak jak poprzednio tworzymy - zamiast szkicu ograniczonego do $k$ wartości - największy możliwy szkic. Nowy operator przekroju na szkicach \texttt{MinCount} wygląda następująco \cite{ting}:
+\begin{flalign}
+        {\tau}_{min} = \tau(S_1 \cup S_2) = \tau(S_1 \cap S_2) = min({\tau}_1, {\tau}_2) \\
+        h(S_1 \cap S_2) = h(S_1, {\tau}_{min}) \cap h(S_2, {\tau}_{min})
+\end{flalign}
+Jedną z największych zalet takiej definicji jest fakt, że otrzymujemy tutaj operator zamknięty, czyli taki który w wyniku operacji przekroju na dwóch szkicach daje w wyniku nowy szkic, a nie tylko estymatę liczności. Estymator liczności dla tak zdefiniowanej operacji przekroju wygląda tak:
+\begin{equation}
+    {\hat{N}}_{impr}(S_1 \cap S_2) = \frac{|h(S_1 \cap S_2)| - \alpha(S_1, S_2)}{{\tau}_{min}}
+\end{equation}
+gdzie $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
+ 1 &\mbox{ jeśli ${\tau}_{min} \in h(S_1 \cap S_2)$} \\
+  0 &\mbox{ w p.p.}
+       \end{array} \right.$$
+       
+  

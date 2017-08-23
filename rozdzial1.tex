@@ -1,0 +1,236 @@
+\chapter{Wprowadzenie}
+\thispagestyle{chapterBeginStyle}
+\label{rozdzial1}
+
+W tym rozdziale przedstawimy i opiszemy dwa główne algorytmy którymi zajmować będziemy się w dalszej części pracy: algorytm \texttt{MinCount} oraz \texttt{HyperLogLog}. Omówimy ich działanie oraz wyprowadzimy ich własności takie jak wartość oczekiwana, wariancja i błąd standardowy. Przedstawimy również ich pseudokod. Następnie omówimy także naiwne metody estymacji operacji teoriomnogościowych dla tych algorytmów.
+
+\section{Algorytm MinCount}
+
+Pierwszym algorytmem którym się zajmiemy jest algorytm \texttt{MinCount} znany również pod nazwą \texttt{K-th Minimum Value} (KMV). Algorytm ten korzysta z k-tej statystyki pozycyjnej do wyznaczenia estymatora liczności $n$.
+
+Zdefiniujmy najpierw czym jest k-ta statystyka pozycyjna. Mając dany zbiór zmiennych losowych $X_1, X_2, \dots X_n$ statystykami pozycyjnymi nazywamy zbiór zmiennych losowych  $X_{(1)}, X_{(2)}, \dots X_{(n)}$ powstały poprzez poszeregowanie zmiennych $X_i$ rosnąco. Wówczas $X_{(k)}$ nazywamy k-tą statystyką pozycyjną. Ponadto zakładamy, że zmienne $X_1, X_2, \dots X_n$ są niezależne i pochodzą z tego samego rozkładu prawdopodobieństwa.
+
+Zdefiniujmy również funkcję haszującą $h$ w następujący sposób:
+\begin{equation}
+    h \colon \Omega \rightarrow (0, 1)
+\end{equation}
+Funkcja ta przyjmując element z dowolnej dziedziny haszuje go w przedział $(0,1)$. Jeśli rozpatrywany przez nas zbiór elementów posiada $n$ unikalnych elementów wejściowych $a_1, a_2, \dots a_n$ wówczas otrzymamy ciąg zmiennych losowych $U_1, U_2, \dots U_n \sim U(0,1)$, gdzie $U_i = h(a_i)$. Zauważmy, że dla statystyk pozycyjnych również zachodzi $U_{(i)} = h(a_{(i)})$.
+Zatem zmienna losowa $U_{(k)}$ pochodzi z rozkładu $Beta$ i jest zdefiniowana przez następującą funkcję rozkładu prawdopodobieństwa:
+\begin{equation}
+    f(x; \alpha, \beta) = \frac{x^{\alpha-1}{(1-x)}^{\beta-1}}{B(\alpha, \beta)}
+\end{equation}
+Wartość oczekiwana zmiennej losowej pochodzącej z rozkładu $Beta$ jest funkcją stosunku parametrów $\alpha$ i $\beta$:
+\begin{equation}
+    E[X] = \int_0^1 xf(x; \alpha, \beta) dx = \int_0^1 x\frac{x^{\alpha-1}{(1-x)}^{\beta-1}}{B(\alpha, \beta)} dx = \frac{\alpha}{\alpha + \beta} = \frac{1}{1 + \frac{\beta}{\alpha}}
+\end{equation}
+Zatem wartość oczekiwana dla k-tej statystyki pozycyjnej wynosi $U_{(k)} = \frac{k}{k + (n + 1 - k)} = \frac{k}{n + 1}$. Zdefiniujmy estymator liczności $\hat{n}$ naszego zbioru wejściowego $a_1, a_2, \dots a_n$ jako:
+\begin{equation}
+    \hat{n} = \frac{k - 1}{U_{(k)}}
+\end{equation}
+Możemy go interpretować jako proporcję $\frac{k}{U_{(k)}} \sim \frac{n}{1}$.
+Pokażemy teraz, że estymator $\hat{n}$ jest estymatorem nieobciążonym, czyli jego wartość oczekiwana jest równa $n$.
+\begin{equation}
+    E[\hat{n}] = \int_0^1 \frac{k - 1}{x}f(x; k, n+1-k) dx = n
+\end{equation}
+Wariancję rozkładu $Beta$ określa funkcja:
+\begin{equation}
+    Var[X] = E[(X - E[X])^2] = \frac{\alpha\beta}{(\alpha + \beta)^{2}(\alpha + \beta + 1)}
+\end{equation}
+Z której łatwo możemy policzyć wariancję naszego estymatora $\hat{n}$:
+\begin{equation}
+    Var[\hat{n}] = \frac{n(n - k + 1)}{k - 2} \approx \frac{n^2}{k - 2}
+\end{equation}
+
+Zdefiniujemy teraz strukturę jaką jest szkic danych algorytmu \texttt{MinCount}. Szkic ten możemy zdefiniować jako dwójkę $(S, {\tau})$, gdzie $S$ to zbiór $k$ najmniejszych haszy wartości wejściowych, pamiętając że nasza funkcja haszująca $h$ haszuje dowolne wartości w przedział $(0,1)$. Natomiast ${\tau}$ to k-ty najmniejszy hasz, czyli największa wartość ze zbioru haszy $S$.
+
+W momencie pojawienia się nowego elementu wejściowego porównujemy jego hasz z ${\tau}$ - jeżeli jest mniejszy to dodajemy go do zbioru $S$, usuwamy z niego dotychczasowe ${\tau}$ i ustalamy nowe. 
+
+Posiadając taką strukturę $(S, {\tau})$ jesteśmy w stanie w dowolnym momencie wyliczyć estymator liczności zbioru wejściowego $\hat{n} = \frac{k - 1}{{\tau}}$.
+
+Poniżej przedstawiamy pseudokod takiej struktury dla algorytmu \texttt{MinCount} wraz z odpowiednimi metodami pozwalającymi na dodawanie elementów oraz wyliczenie estymatora:
+\newline
+\begin{algorithm}
+    \begin{algorithmic}
+    \State $k \gets $ liczba przechowywanych haszy 
+    \State $S \gets $ zbiór przechowywanych haszy
+    \State $\tau \gets $ największy przechowywany hasz 
+    \State $h(x) \gets $ funkcja haszująca $\Omega \rightarrow (0, 1)$
+    \newline
+    \Function{Add}{$x \in \Omega$}
+        \State $e \gets h(x)$
+        \If {$e \notin S$}
+            \If {$S.size < k$}
+                \State $S.add(e)$
+                \State $\tau \gets max\{S\}$
+            \ElsIf {$e < \tau$}
+                \State $S.remove(\tau)$
+                \State $S.add(e)$
+                \State $\tau \gets max\{S\}$
+            \EndIf
+        \EndIf
+    \EndFunction
+    \newline
+    \Function{Estimate}{} 
+        \If {$S.size < k$} 
+            \State \Return $S.size$
+        
+        \Else 
+            \State \Return $(k - 1) / \tau$
+        \EndIf
+    \EndFunction
+    
+    \end{algorithmic}
+    \caption{Algorytm \texttt{MinCount}}
+\end{algorithm}
+
+\newpage
+
+\section{Algorytm HyperLogLog}
+
+Kolejnym algorytmem zliczania który omówimy w tej pracy jest szeroko dzisiaj używany algorytm \texttt{HyperLogLog}. Algorytm ten jest rozszerzeniem algorytmu \texttt{LogLog} który z kolei powstał na bazie algorytmu \texttt{Flajoleta-Martina}.
+
+Algorytm \texttt{HyperLogLog} wykorzystuje randomizację do wyznaczenia estymatora liczności multizbioru. W tym celu podobnie jak w przypadku algorytmu \texttt{MinCount} wykorzystana zostaje funkcja haszująca $h$ która haszuje każdy element ze zbioru wejściowego. Algorytm następnie śledzi maksymalną liczbę zer wiodących wśród binarnych reprezentacji wszystkich haszy. W skrócie - hasze które zawierają więcej zer wiodących są rzadziej spotykane a więc implikują większą liczność zbioru wejściowego. Jeśli ciąg bitów postaci $0^{q-1}1$ pojawi się na początku hasza, wówczas przy założeniu, że funkcja $h$ zwraca wartości zgodnie z rozkładem jednostajnym ciągłym, możemy estymować liczność multizbioru wejściowego jako $2^{q}$.
+
+Takie podejście oparte na pojedynczym pomiarze posiada jednak dużą wariancję. W tym celu zastosowano metodę zwaną \texttt{stochastic averaging}. Strumień wejściowy $S$ dzielony jest na $m$ mniejszych podstrumieni $S_i$ podobnych rozmiarów. O tym, do którego podstrumienia należeć będzie dany element decyduje $p$ pierwszych bitów z jego hasza, gdzie $m = 2^p$. W każdym z podstrumieni $S_i$ maksymalna liczba wiodących zer $q$ jest zliczana niezależnie od pozostałych. Wartości te przetrzymywane są w tablicy tzw. rejestrów $M$, gdzie $M[i]$ przechowuje wartość $q + 1$ dla danego podstrumienia $S_i$:
+\begin{equation}
+    M[i] = \max_{x \in S_i} Q(x)
+\end{equation}
+gdzie $Q(x)$ jest funkcją zwracającą liczbę wiodących zer w binarnej reprezentacji $x + 1$. Początkowo, każdy z rejestrów zainicjalizowany jest wartością $-\infty$. Korzystając z tych rejestrów algorytm wylicza estymację liczności jako znormalizowaną średnią harmoniczną (skorygowaną o bias) z estymacji na poszczególnych podstrumieniach:
+\begin{equation}
+    E = {\alpha}_m{m}^{2}(\sum_{i=1}^{m} 2^{-M[i]})
+\end{equation}
+Gdzie ${\alpha}_{m}$ to stała korygująca bias, której wartość dla $m$ rejestrów została udowodniona \cite{hll} jako:
+\begin{equation}
+    {\alpha}_{m} = (m \int_{0}^{\infty} ({\log}_2(\frac{2 + u}{1 + u}))^m du)^{-1}
+\end{equation}
+Ta podstawowa wersja algorytmu posiada jednak szereg wat w praktycznym zastosowaniu, które zostały jednak zaadresowane przez jego twórców, którzy wprowadzili do niego szereg poprawek:
+\begin{enumerate}
+    \item \textbf{Inicjalizacja rejestrów} - rejestry są początkowo inicjalizowane wartością $0$ zamiast $-\infty$. Dzięki temu uniknięto sytuacji gdy dla $n \ll m\log{m}$ algorytm zwracał wynik $0$.
+    \item \textbf{Small range correction} - symulacje przeprowadzone przez autorów algorytmu wykazały, że dla $n \le \frac{5}{2}m$ pojawiają się nieliniowe zaburzenia, które należy skorygować. Dlatego dla tego zakresu $n$ użyty zostaje algorytm \texttt{Linear Counting}.
+    \item \textbf{Large range correction} - gdy wartość $n$ zbliża się do $2^32 \approx 4 \times 10^9$, kolizje haszy stają się coraz bardziej prawdopodobne (jeśli używamy 32-bitowej funkcji haszującej). Aby temu zapobiec zastosowano również stosowną korekcję.
+\end{enumerate}
+
+Wartość oczekiwana algorytmu \texttt{HyperLogLog} jest zdefiniowana następująco:
+\begin{equation}
+    E[\hat{n}] = n(1 + {\delta}_1(n) + o(1))
+\end{equation}
+Przy $n \rightarrow \infty$, gdzie $|{\delta}_1(n)| < 5 \times 10^{-5}$ dla $m \geq 16$.
+Wariancja natomiast wynosi:
+\begin{equation}
+    Var[\hat{n}] = (n(\frac{{b}_m}{\sqrt{m}} + {\delta}_2(n) + o(1)))^2
+\end{equation}
+Przy $n \rightarrow \infty$, gdzie $|{\delta}_2(n)| < 5 \times 10^{-4}$ dla $m \geq 16$, a stała ${b}_m$ jest ograniczona i wynosi odpowiednio dla ${b}_{16} \approx 1.106$, ${b}_{32} \approx 1.070$, ${b}_{64} \approx 1.054$, ${b}_{128} \approx 1.046$, ${b}_{\infty} = \sqrt{3\log{2} - 1} \approx 1.03896$. Funkcje ${\delta}_1(n)$ oraz ${\delta}_1(n)$ są funkcjami oscylującymi o małej amplitudzie i mogą zostać bezpiecznie pominięte w zastosowaniach praktycznych.
+
+Szczegółowo algorytm został opisany przez twórców w \cite{hll} wraz ze wszystkimi własnościami. Poniżej przedstawiamy pseudokod algorytmu \texttt{HyperLogLog} wraz z powyższymi korekcjami:
+\newline
+\begin{algorithm}
+    \begin{algorithmic}
+    \State $m \gets 2^b$ liczba rejestrów, gdzie $b \in {\ZZ}_{+}$
+    \State ${\alpha}_m \gets$ stała korygująca bias
+    \State $q(s) \gets $ funkcja zwracając pozycję pierwszej jedynki w ciągu bitów $s$
+    \State $h(x) \gets $ funkcja haszująca $\Omega \rightarrow (0, 1)$
+    \State $M[m] \gets $ kolekcja rejestrów rozmiaru $m$
+    \newline
+    \For {$i = 0 .. m$}
+        \State $M[i] \gets 0$
+    \EndFor
+    \newline
+    \Function{Add}{$x \in \Omega$}
+        \State $e \gets h(x)$
+        \State $idx \gets 1 + {{\langle}e_1, e_2, ..., e_b{\rangle}}_2$
+        \State $v \gets e_{b+1}, e_{b+2}, ...$
+        \State $M[idx] \gets max\{M[idx], q(v)\}$
+    \EndFunction
+    \newline
+    \Function{Estimate}{} 
+        \State $E \gets {\alpha}_{m}{m}^2(\sum_{j=0}^{m} 2^{(-M[j])})^{-1}$
+        \If {$E \leq \frac{5}{2}m$}
+            \State $V \gets $ liczba rejestrów $M[i]$ równych $0$
+            \If {$V > 0$}
+                \State $E \gets {m}log(\frac{m}{V})$
+            \EndIf
+        \ElsIf {$E > \frac{1}{30}2^{32}$}
+            \State $E \gets -2^{32}log(1 - \frac{E}{2^{32}})$
+        \EndIf
+        \State \Return $E$
+    \EndFunction
+    
+    \end{algorithmic}
+    \caption{Algorytm \texttt{HyperLogLog}}
+\end{algorithm}
+
+\section{Algorytm Streaming MinCount}
+
+Jednym z algorytmów, na których skupimy się omawiając proponowane ulepszenia jest algorytm \texttt{Streaming MinCount}. Algorytm ten różni się od zwykłego \texttt{MinCounta} sposobem estymacji liczności. Wykorzystuje on tzw. \textit{estymatę kroczącą}:
+\begin{equation}
+    \hat{N}(S) = \sum_{t=1}^{n} \frac{Z_t}{\tau_{t}}
+\end{equation}
+gdzie $\tau_{t}$ to wartość największego spośród $k$ przechowywanych haszy po napotkaniu $t$ elementów, a $Z_t$ jest zmienna binarną przyjmującą wartość $1$ jeśli szkic zmienił się w momencie $t$ lub $0$ w p.p. Jak widać ten estymator operuje na przestrzeni czasu $t$ - każdy kolejny napotkany element ze strumienia wejściowego inkrementuje $t$. Dzięki takiemu podejściu, estymator zmienia wartość tylko wtedy, gdy hasz nowo napotkanego elementu modyfikuje szkic - co z kolei zmniejsza wariancję estymatora o połowę względem zwykłego algorytmu \texttt{MinCount} \cite{ting}. Analiza tego estymatora wraz ze szczegółowym opisem i dowodem własności znajduje się w pracy \cite{streamed}. Poniżej przedstawiamy pseudokod dla algorytmu \texttt{Streaming MinCount}:
+\newline
+\begin{algorithm}
+    \begin{algorithmic}
+    \State $k \gets $ liczba przechowywanych haszy 
+    \State $S \gets $ zbiór przechowywanych haszy
+    \State $\tau \gets $ największy przechowywany hasz 
+    \State $N \gets $ estymata krocząca
+    \State $h(x) \gets $ funkcja haszująca $\Omega \rightarrow (0, 1)$
+    \newline
+    \Function{Add}{$x \in \Omega$}
+        \State $e \gets h(x)$
+        \If {$e \notin S$}
+            \If {$S.size < k$}
+                \State $S.add(e)$
+                \State $\tau \gets max\{S\}$
+                \State $N \gets N + 1/\tau$
+            \ElsIf {$e < \tau$}
+                \State $S.remove(\tau)$
+                \State $S.add(e)$
+                \State $\tau \gets max\{S\}$
+                \State $N \gets N + 1/\tau$
+            \EndIf
+        \EndIf
+    \EndFunction
+    \newline
+    \Function{Estimate}{} 
+        \State \Return $round(N)$
+    \EndFunction
+    
+    \end{algorithmic}
+    \caption{Algorytm \texttt{Streaming MinCount}}
+\end{algorithm}
+
+\section{Naiwna estymacja operacji teoriomnogościowych}
+
+Omówimy teraz naiwne metody estymacji operacji teoriomnogościowych, szczególnie skupimy się na operacji sumy i przekroju. Wiele szkiców danych takich jak \texttt{LPCA} (Linear Probabilistic Counting) czy \texttt{HyperLogLog} posiada naturalną operację sumy. Na przykład dla \texttt{LPCA} jest to bitowy \textbf{OR} szkiców, a dla \texttt{HyperLogLog} jest to maksimum każdego z rejestrów spośród sumowanych szkiców. Najważniejszą własnością tych operacji jest to, że powstały szkic jest identyczny ze szkicem, który powstałby z sumy zbiorów wejściowych oraz fakt, że suma dwóch szkiców daje w wyniku nowy szkic - oznacza to że operacja sumy jest zamknięta i pozawala m.in. na sumowanie ze sobą sekwencyjnie większej liczby szkiców.
+
+Formalnie mówiąc, możemy zdefiniować taką operację $\hat{\cup}$, że dla dwóch dowolnych zbiorów $A_1, A_2$:
+\begin{equation}
+    S(A_1) \hat{\cup} S(A_2) = S(A_1 \cup A_2)
+\end{equation}
+Gdzie $S$ to funkcja generująca szkic danych z zadanego zbioru.
+
+W przeciwieństwie do operacji sumy, w szkicach rozważanych przez nas algorytmów nie istnieje naturalna operacja przekroju. Aby taki przekrój policzyć stosuje się specjalne formuły, które jednak nie zwracają w wyniku nowego szkicu tak jak operacja sumy, ale jedynie estymację wyniku operacji przekroju. Jedną z takich metod jest zastosowanie zasady \textit{włączeń i wyłączeń} i skorzystanie z estymaty sumy do policzenia estymaty przekroju:
+\begin{equation}
+    |A_1 \cap A_2| = |A_1| + |A_2| - |A_1 \cup A_2|
+\end{equation}
+Metodę tę można również wykorzystać do policzenia estymaty różnicy zbiorów:
+\begin{equation}
+    \begin{aligned}
+        |A_1 \setminus A_2| = |A_1 \cup A_2| - |A_2|\\
+        |A_2 \setminus A_1| = |A_1 \cup A_2| - |A_1|
+    \end{aligned}
+\end{equation}
+Estymatę przekroju można również policzyć korzystając z podobieństwa \textit{Jaccarda}. Poniżej podajemy zestawienie estymatorów operacji sum i przekroju zdefiniowanych zgodnie z naiwnym podejściem opisanym powyżej:
+\begin{flalign}
+        \hat{N}(S_1 \hat{\cup} S_2) &= \hat{N}(S(S_1 \cup S_2)) \\
+        \hat{N}(S_1 \hat{\cap} S_2) &= \hat{N}(S(A_1)) + \hat{N}(S(A_2)) - \hat{N}(S(S_1 \cup S_2)) \\
+        \hat{N_1}(S_1 \hat{\cap} S_2) &= \hat{J}(S(A_1), S(A_2))\hat{N}(S(S_1 \cup S_2)) \\
+        \hat{N_2}(S_1 \hat{\cap} S_2) &= \frac{\hat{J}(S(A_1), S(A_2))}{1 + \hat{J}(S(A_1), S(A_2))}(\hat{N}(S(A_1)) + \hat{N}(S(A_2)))
+\end{flalign}
+Te metody estymacji nie są jednak optymalne. Zwłaszcza w przypadku przekroju, gdzie błąd jest z grubsza proporcjonalny do wielkości sumy lub większego zbioru natomiast dobra metoda powinna powinna dawać błąd ograniczony rozmiarem mniejszego zbioru. Takie zachowanie prowadzi często do anomalii w wyniku których estymata liczności jest ujemna i wymaga ręcznych korekcji zamieniających ujemne estymaty na zero. Jednak takie korekcje powodują, że estymator przestaje być nieobciążony. Dlatego w kolejnych rozdziałach tej pracy zajmiemy się analizą innych metod estymacji operacji teoriomnogościowych, które dają dokładniejsze wyniki i pozbawione są takich anomalii, oraz - w przypadku algorytmu \texttt{MinCount} - pozawalają na zdefiniowanie zamkniętej operacji przekroju.
+
+\section{Estymacja metodą Największej Wiarygodności}
+
+Estymacja liczności zbioru jest problemem estymacji parametru - dzięki takiemu sformułowaniu problemu, możemy ustalić dwa bardzo ważne fakty: przydatne informacje w szkicu są zakodowane przez \textit{wystarczające statystyki}, a estymator \textit{największej wiarygodności} (maximum likelihood estimator) jest asymptotycznie wydajnym estymatorem \cite{ting}. Mimo, iż metoda estymacji z użyciem \textit{estymatora największej wiarygodności} jest metodą optymalną, nie będziemy się nią zajmować w tej pracy. Ze wszystkich metod omawianych przez nas i przedstawionych w pracy \cite{ting} jest ona najtrudniejsza do efektywnego policzenia i implementacji w praktyce. Metoda omówiona i przetestowana przez nas jest dużo prostsza w implementacji oraz pozwala na łatwiejsze rozszerzenie jej na inne rodzaje szkiców oraz na operacje teoriomnogościowe na większej ilości zbiorów. Jednocześnie estymatory wyprowadzone tą metodą są niemal tak dokładne jak estymatory wyprowadzone metodą \textit{estymatora największej wiarygodności} \cite{ting}. Mowa tutaj o metodzie \textit{estymatora ważonego}, która została szczegółowo omówiona w rozdziale 4.
+
+Estymacja metodą \textit{estymatora największej wiarygodności} może być również zastosowana w kontekście algorytmu \texttt{HyperLogLog}. Taki pomysł został przedstawiony i szczegółowo omówiony w pracy \cite{oertl}. Jednak podobnie jak w przypadku algorytmu \texttt{MinCount} jest on trudny do efektywnego zaimplementowania, między innymi ze względu na konieczność maksymalizacji wielowymiarowej funkcji. W dalszej części naszej pracy przyjrzymy się generalizacji metody \textit{estymatora ważonego} dla algorytmu \texttt{HyperLogLog}, która jest szybsza i dużo łatwiejsza oraz omówimy jej efektywność.
