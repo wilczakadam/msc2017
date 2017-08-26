@@ -1,4 +1,4 @@
-\chapter{Aproksymacja metodą estymatora ważonego}
+\chapter{Metoda estymatora ważonego}
 \thispagestyle{chapterBeginStyle}
 
 W tym rozdziale zajmiemy się inną metodą estymacji operacji teoriomnogościowych opisaną w \cite{ting}. Jest to metoda w której tworzone są \textit{re-weighted estimators}, które dalej w tej pracy będziemy nazywać \textit{estymatorami ważonymi}. Jest to metoda łatwiejsza w implementacji niż metody korzystające z \textit{pseudo-likelihood} oraz jest ona łatwiejsza w generalizacji na inne rodzaje szkiców, m.in. szkice algorytmu \texttt{HyperLogLog}, jak również dla operacji na większej liczbie zbiorów. Te estymatory są tworzone poprzez wyznaczenie średniej ważonej kilku nieobciążonych estymatorów liczności (nazywanych estymatorami składowymi). Opiszemy w jaki sposób należy zdefiniować estymatory składowe aby metoda sprawdzała się prawie tak dobrze jak metoda oparta na estymatorze \textit{największej wiarygodności}, oraz jak należy optymalnie \textit{ważyć} estymatory. W dalszej części tego rozdziału dotyczącej szkiców algorytmu \texttt{MinCount} zakładamy użycie wersji algorytmu \texttt{Streaming MinCount} opisanej w rozdziale $2.3$.
@@ -175,7 +175,7 @@ Ostatecznie, przeprowadzając analogiczne obliczenia jak w $(4.31)$, otrzymujemy
 
 \section{Metoda estymatora ważonego dla algorytmu HyperLogLog}
 
-Jak dotąd omówiliśmy zastosowanie metody \textit{estymatora ważonego} w kontekście algorytmu \texttt{MinCount}. W tym podrozdziale przedstawimy pomysł generalizacji tej metody na szkice \textit{Flajoleta-Martina}, a konkretnie szkice algorytmu \texttt{HyperLogLog}.
+Jak dotąd omówiliśmy zastosowanie metody \textit{estymatora ważonego} w kontekście algorytmu \texttt{MinCount}. W tym podrozdziale przedstawimy pomysł generalizacji tej metody na szkice  algorytmu \texttt{HyperLogLog}.
 \newline
 Potrzebne będą nam do tego estymatory mnożników ${\alpha}_i$ oraz ${\beta}_i$. Niestety nie jesteśmy w stanie policzyć ich korzystając bezpośrednio z informacji przechowywanych w szkicu HyperLogLog-a. Zauważmy jednak że zarówno ${\alpha}_i$ jak i ${\beta}_i$ możemy wyrazić za pomocą podobieństwa \textit{Jaccarda}:
 
@@ -184,53 +184,59 @@ Potrzebne będą nam do tego estymatory mnożników ${\alpha}_i$ oraz ${\beta}_i
     \\
     {\beta}_{i} = \frac{|A_1 \cup A_2|}{|A_i|} = J(A_i, A_1 \cup A_2,)^{-1}
 \end{flalign}
-gdzie podobieństwo \textit{Jaccarda} definiujemy jako:
-\begin{equation}
-    J(A, B) = \frac{|A \cap B|}{|A \cup B|}
-\end{equation}
-Definicję tę możemy także rozwinąć na $n$ zbiorów \cite{adroll}:
-\begin{equation}
-    J(A_1, A_2, ..., A_n) = \frac{|A_1 \cap A_2 \cap ... \cap A_n|}{|A_1 \cup A_2 \cup ... \cup A_n|}
-\end{equation}
-Zatem aby znaleźć estymatory dla ${\alpha}_i$ i ${\beta}_i$, możemy posłużyć się estymatorami dla odpowiadających im indeksów \textit{Jaccarda}. W tej pracy zaproponujemy wykorzystanie do tego, jako narzędzia pomocniczego - algorytmu \texttt{MinHash}, który wykorzystywany jest m.in. do estymacji podobieństwa \textit{Jaccarda} dwóch zbiorów danych.
 
-\subsubsection{Algorytm MinHash}
-W tym podrozdziale przypomnimy krótko działanie algorytmu \texttt{MinHash} oraz wyjaśnimy dlaczego możemy go zastosować w naszej metodzie estymacji.
-\newline
-Algorytm \texttt{MinHash} korzysta z techniki tzw. \textit{min-wise hashing}. Schemat ten został po raz pierwszy zaproponowany przez Andrei Brodera \cite{broder}, jako narzędzie do określania podobieństwa stron internetowych.
+Zatem aby znaleźć estymatory dla ${\alpha}_i$ i ${\beta}_i$, możemy posłużyć się estymatorami dla odpowiadających im indeksów \textit{Jaccarda}.
 
-Niech $h$ będzie funkcją haszującą, która mapuje elementy ze zbiorów $A$ i $B$ na liczby całkowite. Dla dowolnego zbioru $S$ zdefiniujmy $h_{min}(S)$ jako minimalny element z $S$ względem funkcji $h$ - to jest taki element $x \in S$ dla którego $h(x)$ osiąga najmniejszą wartość.
 
-Teraz, jeśli zastosujemy $h_{min}$ na obydwu zbiorach $A$ i $B$, zakładając że nie wystąpią żadne kolizje haszy - otrzymamy dokładnie tę samą wartość jeśli element $x$ należący do sumy zbiorów $A \cup B$ osiągający minimalną wartość $h(x)$ znajduje się także w przecięciu tych zbiorów $A \cap B$. Prawdopodobieństwo zajścia takiego zdarzenia jest równe właśnie indeksowi \textit{Jaccarda} tych zbiorów:
-\begin{equation}
-    Pr(h_{min}(A) = h_{min}(B)) = J(A, B)
-\end{equation}
-Inaczej mówiąc - jeśli $Y$ jest zmienną losową przyjmującą wartość $1$ gdy $h_{min}(A) = h_{min}(B)$ i $0$ w przeciwnym przypadku - wówczas $Y$ jest nieobciążonym estymatorem dla $J(A, B)$ \cite{minhash}.
-
-Ponieważ $Y$ ma zbyt dużą wariancję aby być przydatnym estymatorem indeksu \textit{Jaccarda} (ponieważ przyjmuje tylko wartość 0 lub 1), głównym pomysłem algorytmu \texttt{MinHash} jest zmniejszenie tej wariancji poprzez użycie estymatora będącego średnią z wielu takich zmiennych losowych. Najprostsza wersja algorytmu zakłada użycie $k$ różnych funkcji haszujących, gdzie $k$ to ustalony parametr będący liczbą całkowitą, a każdy zbiór $S$ jest reprezentowany przez $k$ wartości $h_{min}(S)$ policzonych przez $k$ funkcji haszujących.
-Estymator $J(A, B)$ w tej wersji algorytmu wygląda następująco:
-\begin{equation}
-    \hat{J}(A, B) = \frac{1}{k}\sum_{i=1}^{k}[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]
-\end{equation}
-gdzie $[x]$ jest notacją \textit{Iversona} dla zdarzenia $x$. Tak zdefiniowany estymator jest nieobciążonym estymatorem $J(A, B)$ \cite{minhash}, a jego wariancja wynosi:
-\begin{equation}
-    Var(\hat{J}(A,B)) = \frac{J(A, B)(1 - J(A, B))}{k}
-\end{equation}
-Ten wzór jest łatwo wyprowadzalny w podobny sposób jak wzór $(4.24)$. Estymator ten jest zmienną losową będącą sumą $k$ niezależnych prób \textit{Bernoulliego} postaci $[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$, a jak wiemy ze wzoru $(4.38)$ prawdopodobieństwo sukcesu takiej jednej próby jest równe $J(A, B)$.
-
-Istnieje również drugi wariant tego algorytmu, który będziemy wykorzystywać w dalszej części tego rozdziału. Przedstawimy go od razu dla indeksu \textit{Jaccarda} dla wielu zbiorów $(4.38)$. Używa on analogicznego estymatora jak $(4.39)$, ale korzysta z tylko jednej funkcji haszującej. Zamiast generować $k$ różnych funkcji haszujących, przechowujemy $k$ najmniejszych wartości dla każdego z porównywanych zbiorów $A_1, A_2, ..., A_n$ i korzystamy z tylko jednej funkcji haszującej (analogicznie jak w algorytmie \texttt{MinCount}) \cite{adroll}. Posiadamy zatem zbiór haszy, który możemy traktować jako losową próbkę z $\bigcup A_i$. Następnie dla $k$ najmniejszych wartości z tej próbki zliczamy ile z nich znajduje się również wśród $k$ najmniejszych wartości w próbkach poszczególnych zbiorów. Całość dzielimy przez $k$ i otrzymujemy alternatywną wersję estymatora indeksu \textit{Jaccarda} \cite{adroll}:
-\begin{equation}
-    \hat{J}(A_1, A_2, ..., A_n) = \frac{|min_{k}\{\bigcup min_{k} \{ H(A_i) \} \} \cap (\bigcap min_{k}\{H(A_i)\})|}{k}
-\end{equation}
-gdzie $H(A_i)$ oznacza zbiór zhaszowanych elementów zbioru $A_i$, a $min_{k}\{S\}$ jest funkcją zwracającą $k$ najmniejszych elementów ze zbioru $S$ (w naszym przypadku są to hasze).
-
+\JL{zakomentowałem Jaccarda i minhash i przenioslem na poczatek}
+%
+%gdzie podobieństwo \textit{Jaccarda} definiujemy jako:
+%\begin{equation}
+%    J(A, B) = \frac{|A \cap B|}{|A \cup B|}
+%\end{equation}
+%Definicję tę możemy także rozwinąć na $n$ zbiorów \cite{adroll}:
+%\begin{equation}
+%    J(A_1, A_2, ..., A_n) = \frac{|A_1 \cap A_2 \cap ... \cap A_n|}{|A_1 \cup A_2 \cup ... \cup A_n|}
+%\end{equation}
+%Zatem aby znaleźć estymatory dla ${\alpha}_i$ i ${\beta}_i$, możemy posłużyć się estymatorami dla odpowiadających im indeksów \textit{Jaccarda}. W tej pracy zaproponujemy wykorzystanie do tego, jako narzędzia pomocniczego - algorytmu \texttt{MinHash}, który wykorzystywany jest m.in. do estymacji podobieństwa \textit{Jaccarda} dwóch zbiorów danych.
+%
+%\subsubsection{Algorytm MinHash}
+%W tym podrozdziale przypomnimy krótko działanie algorytmu \texttt{MinHash} oraz wyjaśnimy dlaczego możemy go zastosować w naszej metodzie estymacji.
+%\newline
+%Algorytm \texttt{MinHash} korzysta z techniki tzw. \textit{min-wise hashing}. Schemat ten został po raz pierwszy zaproponowany przez Andrei Brodera \cite{broder}, jako narzędzie do określania podobieństwa stron internetowych.
+%
+%Niech $h$ będzie funkcją haszującą, która mapuje elementy ze zbiorów $A$ i $B$ na liczby całkowite. Dla dowolnego zbioru $S$ zdefiniujmy $h_{min}(S)$ jako minimalny element z $S$ względem funkcji $h$ - to jest taki element $x \in S$ dla którego $h(x)$ osiąga najmniejszą wartość.
+%
+%Teraz, jeśli zastosujemy $h_{min}$ na obydwu zbiorach $A$ i $B$, zakładając że nie wystąpią żadne kolizje haszy - otrzymamy dokładnie tę samą wartość jeśli element $x$ należący do sumy zbiorów $A \cup B$ osiągający minimalną wartość $h(x)$ znajduje się także w przecięciu tych zbiorów $A \cap B$. Prawdopodobieństwo zajścia takiego zdarzenia jest równe właśnie indeksowi \textit{Jaccarda} tych zbiorów:
+%\begin{equation}
+%    Pr(h_{min}(A) = h_{min}(B)) = J(A, B)
+%\end{equation}
+%Inaczej mówiąc - jeśli $Y$ jest zmienną losową przyjmującą wartość $1$ gdy $h_{min}(A) = h_{min}(B)$ i $0$ w przeciwnym przypadku - wówczas $Y$ jest nieobciążonym estymatorem dla $J(A, B)$ \cite{minhash}.
+%
+%Ponieważ $Y$ ma zbyt dużą wariancję aby być przydatnym estymatorem indeksu \textit{Jaccarda} (ponieważ przyjmuje tylko wartość 0 lub 1), głównym pomysłem algorytmu \texttt{MinHash} jest zmniejszenie tej wariancji poprzez użycie estymatora będącego średnią z wielu takich zmiennych losowych. Najprostsza wersja algorytmu zakłada użycie $k$ różnych funkcji haszujących, gdzie $k$ to ustalony parametr będący liczbą całkowitą, a każdy zbiór $S$ jest reprezentowany przez $k$ wartości $h_{min}(S)$ policzonych przez $k$ funkcji haszujących.
+%Estymator $J(A, B)$ w tej wersji algorytmu wygląda następująco:
+%\begin{equation}
+%    \hat{J}(A, B) = \frac{1}{k}\sum_{i=1}^{k}[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]
+%\end{equation}
+%gdzie $[x]$ jest notacją \textit{Iversona} dla zdarzenia $x$. Tak zdefiniowany estymator jest nieobciążonym estymatorem $J(A, B)$ \cite{minhash}, a jego wariancja wynosi:
+%\begin{equation}
+%    Var(\hat{J}(A,B)) = \frac{J(A, B)(1 - J(A, B))}{k}
+%\end{equation}
+%Ten wzór jest łatwo wyprowadzalny w podobny sposób jak wzór $(4.24)$. Estymator ten jest zmienną losową będącą sumą $k$ niezależnych prób \textit{Bernoulliego} postaci $[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$, a jak wiemy ze wzoru $(4.38)$ prawdopodobieństwo sukcesu takiej jednej próby jest równe $J(A, B)$.
+%
+%Istnieje również drugi wariant tego algorytmu, który będziemy wykorzystywać w dalszej części tego rozdziału. Przedstawimy go od razu dla indeksu \textit{Jaccarda} dla wielu zbiorów $(4.38)$. Używa on analogicznego estymatora jak $(4.39)$, ale korzysta z tylko jednej funkcji haszującej. Zamiast generować $k$ różnych funkcji haszujących, przechowujemy $k$ najmniejszych wartości dla każdego z porównywanych zbiorów $A_1, A_2, ..., A_n$ i korzystamy z tylko jednej funkcji haszującej (analogicznie jak w algorytmie \texttt{MinCount}) \cite{adroll}. Posiadamy zatem zbiór haszy, który możemy traktować jako losową próbkę z $\bigcup A_i$. Następnie dla $k$ najmniejszych wartości z tej próbki zliczamy ile z nich znajduje się również wśród $k$ najmniejszych wartości w próbkach poszczególnych zbiorów. Całość dzielimy przez $k$ i otrzymujemy alternatywną wersję estymatora indeksu \textit{Jaccarda} \cite{adroll}:
+%\begin{equation}
+%    \hat{J}(A_1, A_2, ..., A_n) = \frac{|min_{k}\{\bigcup min_{k} \{ H(A_i) \} \} \cap (\bigcap min_{k}\{H(A_i)\})|}{k}
+%\end{equation}
+%gdzie $H(A_i)$ oznacza zbiór zhaszowanych elementów zbioru $A_i$, a $min_{k}\{S\}$ jest funkcją zwracającą $k$ najmniejszych elementów ze zbioru $S$ (w naszym przypadku są to hasze).
+%
 \subsubsection{Zastosowanie w algorytmie HyperLogLog}
 
 Pomysłem zaproponowanym w tej pracy jest wykorzystanie algorytmu \texttt{MinHash} do policzenia estymatorów mnożników ${\alpha}_i$ oraz ${\beta}_i$, t.j:
 \begin{flalign}
-    \hat{{\alpha}_{i}} = \hat{J}(A_1 \cap A_2, A_i)
+    \hat{{\alpha}_{i}} = \hat{J}(A_1 \cap A_2, A_i),
     \\
-    \hat{{\beta}_{i}} = \hat{J}(A_i, A_1 \cup A_2,)^{-1}
+    \hat{{\beta}_{i}} = \hat{J}(A_i, A_1 \cup A_2,)^{-1}.
 \end{flalign}
 
 Ich wariancję możemy przybliżyć używając następujących wzorów. Dla $\hat{{\alpha}_i}$ będzie to po prostu wariancja estymatora $\hat{J}(A_1 \cap A_2, A_i)$, którą znamy dla algorytmu \texttt{MinHash}:
@@ -238,7 +244,8 @@ Ich wariancję możemy przybliżyć używając następujących wzorów. Dla $\ha
     Var(\hat{{\alpha}_i}) = \frac{{\alpha}_i(1 - {\alpha}_i)}{k} \approx \frac{\hat{J}(A_1 \cap A_2, A_i)(1 - \hat{J}(A_1 \cap A_2, A_i))}{k} 
 \end{equation}
 
-Wyznaczenie wariancji dla $\hat{{\beta}_i}$ nie jest już tak trywialne ponieważ estymator ten jest odwrotnością indeksu \textit{Jaccarda}. Skorzystamy zatem z \textit{Delta metody}, pozwalającej na wyznaczenie przybliżenia wariancji funkcji zmiennej losowej, przy odpowiednich założeniach \cite{delta}.
+Wyznaczenie wariancji dla $\hat{{\beta}_i}$ nie jest już zupełnie trywialne, ponieważ estymator ten jest odwrotnością indeksu \textit{Jaccarda}. Skorzystamy zatem z techniki znanej czasem jako \textit{delta metoda} \JL{(zobacz: cytowanie pracy ''On Delta-Method of Moments and Probabilistic Sums'' J.Cichonia)},
+ pozwalającej na oszacowanie wariancji funkcji zmiennej losowej, przy odpowiednich założeniach.
 \begin{equation}
     Var(Y) \approx Var(f(X)) = (f'(E[X]))^{2}Var(X)
 \end{equation}
@@ -252,11 +259,11 @@ Oznaczmy przez $b_i = \frac{1}{{\beta}_i} = J(A_i, A_1 \cup A_2)$, oraz niech $f
     \\
     {{{\beta}_i}^3}\frac{(1 - \frac{1}{{\beta}_i})}{k} = 
     \\
-    \frac{{{{\beta}_i}^2}({\beta}_i - 1)}{k} 
+    \frac{{{{\beta}_i}^2}({\beta}_i - 1)}{k} ,
 \end{flalign}
 
 \begin{equation}
-    Var(\hat{{\beta}_{i}}) \approx \frac{{{{\beta}_i}^2}({\beta}_i - 1)}{k} \approx \frac{\hat{J}(A_i, A_1 \cup A_2)^{2}(\hat{J}(A_i, A_1 \cup A_2) - 1)}{k}
+    Var(\hat{{\beta}_{i}}) \approx \frac{{{{\beta}_i}^2}({\beta}_i - 1)}{k} \approx \frac{\hat{J}(A_i, A_1 \cup A_2)^{2}(\hat{J}(A_i, A_1 \cup A_2) - 1)}{k}.
 \end{equation}
 
 Aby zastosować schemat \textit{estymatora ważonego} potrzebna nam będzie jeszcze wariancja estymatora ${{\hat{N}}_i}^{HLL}(S)$ wyliczonego przez algorytm \texttt{HyperLogLog}. Jak przedstawiliśmy we wzorze $(2.12)$, wariancja estymatora wynosi:

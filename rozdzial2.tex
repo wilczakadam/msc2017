@@ -1,23 +1,127 @@
-\chapter{Aproksymacja operacji teoriomnogościowych}
+\chapter{Operacje teoriomnogościowe}
 \thispagestyle{chapterBeginStyle}
 
-W tym rozdziale przyjrzymy się dokładniej naiwnym podejściom do aproksymacji operacji teoriomnogościowych dla szkiców danych zarówno dla algorytmu \texttt{MinCount} jak i \texttt{HyperLogLog}. Takie podejścia są łatwe w implementacji i nie wymagają żadnych modyfikacji istniejących algorytmów ale, zwłaszcza w przypadku przekroju i różnicy, są stosunkowo niedokładne, mogą prowadzić do anomalii oraz w przypadku niektórych algorytmów (np. \texttt{HyperLogLog}) nie pozwalają na zdefiniowanie zamkniętego operatora zwracającego nowy szkic a jedynie na estymację wyniku liczności.
+W tym rozdziale wprowadzimy pojęcie \textit{podobieństwa Jaccarda} zbiorów oraz przedstawimy algorytm \texttt{MinHash} służący do ...\JL{uzupełnić}.
+ Następnie omówimy podstawowe metody estymacji liczności zbiorów powstałych w wyniku wykonania operacji teoriomnogościowych w przypadku, gdy nie są znane bezpośrednio zbiory na jakich wykonywane są te operacje, a jedynie ich szkice. 
+
+\subsubsection{Podobieństwo Jaccarda}
+Podobieństwo Jaccarda definiujemy jako:
+\begin{equation}
+    J(A, B) = \frac{|A \cap B|}{|A \cup B|}.
+\end{equation}
+Definicję tę możemy także uogólnić  na $n$ zbiorów \cite{adroll}:
+\begin{equation}
+    J(A_1, A_2, ..., A_n) = \frac{|A_1 \cap A_2 \cap ... \cap A_n|}{|A_1 \cup A_2 \cup ... \cup A_n|}.
+\end{equation}
+ W tej pracy zaproponujemy wykorzystanie do tego, jako narzędzia pomocniczego - algorytmu \texttt{MinHash}, który wykorzystywany jest m.in. do estymacji podobieństwa \textit{Jaccarda} dwóch zbiorów danych.
+
+\subsubsection{Algorytm MinHash}
+W tym podrozdziale opiszemy działanie algorytmu \texttt{MinHash} oraz wyjaśnimy w jaki sposób możemy go zastosować do ... \JL{uzupełnić}.
+Algorytm \texttt{MinHash} korzysta z techniki tzw. \textit{min-wise hashing}. Schemat ten został po raz pierwszy zaproponowany przez Andrei Brodera \cite{broder}, jako narzędzie do określania podobieństwa stron internetowych.
+
+Niech $h$ będzie funkcją haszującą, która mapuje elementy ze zbiorów na liczby.
+ %całkowite. 
+ \JL{czy to ma isitotne znaczenie, ze calkowite?}
+ Dla dowolnego zbioru $X$ zdefiniujmy $h_{min}(X)$ jako minimalny element z $X$ względem funkcji $h$ , to jest taki element $x \in X$ dla którego $h(x)$ osiąga najmniejszą wartość.
+
+Zastosujemy funkcję $h_{min}$ na zbiorach $A$ i $B$. Zakładając że nie wystąpią żadne kolizje haszy, otrzymamy dokładnie tę samą wartość, jeśli element $x$ należący do sumy zbiorów $A \cup B$ osiągający minimalną wartość $h(x)$ znajduje się także w przecięciu tych zbiorów $A \cap B$. Prawdopodobieństwo zajścia takiego zdarzenia jest równe właśnie indeksowi \textit{Jaccarda} tych zbiorów:
+\begin{equation}
+    Pr(h_{min}(A) = h_{min}(B)) = J(A, B)
+\end{equation}
+Łatwo zatem pokazać, że jeśli $I$ jest zmienną losową przyjmującą wartość $1$ gdy $h_{min}(A) = h_{min}(B)$ i $0$ w przeciwnym przypadku, wówczas $I$ jest nieobciążonym estymatorem dla $J(A, B)$ \cite{minhash}.
+
+Ponieważ zmienna $I$ ma zbyt dużą wariancję, aby być przydatnym estymatorem indeksu \textit{Jaccarda}, główną ideą algorytmu \texttt{MinHash} jest zmniejszenie tej wariancji poprzez użycie estymatora będącego średnią z wielu niezależnych eksperymentów tego typu. Najprostsza wersja algorytmu zakłada użycie $k$ różnych funkcji haszujących, gdzie $k$ to ustalony parametr. Innymi słowy, każdy zbiór $X$ jest reprezentowany przez $k$ wartości $h^{(1)}_{min}(X), h^{(2)}_{min}(X), \ldots, h^{(k)}_{min}(X)$ policzonych przez $k$ funkcji haszujących.
+Estymator $J(A, B)$ w tej wersji algorytmu wygląda następująco:
+\begin{equation}
+    \hat{J}(A, B) = \frac{1}{k}\sum_{i=1}^{k}[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)],
+\end{equation}
+gdzie $[x]$ jest notacją \textit{Iversona} dla zdarzenia $x$, zdefiniowaną jako 
+$$[x] = ... .$$ \JL{uzupelnić}
+Tak zdefiniowany estymator jest nieobciążonym estymatorem $J(A, B)$ \cite{minhash}, a jego wariancja wynosi:
+\begin{equation}
+    Var(\hat{J}(A,B)) = \frac{J(A, B)(1 - J(A, B))}{k}
+\end{equation}
+
+Ten wzór można łatwo wyprowadzić:...
+%JL % % % % % % % % % % % % % % % % % % % %
+ w podobny sposób jak wzór $(4.24)$. \JL{przeniesc tamto wyprowadzenie tutaj} Estymator ten jest zmienną losową będącą sumą $k$ niezależnych prób \textit{Bernoulliego} postaci $[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$, a jak wiemy ze wzoru $(4.38)$ prawdopodobieństwo sukcesu takiej jednej próby jest równe $J(A, B)$.
+\JL{zastanowic sie czy wtedy powyzsze zdanie jest potrzebne}
+%JL % % % % % % % % % % % % % % % % % %
+
+Istnieje również drugi, mniej znany wariant algorytmu \texttt{MinHash}, który będziemy wykorzystywać w dalszej części tego rozdziału. Przedstawimy go od razu dla indeksu \textit{Jaccarda} dla wielu zbiorów $(4.38)$.
+\JL{Ja bym go najpierw przedstawił w wersji dla dwóch zbioróW a potem uogołnił}
+ Używa on analogicznego estymatora jak $(4.39)$, ale korzysta z tylko jednej funkcji haszującej. Zamiast generować $k$ różnych funkcji haszujących, przechowujemy $k$ najmniejszych wartości dla każdego z porównywanych zbiorów $A_1, A_2, ..., A_n$ i korzystamy z tylko jednej funkcji haszującej (analogicznie jak w algorytmie \texttt{MinCount}) \cite{adroll}. Posiadamy zatem zbiór haszy, który możemy traktować jako losową próbkę z $\bigcup A_i$. Następnie dla $k$ najmniejszych wartości z tej próbki zliczamy ile z nich znajduje się również wśród $k$ najmniejszych wartości w próbkach poszczególnych zbiorów. Całość dzielimy przez $k$ i otrzymujemy alternatywną wersję estymatora indeksu \textit{Jaccarda} \cite{adroll}:
+\begin{equation}
+    \hat{J}(A_1, A_2, ..., A_n) = \frac{|min_{k}\{\bigcup min_{k} \{ h(A_i) \} \} \cap (\bigcap min_{k}\{h(A_i)\})|}{k}
+\end{equation}
+\JL{zmieniłem duże H we wzorze na małe h}
+gdzie $h(A_i)$ oznacza zbiór zhaszowanych elementów zbioru $A_i$, a $min_{k}\{S\}$ jest funkcją zwracającą $k$ najmniejszych elementów ze zbioru $S$ (w naszym przypadku są to hasze).
+
+
+
+\section{Naiwna estymacja operacji teoriomnogościowych}
+
+Omówimy teraz naiwne metody wyników estymacji operacji teoriomnogościowych na szkicach, skupimy się na operacji sumy i przekroju. Dla niektóre szkiców danych operacja sumy może być zdefiniowana w stosunkowo naturalny sposób. Dla przykładu, łatwo zauważyć, że  oszacowanie liczności dla sumy dwóch zbiorów $A_1$ i $A_2$ przy użyciu szkiców $M_1$ i $M_2$ związanych z algorytmem \texttt{HyperLogLog} sprowadza się do stworzenia nowego szkicu $M_{A_1\cup A_2}$, takiego, że 
+$$M_{A_1\cup A_2}[i] = \max ... .$$ \JL{uzupelnic wzor}
+Najważniejszą własnością powyższej operacji jest to, że powstały szkic jest identyczny ze szkicem, który powstałby z sumy zbiorów wejściowych $A_1\cup A_2$ oraz fakt, że suma dwóch szkiców daje w wyniku nowy szkic. Oznacza to że operacja sumy jest zamknięta i pozawala m.in. na sumowanie ze sobą sekwencyjnie większej liczby szkiców.
+Bardziej formalnie, możemy zdefiniować taką operację $\dot{\cup}$, że dla dwóch dowolnych zbiorów $A, B$:
+\begin{equation}
+    S(A_1) \dot{\cup} S(A_2) = S(A_1 \cup A_2),
+\end{equation}
+\JL{zamienilem znaczek $\hat{\cup}$ na $\dot{\cup}$}
+gdzie $S$ to funkcja generująca szkic danych dla zbioru.
+
+W przeciwieństwie do operacji sumy, dla szkicach rozważanych przez nas algorytmów nie istnieje naturalna operacja przekroju. Istnieją metody umożliwiające
+oszacowanie mocy przekroju, ale nie zwracają one wyniku nowego szkicu, tak jak operacja sumy. Jedną z takich podstawowych metod jest zastosowanie zasady \textit{włączeń i wyłączeń}: 
+\begin{equation}
+    |A_1 \cap A_2| = |A_1| + |A_2| - |A_1 \cup A_2|
+\end{equation}
+i skorzystanie z wcześniej wyznaczonej estymacji sumy do policzenia estymacji przekroju.
+Metodę tę można również wykorzystać do oszacowania różnicy zbiorów:
+\begin{equation}
+    \begin{aligned}
+        |A_1 \setminus A_2| = |A_1 \cup A_2| - |A_2|.
+    \end{aligned}
+\end{equation}
+Estymatę przekroju można również policzyć korzystając z podobieństwa \textit{Jaccarda}. Poniżej podajemy zestawienie estymatorów operacji sum i przekroju zdefiniowanych zgodnie z naiwnym podejściem opisanym powyżej:
+\begin{flalign}
+        \hat{N}(S_1 \hat{\cup} S_2) &= \hat{N}(S(S_1 \cup S_2)) \\
+        \hat{N}(S_1 \hat{\cap} S_2) &= \hat{N}(S(A_1)) + \hat{N}(S(A_2)) - \hat{N}(S(S_1 \cup S_2)) \\
+\end{flalign}
+a także z wykorzystaniem podobieństwa \textit{Jaccarda}:
+
+\begin{flalign}
+\hat{N_1}(S_1 \hat{\cap} S_2) &= \hat{J}(S(A_1), S(A_2))\hat{N}(S(S_1 \cup S_2)) \\
+        \hat{N_2}(S_1 \hat{\cap} S_2) &= \frac{\hat{J}(S(A_1), S(A_2))}{1 + \hat{J}(S(A_1), S(A_2))}(\hat{N}(S(A_1)) + \hat{N}(S(A_2)))
+\end{flalign}
+Powyższe wzory można uzasadnić następująco:
+\JL{uzupełnić, najlepiej wzorami}
+
+Powyższe metody estymacji nie są jednak zbyt dokładne \JL{cytowanie}. Zwłaszcza w przypadku przekroju, gdzie błąd jest z mniej więcej proporcjonalny do wielkości sumy lub większego zbioru, a oczekiwalibyśmy błędu ograniczony rozmiarem mniejszego zbioru. W skutek użycia powyższych formuł często dochodzi również do anomalii w wyniku których oszacowanie liczności jest ujemne. Dlatego w dalszej części pracy zajmiemy się analizą innych metod szacowania wyników operacji teoriomnogościowych, które dają dokładniejsze wyniki i pozbawione są tego rodzaju anomalii. Ponadto, przynajmniej w przypadku algorytmu \texttt{MinCount}, pozawalają na zdefiniowanie zamkniętej operacji przekroju.
+
+
+% JL - chyba to jest niepotrzebne:
+%%W tym rozdziale przyjrzymy się dokładniej naiwnym podejściom do aproksymacji operacji teoriomnogościowych dla szkiców danych zarówno dla algorytmu \texttt{MinCount} jak i \texttt{HyperLogLog}. Takie podejścia są łatwe w implementacji i nie wymagają żadnych modyfikacji istniejących algorytmów ale, zwłaszcza w przypadku przekroju i różnicy, są stosunkowo niedokładne, mogą prowadzić do anomalii oraz w przypadku niektórych algorytmów (np. \texttt{HyperLogLog}) nie pozwalają na zdefiniowanie zamkniętego operatora zwracającego nowy szkic a jedynie na estymację wyniku liczności.
 
 \section{HyperLogLog}
 
 \subsection{Operacja sumy}
 
-Jak już wspomnieliśmy w poprzednim rozdziale, algorytm \texttt{HyperLogLog} posiada naturalną, zamkniętą operację sumy teoriomnogościowej na swoich szkicach. Jest ona wyjątkowo nieskomplikowana i sprowadza się do znalezienia maksimum na każdym z rejestrów spośród sumowanych szkiców \cite{oertl}. Mając dwa szkice \texttt{HyperLogLog-a} rozmiaru $m$ - $K_1 = (K_{11}, ..., K_{1m})$ oraz $K_2 = (K_{21}, ..., K_{2m})$ reprezentujące dwa zbiory $A_1$ oraz odpowiednio $A_2$, procedura tworząca szkic $K_u = (K_{u1}, ..., K_{um})$ reprezentujący sumę $A_1 \cup A_2$ wygląda następująco:
+W poprzedniej sekcji wyjaśniliśmy, że algorytm \texttt{HyperLogLog} posiada naturalną, zamkniętą operację sumy teoriomnogościowej na swoich szkicach. Jest ona wyjątkowo nieskomplikowana i sprowadza się do znalezienia maksimum na każdym z rejestrów spośród sumowanych szkiców \cite{oertl}. Mając dwa szkice \texttt{HyperLogLog-a} rozmiaru $m$: $M_1 = (M_{11}, ..., M_{1m})$ oraz $M_2 = (M_{21}, ..., M_{2m})$ reprezentujące dwa zbiory $A_1$ oraz odpowiednio $A_2$, procedura tworząca szkic $M_u = (M_{u1}, ..., M_{um})$ reprezentujący sumę $A_1 \cup A_2$ wygląda następująco:
 \begin{equation}
-    K_{ui} = max(K_{1i}, K_{2i}) \quad \textbf{for} \quad i = 1 ... m
+    M_{ui} = max(M_{1i}, M_{2i}) \quad \textbf{dla} \quad i = 1,..., m.
 \end{equation}
+\JL{ujednolicić notacje dla M-ów z tym co w poprzedniej sekcji}
 
-Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach $p$ i $q$. parametr $p$ kontroluje błąd względny natomiast $q$ określa zakres wartości dla rejestrów. Suma $p + q$ określa liczbę używanych bitów haszu i definiuje tym samym maksymalna liczność jaką możemy wyznaczyć. Warto zauważyć, że jeśli liczność zbioru zbliża się do $2^{p+q}$ kolizje haszy stają się coraz częstsze i błąd znacznie wzrasta. Istnieje jednak możliwość sumowania dwóch szkiców o różnych od siebie parach $(p, q)$ oraz $(p',q')$, albowiem każdy szkic \texttt{HyperLogLog} opisany przez parę $(p, q)$ może zostać zredukowany do szkicu opisanego przez $(p',q')$, jeśli spełniony jest warunek $p' \leq p$ oraz $p' + q' \leq p + q$. Taka transformacja jest bezstratna, tj. powstały szkic jest taki sam jak szkic który powstałby przez dodawanie tych wszystkich elementów od początku do szkicu opisanego przez $(p', q')$ \cite{oertl}.
+Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach $p$ i $q$ (patrz rozdział:... \JL{uzupelnic rozdzial gdzie s a te parametry opisane}). Parametr $p$ kontroluje błąd względny, natomiast $q$ określa zakres wartości dla rejestrów. Suma $p + q$ określa liczbę używanych bitów haszu i definiuje tym samym maksymalna liczność jaką możemy wyznaczyć. Warto zauważyć, że jeśli liczność zbioru zbliża się do $2^{p+q}$ kolizje haszy stają się coraz częstsze i błąd znacznie wzrasta. Istnieje jednak możliwość sumowania dwóch szkiców o różnych parametrach parach $(p, q)$ oraz $(p',q')$, albowiem każdy szkic \texttt{HyperLogLog} opisany przez parę $(p, q)$ może zostać zredukowany do szkicu opisanego przez $(p', q')$, jeśli spełniony jest warunek $p' \leq p$ oraz $p' + q' \leq p + q$. Taka transformacja jest bezstratna, tj. powstały szkic jest taki sam jak szkic który powstałby przez dodawanie tych wszystkich elementów od początku do szkicu opisanego przez $(p', q')$ \cite{oertl}.
+\JL{opisac doklanie jak tak redukacja sie odbywa!}
 
 \subsection{Operacja przekroju i różnicy}
 
-O ile w przypadku operacji sumy Algorytm \texttt{HyperLogLog} sprawdza się całkiem dobrze i jest ona łatwa w implementacji, to niestety nie posiada on naturalnych operacji przekroju oraz różnicy na szkicach. Algorytm ten nie pozwala na zdefiniowanie zamkniętej operacji przekroju, możemy jedynie estymować sam wynik liczności zbioru powstałego z przekroju danych szkiców korzystając z \textit{zasady włączeń i wyłączeń} oraz \textit{podobieństw Jaccarda} które pokrótce opisaliśmy w rozdziale 1. O ile metoda oparta na \textit{zasadzie włączeń i wyłączeń} nie sprawdza się zbyt dobrze i prowadzi do różnych anomalii, to metoda wykorzystująca podobieństwo \textit{Jaccarda} $(2.19)$ do estymacji przekroju jest już bardziej dokładna. Wymaga ona jednak dodatkowej struktury danych pozwalającej na estymację indeksu \textit{Jaccarda} zbiorów. Częstą praktyką jest wykorzystanie do tego algorytmu \texttt{MinHash} \cite{adroll}. Wyniki tej metody zostaną jeszcze omówione w rozdziale 4.
+O ile w przypadku operacji sumy na szkicach \texttt{HyperLogLog} sprawdza się całkiem dobrze i jest  łatwa w implementacji, to niestety nie są znane naturalne i zamknięte operacje przekroju oraz różnicy na tych szkicach. Oczywiście stosunkowo łatwo możemy estymować liczność przekroju zbiorów korzystając z zasady włączeń i wyłączeń lub podobieństwa Jaccarda.
+O ile metoda oparta na zasadzie włączeń i wyłączeń nie sprawdza się w tym przypadku i prowadzi do anomalii, to metoda wykorzystująca podobieństwo \textit{Jaccarda} $(2.19)$ \JL{to nie jest dobry sposob odwolywania sie do wozru} do estymacji przekroju jest stosunkowo dokładna \JL{cytowanie, albo powolanie sie na eksperymenty}. Wymaga ona jednak dodatkowej struktury danych pozwalającej na estymację indeksu \textit{Jaccarda} zbiorów. Częstą praktyką jest wykorzystanie do tego algorytmu \texttt{MinHash} \cite{adroll}. Wyniki związane z tym podejściem zostaną jeszcze omówione w kolejnym rozdziale.
 
+\JL{Ttuaj skonczyłem sprawdzanie}
 \section{MinCount}
 
 \subsection{Operacja sumy}
@@ -56,4 +160,11 @@ gdzie $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
   0 &\mbox{ w p.p.}
        \end{array} \right.$$
        
+       
+       
+       \section{Estymacja metodą Największej Wiarygodności}
+       
+       Estymacja liczności zbioru jest problemem estymacji parametru - dzięki takiemu sformułowaniu problemu, możemy ustalić dwa bardzo ważne fakty: przydatne informacje w szkicu są zakodowane przez \textit{wystarczające statystyki}, a estymator \textit{największej wiarygodności} (maximum likelihood estimator) jest asymptotycznie wydajnym estymatorem \cite{ting}. Mimo, iż metoda estymacji z użyciem \textit{estymatora największej wiarygodności} jest metodą optymalną, nie będziemy się nią zajmować w tej pracy. Ze wszystkich metod omawianych przez nas i przedstawionych w pracy \cite{ting} jest ona najtrudniejsza do efektywnego policzenia i implementacji w praktyce. Metoda omówiona i przetestowana przez nas jest dużo prostsza w implementacji oraz pozwala na łatwiejsze rozszerzenie jej na inne rodzaje szkiców oraz na operacje teoriomnogościowe na większej ilości zbiorów. Jednocześnie estymatory wyprowadzone tą metodą są niemal tak dokładne jak estymatory wyprowadzone metodą \textit{estymatora największej wiarygodności} \cite{ting}. Mowa tutaj o metodzie \textit{estymatora ważonego}, która została szczegółowo omówiona w rozdziale 4.
+       
+       Estymacja metodą \textit{estymatora największej wiarygodności} może być również zastosowana w kontekście algorytmu \texttt{HyperLogLog}. Taki pomysł został przedstawiony i szczegółowo omówiony w pracy \cite{oertl}. Jednak podobnie jak w przypadku algorytmu \texttt{MinCount} jest on trudny do efektywnego zaimplementowania, między innymi ze względu na konieczność maksymalizacji wielowymiarowej funkcji. W dalszej części naszej pracy przyjrzymy się generalizacji metody \textit{estymatora ważonego} dla algorytmu \texttt{HyperLogLog}, która jest szybsza i dużo łatwiejsza oraz omówimy jej efektywność.
   
