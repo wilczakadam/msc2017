@@ -1,7 +1,7 @@
 \chapter{Operacje teoriomnogościowe}
 \thispagestyle{chapterBeginStyle}
 
-W tym rozdziale wprowadzimy pojęcie \textit{podobieństwa Jaccarda} zbiorów oraz przedstawimy algorytm \texttt{MinHash} służący do ...\JL{uzupełnić}.
+W tym rozdziale wprowadzimy pojęcie \textit{podobieństwa Jaccarda} zbiorów oraz przedstawimy algorytm \texttt{MinHash} służący do estymacji takiego podobieństwa zbiorów bez konieczności pamiętania wszystkich jego elementów.
  Następnie omówimy podstawowe metody estymacji liczności zbiorów powstałych w wyniku wykonania operacji teoriomnogościowych w przypadku, gdy nie są znane bezpośrednio zbiory na jakich wykonywane są te operacje, a jedynie ich szkice. 
 
 \subsubsection{Podobieństwo Jaccarda}
@@ -12,11 +12,12 @@ Podobieństwo Jaccarda definiujemy jako:
 Definicję tę możemy także uogólnić  na $n$ zbiorów \cite{adroll}:
 \begin{equation}
     J(A_1, A_2, ..., A_n) = \frac{|A_1 \cap A_2 \cap ... \cap A_n|}{|A_1 \cup A_2 \cup ... \cup A_n|}.
+    \label{jacc_multi}
 \end{equation}
  W tej pracy zaproponujemy wykorzystanie do tego, jako narzędzia pomocniczego - algorytmu \texttt{MinHash}, który wykorzystywany jest m.in. do estymacji podobieństwa \textit{Jaccarda} dwóch zbiorów danych.
 
 \subsubsection{Algorytm MinHash}
-W tym podrozdziale opiszemy działanie algorytmu \texttt{MinHash} oraz wyjaśnimy w jaki sposób możemy go zastosować do ... \JL{uzupełnić}.
+W tym podrozdziale opiszemy działanie algorytmu \texttt{MinHash} oraz wyjaśnimy w jaki sposób możemy go zastosować do estymacji \textit{podobieństwa Jaccarda} wbiorów.
 Algorytm \texttt{MinHash} korzysta z techniki tzw. \textit{min-wise hashing}. Schemat ten został po raz pierwszy zaproponowany przez Andrei Brodera \cite{broder}, jako narzędzie do określania podobieństwa stron internetowych.
 
 Niech $h$ będzie funkcją haszującą, która mapuje elementy ze zbiorów na liczby.
@@ -34,6 +35,7 @@ Ponieważ zmienna $I$ ma zbyt dużą wariancję, aby być przydatnym estymatorem
 Estymator $J(A, B)$ w tej wersji algorytmu wygląda następująco:
 \begin{equation}
     \hat{J}(A, B) = \frac{1}{k}\sum_{i=1}^{k}[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)],
+    \label{jacc_est}
 \end{equation}
 gdzie $[x]$ jest notacją \textit{Iversona} dla zdarzenia $x$, zdefiniowaną jako 
 $$[x] = ... .$$ \JL{uzupelnić}
@@ -48,21 +50,21 @@ Ten wzór można łatwo wyprowadzić:...
 \JL{zastanowic sie czy wtedy powyzsze zdanie jest potrzebne}
 %JL % % % % % % % % % % % % % % % % % %
 
-Istnieje również drugi, mniej znany wariant algorytmu \texttt{MinHash}, który będziemy wykorzystywać w dalszej części tego rozdziału. Przedstawimy go od razu dla indeksu \textit{Jaccarda} dla wielu zbiorów $(4.38)$.
-\JL{Ja bym go najpierw przedstawił w wersji dla dwóch zbioróW a potem uogołnił}
- Używa on analogicznego estymatora jak $(4.39)$, ale korzysta z tylko jednej funkcji haszującej. Zamiast generować $k$ różnych funkcji haszujących, przechowujemy $k$ najmniejszych wartości dla każdego z porównywanych zbiorów $A_1, A_2, ..., A_n$ i korzystamy z tylko jednej funkcji haszującej (analogicznie jak w algorytmie \texttt{MinCount}) \cite{adroll}. Posiadamy zatem zbiór haszy, który możemy traktować jako losową próbkę z $\bigcup A_i$. Następnie dla $k$ najmniejszych wartości z tej próbki zliczamy ile z nich znajduje się również wśród $k$ najmniejszych wartości w próbkach poszczególnych zbiorów. Całość dzielimy przez $k$ i otrzymujemy alternatywną wersję estymatora indeksu \textit{Jaccarda} \cite{adroll}:
+Istnieje również drugi, mniej znany wariant algorytmu \texttt{MinHash}, który będziemy wykorzystywać w dalszej części tego rozdziału.
+ Używa on analogicznego estymatora jak \ref{jacc_est}, ale korzysta z tylko jednej funkcji haszującej. Zamiast generować $k$ różnych funkcji haszujących, przechowujemy $k$ najmniejszych wartości dla porównywanych zbiorów $A_1, A_2$ i korzystamy z tylko jednej funkcji haszującej (analogicznie jak w algorytmie \texttt{MinCount}) \cite{adroll}. Posiadamy zatem zbiór haszy, który możemy traktować jako losową próbkę z $\bigcup A_i$. Następnie dla $k$ najmniejszych wartości z tej próbki zliczamy ile z nich znajduje się również wśród $k$ najmniejszych wartości w próbkach poszczególnych zbiorów. Całość dzielimy przez $k$ i otrzymujemy alternatywną wersję estymatora indeksu \textit{Jaccarda} \cite{adroll}:
+ \begin{equation}
+ \hat{J}(A_1, A_2) = \frac{|min_{k}\{min_{k} \{ h(A_1) \} \cup min_{k} \{ h(A_2) \} \} \cap (min_{k}\{h(A_1)\} \cap min_{k}\{h(A_2)\})|}{k}
+ \end{equation}
+ gdzie $h(A_i)$ oznacza zbiór zhaszowanych elementów zbioru $A_i$, a $min_{k}\{S\}$ jest funkcją zwracającą $k$ najmniejszych elementów ze zbioru $S$ (w naszym przypadku są to hasze).
+ Estymator ten możemy łatwo uogólnić dla \textit{indeksu Jaccarda} $n$ zbiorów, zdefiniowanego w \ref{jacc_multi}:
 \begin{equation}
     \hat{J}(A_1, A_2, ..., A_n) = \frac{|min_{k}\{\bigcup min_{k} \{ h(A_i) \} \} \cap (\bigcap min_{k}\{h(A_i)\})|}{k}
 \end{equation}
-\JL{zmieniłem duże H we wzorze na małe h}
-gdzie $h(A_i)$ oznacza zbiór zhaszowanych elementów zbioru $A_i$, a $min_{k}\{S\}$ jest funkcją zwracającą $k$ najmniejszych elementów ze zbioru $S$ (w naszym przypadku są to hasze).
-
-
 
 \section{Naiwna estymacja operacji teoriomnogościowych}
 
 Omówimy teraz naiwne metody wyników estymacji operacji teoriomnogościowych na szkicach, skupimy się na operacji sumy i przekroju. Dla niektóre szkiców danych operacja sumy może być zdefiniowana w stosunkowo naturalny sposób. Dla przykładu, łatwo zauważyć, że  oszacowanie liczności dla sumy dwóch zbiorów $A_1$ i $A_2$ przy użyciu szkiców $M_1$ i $M_2$ związanych z algorytmem \texttt{HyperLogLog} sprowadza się do stworzenia nowego szkicu $M_{A_1\cup A_2}$, takiego, że 
-$$M_{A_1\cup A_2}[i] = \max ... .$$ \JL{uzupelnic wzor}
+$$M_{A_1\cup A_2}[i] = \max(M_{A_1}[i], M_{A_2}[i]).$$ 
 Najważniejszą własnością powyższej operacji jest to, że powstały szkic jest identyczny ze szkicem, który powstałby z sumy zbiorów wejściowych $A_1\cup A_2$ oraz fakt, że suma dwóch szkiców daje w wyniku nowy szkic. Oznacza to że operacja sumy jest zamknięta i pozawala m.in. na sumowanie ze sobą sekwencyjnie większej liczby szkiców.
 Bardziej formalnie, możemy zdefiniować taką operację $\dot{\cup}$, że dla dwóch dowolnych zbiorów $A, B$:
 \begin{equation}
@@ -75,6 +77,7 @@ W przeciwieństwie do operacji sumy, dla szkicach rozważanych przez nas algoryt
 oszacowanie mocy przekroju, ale nie zwracają one wyniku nowego szkicu, tak jak operacja sumy. Jedną z takich podstawowych metod jest zastosowanie zasady \textit{włączeń i wyłączeń}: 
 \begin{equation}
     |A_1 \cap A_2| = |A_1| + |A_2| - |A_1 \cup A_2|
+    \label{incexc}
 \end{equation}
 i skorzystanie z wcześniej wyznaczonej estymacji sumy do policzenia estymacji przekroju.
 Metodę tę można również wykorzystać do oszacowania różnicy zbiorów:
@@ -85,19 +88,33 @@ Metodę tę można również wykorzystać do oszacowania różnicy zbiorów:
 \end{equation}
 Estymatę przekroju można również policzyć korzystając z podobieństwa \textit{Jaccarda}. Poniżej podajemy zestawienie estymatorów operacji sum i przekroju zdefiniowanych zgodnie z naiwnym podejściem opisanym powyżej:
 \begin{flalign}
-        \hat{N}(S_1 \hat{\cup} S_2) &= \hat{N}(S(S_1 \cup S_2)) \\
-        \hat{N}(S_1 \hat{\cap} S_2) &= \hat{N}(S(A_1)) + \hat{N}(S(A_2)) - \hat{N}(S(S_1 \cup S_2)) \\
+        \hat{N}(S_1 \hat{\cup} S_2) &= \hat{N}(S(A_1 \cup A_2))\\
+        \hat{N}(S_1 \hat{\cap} S_2) &= \hat{N}(S(A_1)) + \hat{N}(S(A_2)) - \hat{N}(S(A_1 \cup A_2)) 
 \end{flalign}
 a także z wykorzystaniem podobieństwa \textit{Jaccarda}:
 
 \begin{flalign}
-\hat{N_1}(S_1 \hat{\cap} S_2) &= \hat{J}(S(A_1), S(A_2))\hat{N}(S(S_1 \cup S_2)) \\
-        \hat{N_2}(S_1 \hat{\cap} S_2) &= \frac{\hat{J}(S(A_1), S(A_2))}{1 + \hat{J}(S(A_1), S(A_2))}(\hat{N}(S(A_1)) + \hat{N}(S(A_2)))
+\hat{N_1}(S_1 \hat{\cap} S_2) &= \hat{J}(S(A_1), S(A_2))\hat{N}(S_1 \hat{\cup} S_2) \label{jacc_1} \\
+        \hat{N_2}(S_1 \hat{\cap} S_2) &= \frac{\hat{J}(S(A_1), S(A_2))}{1 + \hat{J}(S(A_1), S(A_2))}(\hat{N}(S(A_1)) + \hat{N}(S(A_2))) \label{jacc_2}
 \end{flalign}
-Powyższe wzory można uzasadnić następująco:
-\JL{uzupełnić, najlepiej wzorami}
+Wzór \ref{jacc_1} możemy uzasadnić korzystając z następującej własności:
+\begin{equation}
+	J(A_1, A_2)|A_1 \cup A_2| = \frac{|A_1 \cap A_2|}{|A_1 \cup A_2|}|A_1 \cup A_2| = |A_1 \cap A_2|
+\end{equation}
+Natomiast wzór \ref{jacc_2} wynika z następujących przekształceń:
+\begin{flalign}
+&\frac{J(A_1, A_2)}{1 + J(A_1, A_2)}(|A_1| + |A_2|) \\
+&= \frac{\frac{|A_1 \cap A_2|}{|A_1 \cup A_2|}}{1 + \frac{|A_1 \cap A_2|}{|A_1 \cup A_2|}}(|A_1| + |A_2|) \\
+&= \frac{|A_1 \cap A_2|}{|A_1 \cup A_2|}\frac{|A_1 \cup A_2|}{|A_1 \cup A_2| + |A_1 \cap A_2|}(|A_1| + |A_2|) \\
+&= \frac{|A_1 \cap A_2|}{|A_1 \cup A_2| + |A_1 \cap A_2|}|A_1| + \frac{|A_1 \cap A_2|}{|A_1 \cup A_2| + |A_1 \cap A_2|}|A_2| \\
+&= \frac{|A_1 \cap A_2|(|A_1| + |A_2|)}{|A_1 \cup A_2| + |A_1 \cap A_2|} \\
+\end{flalign}
+Następnie korzystając z faktu \ref{incexc} otrzymujemy:
+\begin{equation}
+	\frac{|A_1 \cap A_2|(|A_1| + |A_2|)}{|A_1 \cup A_2| + |A_1 \cap A_2|} = |A_1 \cap A_2|
+\end{equation}
 
-Powyższe metody estymacji nie są jednak zbyt dokładne \JL{cytowanie}. Zwłaszcza w przypadku przekroju, gdzie błąd jest z mniej więcej proporcjonalny do wielkości sumy lub większego zbioru, a oczekiwalibyśmy błędu ograniczony rozmiarem mniejszego zbioru. W skutek użycia powyższych formuł często dochodzi również do anomalii w wyniku których oszacowanie liczności jest ujemne. Dlatego w dalszej części pracy zajmiemy się analizą innych metod szacowania wyników operacji teoriomnogościowych, które dają dokładniejsze wyniki i pozbawione są tego rodzaju anomalii. Ponadto, przynajmniej w przypadku algorytmu \texttt{MinCount}, pozawalają na zdefiniowanie zamkniętej operacji przekroju.
+Powyższe metody estymacji nie są jednak zbyt dokładne. Zwłaszcza w przypadku przekroju, gdzie błąd jest z mniej więcej proporcjonalny do wielkości sumy lub większego zbioru, a oczekiwalibyśmy błędu ograniczony rozmiarem mniejszego zbioru \cite{ting}. W skutek użycia powyższych formuł często dochodzi również do anomalii w wyniku których oszacowanie liczności jest ujemne. Dlatego w dalszej części pracy zajmiemy się analizą innych metod szacowania wyników operacji teoriomnogościowych, które dają dokładniejsze wyniki i pozbawione są tego rodzaju anomalii. Ponadto, przynajmniej w przypadku algorytmu \texttt{MinCount}, pozawalają na zdefiniowanie zamkniętej operacji przekroju.
 
 
 % JL - chyba to jest niepotrzebne:
@@ -118,8 +135,9 @@ Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach
 
 \subsection{Operacja przekroju i różnicy}
 
-O ile w przypadku operacji sumy na szkicach \texttt{HyperLogLog} sprawdza się całkiem dobrze i jest  łatwa w implementacji, to niestety nie są znane naturalne i zamknięte operacje przekroju oraz różnicy na tych szkicach. Oczywiście stosunkowo łatwo możemy estymować liczność przekroju zbiorów korzystając z zasady włączeń i wyłączeń lub podobieństwa Jaccarda.
-O ile metoda oparta na zasadzie włączeń i wyłączeń nie sprawdza się w tym przypadku i prowadzi do anomalii, to metoda wykorzystująca podobieństwo \textit{Jaccarda} $(2.19)$ \JL{to nie jest dobry sposob odwolywania sie do wozru} do estymacji przekroju jest stosunkowo dokładna \JL{cytowanie, albo powolanie sie na eksperymenty}. Wymaga ona jednak dodatkowej struktury danych pozwalającej na estymację indeksu \textit{Jaccarda} zbiorów. Częstą praktyką jest wykorzystanie do tego algorytmu \texttt{MinHash} \cite{adroll}. Wyniki związane z tym podejściem zostaną jeszcze omówione w kolejnym rozdziale. \JL{w której sekcji dokładnie napisac}
+Operacji sumy na szkicach algorytmu \texttt{HyperLogLog} sprawdza się całkiem dobrze i jest  łatwa w implementacji. Niestety nie są znane naturalne i zamknięte operacje przekroju oraz różnicy na tych szkicach. Oczywiście stosunkowo łatwo możemy estymować liczność przekroju zbiorów korzystając z zasady włączeń i wyłączeń lub podobieństwa Jaccarda.
+
+O ile metoda oparta na zasadzie włączeń i wyłączeń nie sprawdza się w tym przypadku i prowadzi do anomalii, to metoda wykorzystująca podobieństwo \textit{Jaccarda} \ref{jacc_1} do estymacji przekroju jest stosunkowo dokładna, co potwierdzają wykonane przez nas eksperymenty. Wymaga ona jednak dodatkowej struktury danych pozwalającej na estymację indeksu \textit{Jaccarda} zbiorów. Częstą praktyką jest wykorzystanie do tego algorytmu \texttt{MinHash} \cite{adroll}. Wyniki związane z tym podejściem zostaną jeszcze omówione w kolejnym rozdziale.
 
 
 \section{MinCount}
