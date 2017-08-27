@@ -11,52 +11,54 @@ Na początek przedstawiamy wyniki dla trzech metod estymacji dla algorytmu \text
 	\item metoda \textit{estymatora ważonego}
 \end{enumerate}
 
-Wykresy \ref{fig:KMV_2sets_inter} oraz \ref{fig:KMV_2sets_sum} przedstawiają wyniki eksperymentów dla sum i przekrojów dwóch zbiorów.
+Wykresy \ref{fig:KMV_2sets_inter} oraz \ref{fig:KMV_2sets_unions} przedstawiają wyniki eksperymentów dla sum i przekrojów dwóch zbiorów.
 
 \begin{figure}[h!]
     \includegraphics[width=0.6\textwidth]{KMV_2_sets_inter.png}
     \centering
-    \caption{Porównanie metod dla przekrojów 2 zbiorów}
+    \caption{Porównanie metod dla przekrojów 2 zbiorów przy $n=10^5$}
     \label{fig:KMV_2sets_inter}
 \end{figure}
 
 \begin{figure}[h!]
-    \includegraphics[width=0.6\textwidth]{KMV_2_sets_sum.png}
+    \includegraphics[width=0.6\textwidth]{KMV_2_sets_unions.png}
     \centering
-    \caption{Porównanie metod dla sumy 2 zbiorów}
-    \label{fig:KMV_2sets_sum}
+    \caption{Porównanie metod dla sumy 2 zbiorów przy $n=10^5$}
+    \label{fig:KMV_2sets_unions}
 \end{figure}
 
-Zauważmy, że dla operacji sumy - praktycznie na całym przedziale indeksów \textit{Jaccarda} zbiorów - najmniejszy błąd posiada metoda \textit{estymatora ważonego}. W przypadku przekroju, dla indeksów \textit{Jaccarda} większych niż ok. $0.20$ najlepiej wypada estymacja przy użyciu naiwnej metody wykorzystującej zasadę \textit{włączeń i wyłączeń} - pamiętajmy jednak, że jest to przypadek z użyciem tylko dwóch zbiorów, gdzie wzór ten jest jeszcze stosunkowo nieskomplikowany, oraz że ta metoda estymacji nie prowadzi do utworzenia nowego szkicu reprezentującego przekrój, a więc nie możemy wykonać kolejnych operacji z jego użyciem. W przypadku pozostałych metod dla przekroju znowu widzimy zysk na dokładności poprzez użycie \textit{estymatora ważonego}, nawet dla wartości indeksów \textit{Jaccarda}, dla których metoda naiwna posiadała bardzo duży błąd oraz anomalie (ujemne estymaty).
+Zauważmy, że dla operacji sumy - praktycznie na całym przedziale indeksów \textit{Jaccarda} zbiorów - najmniejszy błąd posiada metoda \textit{estymatora ważonego}. W przypadku przekroju metody $2.$ oraz $3.$ wypadają o wiele lepiej niż metoda naiwna. Na wykresie możemy zauważyć, że metoda \textit{estymatora ważonego} posiada podobną tendencję jak metoda $2.$, ale dla większości indeksów \textit{Jaccarda} posiada mniejszy błąd.
 
-Na kolejnych wykresach, zestawiliśmy wyniki dla sum i przekrojów większej liczby zbiorów. Wykonaliśmy eksperymenty dla 100 oraz 1000 zbiorów, porównując metody $2.$ oraz $3.$ Metodę naiwną pominęliśmy ze względu na jej znaczące wady wspomniane w poprzednim akapicie. Dla większej liczby zbiorów widać coraz większą efektywność metody \textit{estymatora ważonego} la indeksów \textit{Jaccarda} wiekszych niż ok. $3.50$. Wraz z wzrostem liczby zbiorów biorących udział w operacji - wzrasta liczba estymatorów składowych, a więc liczba ważonych składników - przez co zauważyć możemy efekt \textit{ważenia}, zmniejszający błąd względem pojedynczego estymatora.
+Na kolejnych wykresach: \ref{fig:KMV_10sets_inter}, \ref{fig:KMV_10sets_unions}, \ref{fig:KMV_100sets_inter} oraz \ref{fig:KMV_100sets_unions}, zestawiliśmy wyniki dla sum i przekrojów większej liczby zbiorów. Wykonaliśmy eksperymenty dla 10 oraz 100 zbiorów o mocach $n = 10^5$, porównując metody $2.$ oraz $3.$ Metodę naiwną pominęliśmy ze względu na jej znaczące wady opisane w rozdziale $3.1$. 
+
+CDN ...
+
+\begin{figure}[h!]
+    \includegraphics[width=0.6\textwidth]{KMV_10_sets_inter.png}
+    \centering
+    \caption{Porównanie metod dla przekroju 10 zbiorów}
+    \label{fig:KMV_10sets_inter}
+\end{figure}
+
+\begin{figure}[h!]
+    \includegraphics[width=0.6\textwidth]{KMV_10_sets_unions.png}
+    \centering
+    \caption{Porównanie metod dla sumy 10 zbiorów}
+    \label{fig:KMV_10sets_unions}
+\end{figure}
 
 \begin{figure}[h!]
     \includegraphics[width=0.6\textwidth]{KMV_100_sets_inter.png}
     \centering
     \caption{Porównanie metod dla przekroju 100 zbiorów}
-    \label{fig:KMV_1000sets_inter}
-\end{figure}
-
-\begin{figure}[h!]
-    \includegraphics[width=0.6\textwidth]{KMV_100_sets_sum.png}
-    \centering
-    \caption{Porównanie metod dla sumy 100 zbiorów}
-    \label{fig:KMV_100sets_sum}
-\end{figure}
-
-\begin{figure}[h!]
-    \includegraphics[width=0.6\textwidth]{KMV_1000_sets_inter.png}
-    \centering
-    \caption{Porównanie metod dla przekroju 1000 zbiorów}
     \label{fig:KMV_100sets_inter}
 \end{figure}
 
 \begin{figure}[h!]
-    \includegraphics[width=0.6\textwidth]{KMV_1000_sets_sum.png}
+    \includegraphics[width=0.6\textwidth]{KMV_100_sets_unions.png}
     \centering
-    \caption{Porównanie metod dla sumy 1000 zbiorów}
-    \label{fig:KMV_1000sets_sum}
+    \caption{Porównanie metod dla sumy 100 zbiorów}
+    \label{fig:KMV_100sets_unions}
 \end{figure}
 
 Ostatnimi eksperymentami przeprowadzonymi dla algorytmu \texttt{MinCount} było sprawdzenie metody \textit{estymatora ważonego} dla różnicy zbiorów, omówionej w rozdziale $4.4$. Na wykresie \ref{fig:KMV_2_sets_diff} przedstawiamy wyniki dla różnicy dwóch zbiorów, porównując podejście naiwne oraz podejście wykorzystujące \textit{estymator ważony}.
@@ -68,6 +70,8 @@ Ostatnimi eksperymentami przeprowadzonymi dla algorytmu \texttt{MinCount} było 
     \label{fig:KMV_2_sets_diff}
 \end{figure}
 
+Zauważmy ze metody $2.$ oraz $3.$ po raz kolejny wypadają znacznie lepiej od metody naiwnej, a metoda \textit{estymatora ważonego}, podobnie jak w przypadku sumy i przekroju, pokrywa się z tendencją metody $2.$, ale w większości przypadków posiada mniejszy błąd.
+
 \newpage
 \section{Wyniki dla algorytmu HyperLogLog}
 W tym podrozdziale przedstawimy wyniki dla algorytmu \texttt{HyperLogLog}. Zestawiliśmy ze sobą dwie metody:
@@ -75,22 +79,36 @@ W tym podrozdziale przedstawimy wyniki dla algorytmu \texttt{HyperLogLog}. Zesta
 	\item metoda naiwna z użyciem indeksu \textit{Jaccarda} (wzór $(2.19)$)
 	\item metoda \textit{estymatora ważonego}
 \end{enumerate}
-Obydwie metody korzystają z pomocniczej struktury dla każdego ze szkiców, przechowującej $k$ najmniejszych wartości (czyli zasadniczo z podstawowej wersji szkicu \texttt{MinCount}), pozwalającej na estymację indeksu \textit{Jaccarda} \cite{adroll}, potrzebnego zarówno do estymacji metoda naiwna jak i metoda \textit{estymatora ważonego}. W przeprowadzanych eksperymentach ustaliliśmy parametry $k = 80$ oraz $b = 8$.
+Obydwie metody korzystają z pomocniczej struktury dla każdego ze szkiców, przechowującej $k$ najmniejszych wartości (czyli zasadniczo z podstawowej wersji szkicu \texttt{MinCount}), pozwalającej na estymację indeksu \textit{Jaccarda} \cite{adroll}, potrzebnego zarówno do estymacji metodą naiwną jak i metodą \textit{estymatora ważonego}. W przeprowadzanych eksperymentach ustaliliśmy parametry $k = 80$ oraz $b = 8$.
 
-Na wykresach \ref{fig:HLL_100_sets_sum} oraz \ref{fig:HLL_100_sets_inter} przedstawiamy porównanie powyższych metod w kontekście operacji sumy oraz przekroju. Eksperymenty przeprowadziliśmy dla 100 zbiorów.
+Na wykresach \ref{fig:HLL_2_sets_unions}, \ref{fig:HLL_2_sets_unions}, \ref{fig:HLL_10_sets_unions} oraz \ref{fig:HLL_10_sets_inter} przedstawiamy porównanie powyższych metod w kontekście operacji sumy oraz przekroju. Eksperymenty przeprowadziliśmy dla 2 oraz 10 zbiorów o mocach $n=10^5$.
 
 \begin{figure}[h!]
-    \includegraphics[width=0.6\textwidth]{HLL_100_sets_inter.png}
-    \centering
-    \caption{Porównanie metod dla przekroju 100 zbiorów}
-    \label{fig:HLL_100_sets_inter}
+	\includegraphics[width=0.6\textwidth]{HLL_2_sets_inter.png}
+	\centering
+	\caption{Porównanie metod dla przekroju 2 zbiorów przy $n=10^5$}
+	\label{fig:HLL_2_sets_inter}
 \end{figure}
 
 \begin{figure}[h!]
-    \includegraphics[width=0.6\textwidth]{HLL_100_sets_sum.png}
-    \centering
-    \caption{Porównanie metod dla sumy 100 zbiorów}
-    \label{fig:HLL_100_sets_sum}
+	\includegraphics[width=0.6\textwidth]{HLL_2_sets_unions.png}
+	\centering
+	\caption{Porównanie metod dla sumy 2 zbiorów przy $n=10^5$}
+	\label{fig:HLL_2_sets_unions}
 \end{figure}
 
-Wnioski wynikające z tych eksperymentów sugerują, że metoda \textit{estymatora ważonego} w kontekście algorytmu \texttt{HyperLogLog} niestety nie dorównuje pod względem dokładności podejściu naiwnemu. W przypadku sumy jest to dosyć oczywiste, ponieważ jak wspominaliśmy w rozdziale 2 - \texttt{HyperLogLog} posiada naturalną operację sumy, która posiada stały i niewielki błąd, niezależnie od podobieństwa sumowanych zbiorów. W przypadku operacji przekroju metoda naiwna wykorzystująca indeks \textit{Jaccarda} i wzór $(2.19)$ posiada mniejszy błąd niż estymacja z użyciem \textit{estymatora ważonego}. Zauważmy że obie metody wykorzystują tyle samo pamięci, bowiem obie wymagają dodatkowej struktury pozwalającej na estymację indeksu \textit{Jaccarda} przy wykorzystaniu algorytmu \texttt{MinHash}.
+\begin{figure}[h!]
+    \includegraphics[width=0.6\textwidth]{HLL_10_sets_inter.png}
+    \centering
+    \caption{Porównanie metod dla przekroju 10 zbiorów przy $n=10^5$}
+    \label{fig:HLL_10_sets_inter}
+\end{figure}
+
+\begin{figure}[h!]
+    \includegraphics[width=0.6\textwidth]{HLL_10_sets_unions.png}
+    \centering
+    \caption{Porównanie metod dla sumy 10 zbiorów przy $n=10^5$}
+    \label{fig:HLL_10_sets_unions}
+\end{figure}
+
+Wnioski wynikające z tych eksperymentów sugerują, że metoda \textit{estymatora ważonego} w kontekście algorytmu \texttt{HyperLogLog} dla operacji sumy niestety nie dorównuje pod względem dokładności podejściu naiwnemu. W przypadku sumy jest to dosyć oczywiste, ponieważ jak wspominaliśmy w rozdziale 2 - \texttt{HyperLogLog} posiada naturalną operację sumy. W przypadku operacji przekroju metoda naiwna wykorzystująca indeks \textit{Jaccarda} i wzór $(2.19)$ posiada większy błąd niż estymacja z użyciem \textit{estymatora ważonego}, zwłaszcza dla zbiorów o niskim podobieństwie. Zauważmy że obie metody wykorzystują tyle samo pamięci, bowiem obie wymagają dodatkowej struktury pozwalającej na estymację indeksu \textit{Jaccarda} przy wykorzystaniu algorytmu \texttt{MinHash}.
