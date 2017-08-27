@@ -1,11 +1,14 @@
 \chapter{Metoda estymatora ważonego}
 \thispagestyle{chapterBeginStyle}
 
-W tym rozdziale zajmiemy się inną metodą estymacji operacji teoriomnogościowych opisaną w \cite{ting}. Jest to metoda w której tworzone są \textit{re-weighted estimators}, które dalej w tej pracy będziemy nazywać \textit{estymatorami ważonymi}. Jest to metoda łatwiejsza w implementacji niż metody korzystające z \textit{pseudo-likelihood} oraz jest ona łatwiejsza w generalizacji na inne rodzaje szkiców, m.in. szkice algorytmu \texttt{HyperLogLog}, jak również dla operacji na większej liczbie zbiorów. Te estymatory są tworzone poprzez wyznaczenie średniej ważonej kilku nieobciążonych estymatorów liczności (nazywanych estymatorami składowymi). Opiszemy w jaki sposób należy zdefiniować estymatory składowe aby metoda sprawdzała się prawie tak dobrze jak metoda oparta na estymatorze \textit{największej wiarygodności}, oraz jak należy optymalnie \textit{ważyć} estymatory. W dalszej części tego rozdziału dotyczącej szkiców algorytmu \texttt{MinCount} zakładamy użycie wersji algorytmu \texttt{Streaming MinCount} opisanej w rozdziale $2.3$.
+
+
+
+W tym rozdziale zajmiemy się metodą estymacji operacji teoriomnogościowych opisaną w \cite{ting}. Estymatory w tej metodzie są definiowane jako średnia ważonej pewnej liczby nieobciążonych estymatorów liczności (nazywanych estymatorami składowymi). Opiszemy w jaki sposób należy zdefiniować estymatory składowe oraz jak należy optymalnie  je \textit{ważyć}. 
 
 \section{Optymalne ważenie estymatorów}
 Na początku wyjaśnimy na czym polega ważenie estymatorów.
-W tym celu przypomnimy czym jest \textit{macierz kowariancji}. Macierz ta jest uogólnieniem pojęcia wariancji na przypadek wielowymiarowy. Dla wektora zmiennych losowych $(X_1, X_2, ..., X_n)$ ma ona postać:
+W tym celu przypomnijmy definicje \textit{macierz kowariancji}. Macierz ta jest uogólnieniem pojęcia wariancji na przypadek wielowymiarowy. Dla wektora zmiennych losowych $X_1, X_2, \ldots, X_n$ macierz kowariancji postać:\JL{poprawić tą macierz}
 \[
 \Sigma =
   \begin{bmatrix}
@@ -13,44 +16,59 @@ W tym celu przypomnimy czym jest \textit{macierz kowariancji}. Macierz ta jest u
     {{\sigma}_21} & {{\sigma}_{2}}^2 & \cdots & {\sigma}_{2n} \\
     \vdots & \cdots & \ddots & \vdots \\
     {{\sigma}_n1} & {{\sigma}_{n2}} & \cdots & {{\sigma}_{n}^2}
-  \end{bmatrix}
+  \end{bmatrix},
 \]
-gdzie:
-\begin{enumerate}
-    \item ${{\sigma}_i}^2 = Var(X_i)$
-    \item ${\sigma}_{ij} = Cov(X_i, X_j)$
-\end{enumerate}
-Warto dodać, że macierz kowariancji $\Sigma$ jest macierzą symetryczną, a jej wyznacznik macierzy jest nieujemny (jeżeli wektor zmiennych losowych jest niezdegenerowany).
-\newline
+gdzie
+    ${{\sigma}_i}^2 = Var(X_i)$,
+    ${\sigma}_{ij} = Cov(X_i, X_j)$.
+
+Warto dodać, że macierz kowariancji $\Sigma$ jest macierzą symetryczną, a jej wyznacznik jest nieujemny (jeżeli wektor zmiennych losowych jest niezdegenerowany). \JL{czy powyższa uwaga jest do czegokolwiek przydatna, a jesli tak to co to znaczy wektor niezdegenerowany?} 
+
+Poniżej prezentujemy lemat z pracy  \cite{ting}
+
+\begin{lemma}
+content...
+\end{lemma}
 
 Zgodne z lematem 3 \cite{ting}, posiadając ciąg zgodnych estymatorów $\hat{N_1}, ..., \hat{N_n}$ o nieosobliwej macierzy kowariancji $\Sigma$, optymalne wagi które sumują się do $1$ i minimalizują wariancję są proporcjonalne do $\Sigma^{-1}1_n$, gdzie $1_n$ to wektor jednostkowy długości $n$. Powstały estymator jest nieobciążony (bądź zgodny) o wariancji ${{1_n}^{T}\Sigma^{-1}1_n}^{-1}$.
-W praktyce jednak macierz kowariancji $\Sigma$ rzadko jest znana, dlatego potrzebna nam jest jakaś jej aproksymacja. Inną metodą ważenia jest potraktowanie estymatorów jako zmiennych losowych niezależnych i użycie przekątnej macierzy kowariancji, czyli wariancji tych zmiennych losowych. Wówczas, \textit{estymator ważony} ma następującą postać:
+\JL{Zamiast tego całego akapitu napisać Lemat i jego tresc. I żeby miało to sens, bo w tej chwili to co jest napisane nie ma sensu...}
+
+
+W praktyce jednak macierz kowariancji $\Sigma$ rzadko jest znana i potrzebna jest jakaś jej aproksymacja.
+Jeśli przyjemy, że estymatory składowe są niezależne
+lub prawie niezależne, możemy poprzestać na wyliczeniu przekątnej macierzy kowariancji, czyli wariancji tych zmiennych losowych \cite{ting}. Wówczas, \textit{estymator ważony} ma następującą postać:
 \begin{equation}
-    \hat{N}_w = \sum_{i=1}^{n}z\frac{\hat{N_i}(S)}{Var(\hat{N_i}(S)}
+\label{wazony}
+    \hat{N}_w = \sum_{i=1}^{n}c\frac{\hat{N_i}(S)}{Var(\hat{N_i}(S))},
 \end{equation}
-gdzie $z$ to stała normalizacyjna, zapewniająca, że wagi sumują się do jedynki \cite{ting}.
+\JL{tzreba by jeszcze zdefinowac co znaczy $\hat{N_i}(S)$ ), bo to chyba nowe oznaczenie jest} 
+gdzie $c$ to stała normalizacyjna, zapewniająca, że wagi sumują się do jedynki.
 
-\section{Estymatory składowe}
-Omówimy teraz metodę na tworzenie estymatorów składowych. Naszym celem jest stworzenie estymatorów składowych, które są jak najmniej nawzajem ze sobą skorelowane, oraz których wariancję jesteśmy w stanie zaproksymować. Jednym z pomysłów, który został przedstawiony w \cite{ting} jest zdefiniowanie estymatorów, z których każdy z nich wykorzystuje tylko jeden estymator liczności. Tym sposobem, końcowy estymator ważony jest tak naprawdę liniową kombinacją estymatorów liczności \texttt{MinCount}.
+\section{Estymatory składowe dla algorytmu \texttt{Streaming MinCount}}
 
-Aby zdefiniować estymatory składowe zauważmy że zarówno liczność sumy dwóch zbiorów jak ich przekroju możemy zapisać jako stosunek liczności sumy (analogicznie - przekroju) do liczności jednego z tych zbiorów razy liczność tegoż zbioru. Zdefiniujmy:
+W dalszej części tego rozdziału, dotyczącej szkiców algorytmu \texttt{MinCount}, zakładamy użycie wersji \texttt{Streaming MinCount} opisanej w rozdziale $2.3$.
+Estymator w tej wersji algorytmu jest bardziej skoncentrowany, a ponadto, co okaże się istotne, jego rozkład może być aproksymowany przez rozkład normalny\JL{odniesienie do wykresu}. 
+
+Omówimy teraz metodę  definiowania estymatorów składowych. Naszym celem jest zdefiniowanie estymatorów składowych, które są jak najmniej nawzajem ze sobą skorelowane, oraz takich, których wariancję jesteśmy w stanie efektywnie wyliczyć lub przybliżyć. Poniżej przedstawiamy pomysł z \cite{ting} umożliwiający wyrażenie estymatora ważonego sumy i przekroju jako  liniowej kombinacją pojedynczych estymatorów liczności opartych o szkice \texttt{MinCount}.
+
+Aby zdefiniować estymatory składowe dla sumy i dla przekroju  zauważmy, że zarówno liczność sumy dwóch zbiorów, jak i ich przekroju możemy zapisać jako stosunek liczności sumy (analogicznie - przekroju) do liczności jednego z tych zbiorów razy liczność tegoż zbioru. Dla
 \begin{flalign}
-       {\alpha}_{i} = \frac{|A_1 \cap A_2|}{|A_i|} \\
+       {\alpha}_{i} = \frac{|A_1 \cap A_2|}{|A_i|}, \\
     {\beta}_{i} = \frac{|A_1 \cup A_2|}{|A_i|}
 \end{flalign}
-
-Wówczas tak jak zauważyliśmy, liczności sumy oraz przekroju możemy zapisać jako:
+mamy zatem
 \begin{flalign}
-       |A_1 \cap A_2| = {\alpha}_{i}|A_i| = \frac{|A_1 \cap A_2|}{|A_i|}|A_i| \\
-    |A_1 \cup A_2| = {\beta}_{i}|A_i| = \frac{|A_1 \cup A_2|}{|A_i|}|A_i|
+       |A_1 \cap A_2| = {\alpha}_{i}|A_i| = \frac{|A_1 \cap A_2|}{|A_i|}|A_i|, \\
+    |A_1 \cup A_2| = {\beta}_{i}|A_i| = \frac{|A_1 \cup A_2|}{|A_i|}|A_i|.
 \end{flalign}
-
-Zdefiniujmy teraz estymatory dla $\alpha_i$ oraz $\beta_i$. Najprostszymi estymatorami będą:
+Zdefiniujmy teraz estymatory dla $\alpha_i$ oraz $\beta_i$. Najprostszymi estymatorami stworzonymi w oparciu o szkice \texttt{MinCount} będą:
 \begin{flalign}
-     \hat{{\alpha}_{i}} = \frac{|h(S_1 \cap S_2)|}{|h(S_i, {\tau}_{min}|}\\
-    \hat{{\beta}_{i}} = \frac{|h(S_1 \cup S_2)|}{|h(S_i, {\tau}_{min}|}
+     \hat{{\alpha}_{i}} = \frac{|h(S_1 \cap S_2)|}{|h(S_i, {\tau}_{min}|},\\
+    \hat{{\beta}_{i}} = \frac{|h(S_1 \cup S_2)|}{|h(S_i, {\tau}_{min}|}.
 \end{flalign}
-Zgodnie z lematem 4. \cite{ting} tak zdefiniowane estymatory są estymatorami zgodnymi. Estymator nazywamy zgodnym jeśli prawdopodobieństwo, że jego wartość będzie bliska wartości szacowanego przez niego parametru, wzrasta wraz z podniesieniem liczności próby \cite{cons}.
+\JL{Wyjasnić skad sie wzieły te wzory!!!}
+\JL{Poprawic oznaczenia we wzorach, operacja sumy i przekroju na szkicach}
+Powyższe estymatory są estymatorami zgodnymi \cite{ting}. 
 
 Posiadając estymatory dla $\alpha_i$ i $\beta_i$ oraz estymatory liczności pojedynczych szkiców $\hat{N}(S_i)$ możemy zdefiniować estymatory składowe w następującej postaci:
 \begin{flalign}
@@ -62,7 +80,9 @@ Są to zgodne estymatory dla, odpowiednio, $|A_1 \cap A_2|$ oraz $|A_1 \cup A_2|
 
 \section{Wariancja estymatorów składowych}
 
-Żeby można było zastosować metodę \textit{estymatorów ważonych} potrzebujemy znać ich wariancje, a przynajmniej ich przybliżone wartości. W tym celu korzystamy z \textit{Centralnego Twierdzenia Granicznego} i zakładamy że zachodzi ono dla $\hat{N}(S_i)$ \cite{ting}. Przypomnimy teraz w skrócie treść tego twierdzenia.
+Zgodnie z formułą (\ref{wazony}), zastosowanie metody estymatora ważonego wymaga znajomości wariancji  estymatorów składowych (lub jej przybliżenia).
+\JL{Ttuaj skonczyłem sprawdzanie}
+ W tym celu korzystamy z \textit{Centralnego Twierdzenia Granicznego} i zakładamy że zachodzi ono dla $\hat{N}(S_i)$ \cite{ting}. Przypomnimy teraz w skrócie treść tego twierdzenia.
 
 \subsubsection{Centralne Twierdzenie Graniczne}
 

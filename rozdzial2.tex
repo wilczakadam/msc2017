@@ -119,17 +119,22 @@ Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach
 \subsection{Operacja przekroju i różnicy}
 
 O ile w przypadku operacji sumy na szkicach \texttt{HyperLogLog} sprawdza się całkiem dobrze i jest  łatwa w implementacji, to niestety nie są znane naturalne i zamknięte operacje przekroju oraz różnicy na tych szkicach. Oczywiście stosunkowo łatwo możemy estymować liczność przekroju zbiorów korzystając z zasady włączeń i wyłączeń lub podobieństwa Jaccarda.
-O ile metoda oparta na zasadzie włączeń i wyłączeń nie sprawdza się w tym przypadku i prowadzi do anomalii, to metoda wykorzystująca podobieństwo \textit{Jaccarda} $(2.19)$ \JL{to nie jest dobry sposob odwolywania sie do wozru} do estymacji przekroju jest stosunkowo dokładna \JL{cytowanie, albo powolanie sie na eksperymenty}. Wymaga ona jednak dodatkowej struktury danych pozwalającej na estymację indeksu \textit{Jaccarda} zbiorów. Częstą praktyką jest wykorzystanie do tego algorytmu \texttt{MinHash} \cite{adroll}. Wyniki związane z tym podejściem zostaną jeszcze omówione w kolejnym rozdziale.
+O ile metoda oparta na zasadzie włączeń i wyłączeń nie sprawdza się w tym przypadku i prowadzi do anomalii, to metoda wykorzystująca podobieństwo \textit{Jaccarda} $(2.19)$ \JL{to nie jest dobry sposob odwolywania sie do wozru} do estymacji przekroju jest stosunkowo dokładna \JL{cytowanie, albo powolanie sie na eksperymenty}. Wymaga ona jednak dodatkowej struktury danych pozwalającej na estymację indeksu \textit{Jaccarda} zbiorów. Częstą praktyką jest wykorzystanie do tego algorytmu \texttt{MinHash} \cite{adroll}. Wyniki związane z tym podejściem zostaną jeszcze omówione w kolejnym rozdziale. \JL{w której sekcji dokładnie napisac}
 
-\JL{Ttuaj skonczyłem sprawdzanie}
+
 \section{MinCount}
 
 \subsection{Operacja sumy}
 
-Przyjrzyjmy się teraz operacji sumy dla algorytmu \texttt{MinCount}. Załóżmy że posiadamy dwa szkice danych $(S_1, {\tau}_1)$ oraz $(S_2, {\tau}_2)$. Chcemy otrzymac szkic $(S_u, {\tau}_u)$ będący sumą tych dwóch szkiców. Naturalną intuicją jest wykonanie sumy zbiorów $k$ najmniejszych haszy $S_1$ oraz $S_2$ i utworzenie z nich nowego zbioru $S_u$ zawierającego $k$ najmniejszych haszy z sumy $S_1$ i $S_2$ oraz wyznaczenie nowego ${\tau}_u$. Takie podejście jednak odrzuca dużą ilość istotnych informacji wśród zbiorów haszy ze względu na ograniczenie w postaci parametru $k$. Posiadając $2k$ haszy ze zbiorów $S_1$ i $S_2$ odrzucamy połowę z nich - prowadzi to nawet do dwukrotnego zwiększenia wariancji estymatora. Weźmy jako przykład dwa zbiory $A_1$ oraz $A_2$, które są rozłączne i tej samej liczności. Najlepszym estymatorem sumy jest po prostu $\hat{N}(S_1 \cup S_2) = \hat{N}(S_1) + \hat{N}(S_2)$. Jego wariancja wynosi $\frac{|A_1|^2 + |A_2|^2}{k} = \frac{|A_1 \cup A_2|^2}{2k}$. Jednak nasza operacja sumy odrzuca $k$ haszy co powoduje dwukrotny wzrost wariancji do $\frac{|A_1 \cup A_2|^2}{k}$ \cite{ting}.
+Przyjrzyjmy się teraz operacji sumy dla algorytmu \texttt{MinCount}. Załóżmy, że posiadamy dwa szkice danych $(S_1, {\tau}_1)$ oraz $(S_2, {\tau}_2)$ dla zbiorów $A_1$ i $A_2$. Chcemy otrzymać szkic $(S_u, {\tau}_u)$ zbioru $A_1 \cup A_2$. W tym przypadku naturalne wydaje się być wykonanie sumy zbiorów haszy $S_1$ oraz $S_2$ i utworzenie z nich nowego zbioru $S_u$ zawierającego, $k$ najmniejszych haszy z sumy $S_1 \cup S_2$. Takie podejście  odrzuca jednak dużą ilość informacji. Weźmy jako przykład dwa zbiory $A_1$ oraz $A_2$, które są rozłączne i o tej samej liczności.
+Posiadając $2k$ haszy ze zbiorów $S_1$ i $S_2$ odrzucamy połowę z nich - prowadzi to nawet do dwukrotnego zwiększenia wariancji estymatora. 
+ Najlepszym estymatorem byłby w tym przypadku $\hat{N}(S_1 \cup S_2) = \hat{N}(S_1) + \hat{N}(S_2)$. Jego wariancja wynosi $\frac{|A_1|^2 + |A_2|^2}{k} = \frac{|A_1 \cup A_2|^2}{2k}$. Jednak nasza operacja sumy odrzuca $k$ haszy co powoduje dwukrotny wzrost wariancji do $\frac{|A_1 \cup A_2|^2}{k}$.
+\JL{Wyprowadzić dokładnie te fomuły na wariancję, z tego co policzylismy na poczatku dla MinCounta i z prostej obserwacji, że $x^2 + x^2  = \frac{(2x)^2}{2}$}
 
-W pracy \cite{ting} zaproponowana została prosta zmiana dla tej operacji, która w rezultacie zamiast ograniczać nowo powstały szkic do $k$ wartości, tworzy największy możliwy szkic, przez co nie tracimy żadnych istotnych informacji.
+W pracy \cite{ting} zaproponowana została modyfikacja, która zamiast ograniczać nowo powstały szkic do $k$ wartości, tworzy największy możliwy szkic, dzięki czemu nie następuje utrata informacji.
 Oznaczmy przez ${\tau}(S)$ największy przechowywany hasz w szkicu $S$, przez $h(S)$ zbiór haszy przechowywanych w szkicu $S$ oraz $h(S, \tau)$ niech będzie zbiorem haszy w szkicu $S$ których wartości są mniejsze bądź równe $\tau$. Nowy operator sumy na szkicach \texttt{MinCount} wygląda następująco:
+\JL{powyżej S jest oznaczeniem dla zbioru haszy i dla szkicu, to bardzo mylaće, nie może tak być} 
+\JL{wprowadzić osobne oznaczenie $\dot{\cup} $ dla sumy na szkicach, rozumiem, że poniżej $S_1$ i $S_2$ to są szkice a nie zbiory haszy?}
 \begin{flalign}
         {\tau}_{min} = \tau(S_1 \cup S_2) = min({\tau}_1, {\tau}_2) \\
         h(S_1 \cup S_2) = h(S_1, {\tau}_{min}) \cup h(S_2, {\tau}_{min})
@@ -137,34 +142,58 @@ Oznaczmy przez ${\tau}(S)$ największy przechowywany hasz w szkicu $S$, przez $h
 
 W tej modyfikacji algorytmu odrzucamy te wartości które są większe niż wartość graniczna ${\tau}_{min}$, a szkice są następnie łączone poprzez sumę teoriomnogościową na zbiorach pozostałych haszy.
 
-Powstały szkic jest identyczny ze szkicem wielkości $|h(S_1 \cup S_2)|$ skonstruowanym z elementów ze zbioru $A_1 \cup A_2$. Estymator liczności dla tak stworzonego szkicu zdefiniowany jest następująco:
+Zauważmy, że powstały szkic jest identyczny ze szkicem wielkości $|h(S_1 \cup S_2)|$ skonstruowanym z elementów ze zbioru $A_1 \cup A_2$. Naturalnie, estymator liczności dla tak stworzonego szkicu zdefiniowany jest następująco:
 \begin{equation}
-    {\hat{N}}_{impr}(S_1 \cup S_2) = \frac{|h(S_1 \cup S_2)| - 1}{{\tau}_{min}}
+    {\hat{N}}_{impr}(S_1 \cup S_2) = \frac{|h(S_1 \cup S_2)| - 1}{{\tau}_{min}}.
 \end{equation}
 
 \subsection{Operacja przekroju}
 
-Rozpatrzmy teraz operację przekroju dla algorytmu \texttt{MinCount}. W naiwnym podejściu wykorzystujemy zasadę włączeń i wyłączeń, jak zostało to pokrótce opisane we Wprowadzeniu, ale ta metoda nie pozawala nam na zdefiniowanie zamkniętego operatora przekroju, a jedynie na wyznaczenie estymacji liczności przekroju i jest podatna na anomalie oraz posiada duży błąd.
+Rozpatrzmy teraz operację przekroju dla algorytmu \texttt{MinCount}. W naiwnym podejściu wykorzystujemy zasadę włączeń i wyłączeń, jak zostało to pokrótce opisane w sekcji\JL{podać numer sekcji przez \ref{}}. Podejście to jednak nie pozawala nam na zdefiniowanie zamkniętego operatora przekroju, a jedynie na wyznaczenie estymacji liczności przekroju.
+Ponadto, takie podejście prowadzi zazwyczaj do dużych błędów estymacji, a także amonali w postaci ujemnych wartości estymacji.
 
-Możemy jednak zdefiniować operator przekroju w podobny sposób, jak zdefiniowaliśmy ulepszony operator sumy w poprzednim podrozdziale. Tak jak poprzednio tworzymy - zamiast szkicu ograniczonego do $k$ wartości - największy możliwy szkic. Nowy operator przekroju na szkicach \texttt{MinCount} wygląda następująco \cite{ting}:
+Możemy jednak zdefiniować operator przekroju w podobny sposób, jak zdefiniowaliśmy poprawiony operator sumy w poprzednim podrozdziale\JL{podać numer podrodzialu}. Tak jak poprzednio, zamiast szkicu ograniczonego do $k$ wartości, tworzymy największy możliwy szkic. Nowy operator przekroju na szkicach \texttt{MinCount} może być zdefiniowany następująco \cite{ting}:
+\JL{poprawić poniżej oznaczenia przekroju szkiców}
 \begin{flalign}
         {\tau}_{min} = \tau(S_1 \cup S_2) = \tau(S_1 \cap S_2) = min({\tau}_1, {\tau}_2) \\
         h(S_1 \cap S_2) = h(S_1, {\tau}_{min}) \cap h(S_2, {\tau}_{min})
 \end{flalign}
-Jedną z największych zalet takiej definicji jest fakt, że otrzymujemy tutaj operator zamknięty, czyli taki który w wyniku operacji przekroju na dwóch szkicach daje w wyniku nowy szkic, a nie tylko estymatę liczności. Estymator liczności dla tak zdefiniowanej operacji przekroju wygląda tak:
+Jedną z największych zalet takiej definicji jest fakt, że otrzymujemy tutaj operator zamknięty, czyli taki który w wyniku operacji przekroju na dwóch szkicach daje w wyniku nowy szkic. Estymator liczności dla tak zdefiniowanej operacji przekroju ma postać:
+\JL{poprawić poniżej oznaczenia przekroju szkiców}
 \begin{equation}
-    {\hat{N}}_{impr}(S_1 \cap S_2) = \frac{|h(S_1 \cap S_2)| - \alpha(S_1, S_2)}{{\tau}_{min}}
+    {\hat{N}}_{impr}(S_1 \cap S_2) = \frac{|h(S_1 \cap S_2)| - \alpha(S_1, S_2)}{{\tau}_{min}},
 \end{equation}
 gdzie $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
- 1 &\mbox{ jeśli ${\tau}_{min} \in h(S_1 \cap S_2)$} \\
+ 1 &\mbox{ jeśli ${\tau}_{min} \in h(S_1 \cap S_2)$}, \\
   0 &\mbox{ w p.p.}
        \end{array} \right.$$
        
+\JL{Tutaj zdanie wyjasnienia z czego wynika odejmowanie tej alfy}       
        
+       \section{Estymacja metodą największej wiarygodności}
        
-       \section{Estymacja metodą Największej Wiarygodności}
-       
-       Estymacja liczności zbioru jest problemem estymacji parametru - dzięki takiemu sformułowaniu problemu, możemy ustalić dwa bardzo ważne fakty: przydatne informacje w szkicu są zakodowane przez \textit{wystarczające statystyki}, a estymator \textit{największej wiarygodności} (maximum likelihood estimator) jest asymptotycznie wydajnym estymatorem \cite{ting}. Mimo, iż metoda estymacji z użyciem \textit{estymatora największej wiarygodności} jest metodą optymalną, nie będziemy się nią zajmować w tej pracy. Ze wszystkich metod omawianych przez nas i przedstawionych w pracy \cite{ting} jest ona najtrudniejsza do efektywnego policzenia i implementacji w praktyce. Metoda omówiona i przetestowana przez nas jest dużo prostsza w implementacji oraz pozwala na łatwiejsze rozszerzenie jej na inne rodzaje szkiców oraz na operacje teoriomnogościowe na większej ilości zbiorów. Jednocześnie estymatory wyprowadzone tą metodą są niemal tak dokładne jak estymatory wyprowadzone metodą \textit{estymatora największej wiarygodności} \cite{ting}. Mowa tutaj o metodzie \textit{estymatora ważonego}, która została szczegółowo omówiona w rozdziale 4.
-       
-       Estymacja metodą \textit{estymatora największej wiarygodności} może być również zastosowana w kontekście algorytmu \texttt{HyperLogLog}. Taki pomysł został przedstawiony i szczegółowo omówiony w pracy \cite{oertl}. Jednak podobnie jak w przypadku algorytmu \texttt{MinCount} jest on trudny do efektywnego zaimplementowania, między innymi ze względu na konieczność maksymalizacji wielowymiarowej funkcji. W dalszej części naszej pracy przyjrzymy się generalizacji metody \textit{estymatora ważonego} dla algorytmu \texttt{HyperLogLog}, która jest szybsza i dużo łatwiejsza oraz omówimy jej efektywność.
+       Przyjmijmy, że dysponujemy szkicami dla pewnych zbiorów $A_1$ i $A_2$. Estymacja liczności dla zbiorów $A_1 \cup A_2$ czy 
+       $A_1 \cap A_2$ w oparciu o te szkice, jest problemem estymacji parametru rozkładu \cite{ting}. Rozsądnym może więc wydawać się wyprowadzenie estymatorów dla wyników operacji teoriomnogościowych metodą \textit{największej wiarygodności} (NW).
+       Estymator wyprowadzony tą metodą ma szereg istotnych własności. Wraz ze wzrostem rozmiary próby jest asymptotycznie nieobciążony, asymptotycznie najefektywniejszy, ma asymptotycznie rozkład normalny, a także jest zgodny.
+       \JL{wyjasnic co znaczy zgodny, ale zamiast tego ponizszego zdanie prosze napisac lepiej wzor}
+%       
+%       Estymator nazywamy zgodnym jeśli prawdopodobieństwo, że jego wartość będzie bliska wartości szacowanego przez niego parametru, wzrasta wraz z podniesieniem liczności próby \cite{cons}.
+      
+      W pracach \cite{ting} oraz \cite{oertl} podjęto wysiłki
+      by wyprowadzić estymator metodą NW dla operacji teoriomnogościowych na szkicach odpowiednio dla algorytmu \texttt{MinCount} oraz \texttt{HyperLogLog}.
+      Autor pracy \cite{ting} zwraca jednak uwagę, że
+      w praktyce implementacja takiego estymatora na szkicach \texttt{MinCount} może okazać się bardzo kłopotliwa i opisuje tzw. \textit{estymator ważony}, który ma  mieć podobne własności statystyczne, a którego implementacja jest znacznie prostsza. 
   
+ Podobnie jak w przypadku algorytmu \texttt{MinCount}, estymator NW operacji teoriomnogościowych na szkicach \texttt{HyperLogLog} opisany w 
+ \cite{oertl} w praktyce może być dosyć trudny do efektywnego zaimplementowania, między innymi ze względu na konieczność maksymalizacji wielowymiarowej funkcji.
+       
+        W dalszej części naszej pracy omówimy  \textit{metodę estymatora ważonego} w kontekście algorytmu 
+        \texttt{MinCount}. 
+        Estymatory wyprowadzone tą metodą powinny był łatwo implementowalne, mieć niemal te same własności, jak estymatory wyprowadzone metodą \textit{estymatora największej wiarygodności} oraz łatwo uogólniać się na operacje teoriomnogościowe na większej liczbie zbiorów \cite{ting}.         
+        Rozważmy zatem także  możliwość uogólnienia tej metody  dla szkiców algorytmu \texttt{HyperLogLog}.
+        
+        
+
+       
+       
+       
