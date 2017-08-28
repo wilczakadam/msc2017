@@ -67,45 +67,46 @@ Podobnie, możemy policzyć wariancję estymatora \cite{mincount}, gdy $k \geq 3
 Przy czym, dla $n \rightarrow \infty$ możemy zapisać:
 \begin{equation}
 	Var[\hat{n}] \approx \frac{n^2}{k-2}
+	\label{mincount_var}
 \end{equation}
 
 \subsubsection{Szkic danych}
-Zdefiniujemy szkic danych algorytmu \texttt{MinCount}. Szkic określamy jako parę $(S, {\tau})$, gdzie $S$ to zbiór $k$ najmniejszych (i unikalnych) haszy spośród wszystkich wartości $h(\mathfrak{M})$. Natomiast ${\tau}$ to wartość k-tej statystyki pozycyjnej, czyli największa wartość w zbiorze haszy $S$.
-
+Zdefiniujemy szkic danych algorytmu \texttt{MinCount}. Szkic $S$ określamy jako parę $(H, {\tau})$, gdzie $H$ to zbiór $k$ najmniejszych (i unikalnych) haszy spośród wszystkich wartości $h(\mathfrak{M})$. Natomiast ${\tau}$ to wartość k-tej statystyki pozycyjnej, czyli największa wartość w zbiorze haszy $H$.
+\AW{Zmienilem oznaczenie zbioru haszy z S na H, żeby nie myliło się ze szkicem - czyli szkic $S = (H, \tau)$}
 \subsubsection{Algorytm \texttt{MinCount}}
 
 Algorytm \texttt{MinCount} opisany w poniższym pseudokodzie działa w następujący sposób.
-Początkowo w szkicu mamy $S = \emptyset$ i $\tau = 0$.
+Początkowo w szkicu mamy $H = \emptyset$ i $\tau = 0$.
 Jeśli w chwili pojawienia się nowego elementu wejściowego $x$
- ze strumienia $\mathfrak{M}$ rozmiar $|S|< k$ wówczas dodajemy $x$ do $S$ i ustalamy $\tau$ jako największą wartość z $S$.
- Jeśli rozmiar $|S|\geq k$ to porównujemy hasz $h(x)$ z aktualną wartością  ${\tau}$ szkicu. Jeżeli jest mniejsza, to dodajemy $h(x)$ do zbioru $S$, usuwamy z niego dotychczasowe ${\tau}$ i ustalamy nowe.
+ ze strumienia $\mathfrak{M}$ rozmiar $|H|< k$ wówczas dodajemy $x$ do $H$ i ustalamy $\tau$ jako największą wartość z $H$.
+ Jeśli rozmiar $|H|\geq k$ to porównujemy hasz $h(x)$ z aktualną wartością  ${\tau}$ szkicu. Jeżeli jest mniejsza, to dodajemy $h(x)$ do zbioru $H$, usuwamy z niego dotychczasowe ${\tau}$ i ustalamy nowe.
 
-W oparciu o szkic $(S, {\tau})$ jesteśmy w stanie w dowolnym momencie wyliczyć wartość estymatora liczności $$\hat{n} := \frac{k - 1}{{\tau}}.$$
+W oparciu o szkic $(H, {\tau})$ jesteśmy w stanie w dowolnym momencie wyliczyć wartość estymatora liczności $$\hat{n} := \frac{k - 1}{{\tau}}.$$
 
 \begin{algorithm}
     \begin{algorithmic}
     \State $k$ -  liczba przechowywanych haszy 
-    \State $S  $ - zbiór przechowywanych haszy
+    \State $H  $ - zbiór przechowywanych haszy
     \State $\tau  $ - największy przechowywany hasz 
     \State $h  $ - funkcja haszująca elementy $\mathfrak{M}$ w odcinek $(0, 1)$
     \newline
     \Function{Add}{$x \in \mathfrak{M}$}
         \State $e \gets h(x)$
         \If {$e \notin S$}
-            \If {$S.size < k$}
-                \State $S.add(e)$
-                \State $\tau \gets max\{S\}$
+            \If {$H.size < k$}
+                \State $H.add(e)$
+                \State $\tau \gets max\{H\}$
             \ElsIf {$e < \tau$}
-                \State $S.remove(\tau)$
-                \State $S.add(e)$
-                \State $\tau \gets max\{S\}$
+                \State $H.remove(\tau)$
+                \State $H.add(e)$
+                \State $\tau \gets max\{H\}$
             \EndIf
         \EndIf
     \EndFunction
     \newline
     \Function{Estimate}{} 
-        \If {$S.size < k$} 
-            \State \Return $S.size$
+        \If {$H.size < k$} 
+            \State \Return $H.size$
         
         \Else 
             \State \Return $(k - 1) / \tau$
@@ -130,22 +131,22 @@ pseudokod dla algorytmu \texttt{Streaming MinCount}:
 \begin{algorithm}
     \begin{algorithmic}
     \State $k $ - liczba przechowywanych haszy 
-    \State $S  $ - zbiór przechowywanych haszy
+    \State $H  $ - zbiór przechowywanych haszy
     \State $\tau  $ - największy przechowywany hasz 
     \State $h  $ - funkcja haszująca elementy $\mathfrak{M}$ w odcinek $(0, 1)$
     \State $\hat{n} \gets 0$  - estymator liczności
     \newline
     \Function{Add}{$x \in \mathfrak{M}$}
         \State $e \gets h(x)$
-        \If {$e \notin S$}
-            \If {$S.size < k$}
-                \State $S.add(e)$
-                \State $\tau \gets max\{S\}$
+        \If {$e \notin H$}
+            \If {$H.size < k$}
+                \State $H.add(e)$
+                \State $\tau \gets max\{H\}$
                 \State $\hat{n} \gets \hat{n} + (1/\tau)$
             \ElsIf {$e < \tau$}
-                \State $S.remove(\tau)$
-                \State $S.add(e)$
-                \State $\tau \gets max\{S\}$
+                \State $H.remove(\tau)$
+                \State $H.add(e)$
+                \State $\tau \gets max\{H\}$
                 \State $\hat{n} \gets \hat{n} + (1/\tau)$
             \EndIf
         \EndIf
@@ -159,6 +160,7 @@ pseudokod dla algorytmu \texttt{Streaming MinCount}:
     \caption{Algorytm \texttt{Streaming MinCount}}
 \end{algorithm}
 
+\AW{dodac histogram i napisac ze pokrywa sie z rozkladem normalnym}
 
 \section{Algorytm HyperLogLog}
 
@@ -207,11 +209,14 @@ Wyniki eksperymentalne pokazały jednak, że przedstawiona powyżej wersja algor
     \begin{equation}
 	    \hat{n} = {-2}^{32}log(1 - \frac{\hat{n}}{2^{32}})
     \end{equation}
+    \AW{do uzupełnienia jeszcze wyjasnienie skad wzor}
 \end{enumerate}
 Szczegółowo algorytm oraz powyższe korekcje zostały opisane przez twórców w \cite{hll} wraz ze wszystkimi własnościami.
 
 \subsubsection{Szkic danych}
-Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ przechowujących największą napotkaną pozycję pierwszej jedynki w haszach podstrumienia $\mathfrak{M}_i$, gdzie $i = 1 ... m$, $m = 2^p$ jest parametrem wyznaczającym liczbę rejestrów, a więc sterującym dokładnością algorytmu. Szkic ten możemy w naturalny sposób wykorzystać do wyznaczenia estymatora \texttt{Linear Counting} potrzebnego do zastosowania korekcji $1.$ Wystarczy, że zliczymy ile spośród rejestrów jest równych $0$ (oznaczmy liczbę pustych rejestrów przez $V$) i zastosujemy wzór:
+\label{HLL_sketch}
+Parametrami wejściowymi dla szkicu są $p$ oraz $q$, gdzie $p + q$ określa liczbę używanych bitów funkcji hazsującej. Parametr $p$ wyznacza liczbę rejestrów, a więc tym samym kontroluje błąd względny, natomiast $q$ wyznacza maksymalny zakres wartości dla rejestrów. Warto zauważyć, że jeśli liczność zbioru zbliża się do $2^{p+q}$ kolizje haszy stają się coraz częstsze i błąd znacznie wzrasta. 
+Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ przechowujących największą napotkaną pozycję pierwszej jedynki w haszach podstrumienia $\mathfrak{M}_i$, gdzie $i = 1 ... m$, $m = 2^p$ wyznacza liczbę rejestrów. Szkic ten możemy w naturalny sposób wykorzystać do wyznaczenia estymatora \texttt{Linear Counting} potrzebnego do zastosowania korekcji $1.$ \AW{Dopisac ze HLL (p,0) jest rownowazny tablicy bitowej uzywanej w LC} Wystarczy, że zliczymy ile spośród rejestrów jest równych $0$ (oznaczmy liczbę pustych rejestrów przez $V$) i zastosujemy wzór:
 \begin{equation}
 	\hat{n} = {m}log(\frac{m}{V})
 \end{equation}
@@ -219,10 +224,12 @@ Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ pr
 \newline
 \begin{algorithm}
     \begin{algorithmic}
-    \State $m \gets 2^p$ - liczba rejestrów, gdzie $p \in {\NN}_{+}$
+    \State $p $ - parametr wejściowy sterujący liczbą rejestrów
+    \State $q $ - parametr wejściowy wyznaczający zakres wartości rejestrów
+    \State $m \gets 2^p$ - liczba rejestrów
     \State ${\alpha}_m $ - współczynnik korygujący obciążenie
-    \State $q(s) $ -  funkcja zwracając pozycję pierwszej jedynki w ciągu bitów $s$ 
-    \State $h(x)  $  - funkcja haszująca $\mathfrak{M}$ w $(0, 1)$
+    \State $Q(s) $ -  funkcja zwracając pozycję pierwszej jedynki w ciągu bitów $s$ 
+    \State $h(x)  $  - $(p + q)$-bitowa funkcja haszująca $\mathfrak{M}$ w $(0, 1)$
     \State $M $  - kolekcja $m$ rejestrów 
     \newline
     \For {$i = 1 .. m$}
@@ -233,7 +240,7 @@ Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ pr
         \State $e \gets h(x)$
         \State $idx \gets 1 + {{\langle}e_1, e_2, ..., e_b{\rangle}}_2$
         \State $v \gets e_{b+1}, e_{b+2}, ...$
-        \State $M[idx] \gets max\{M[idx], q(v)\}$
+        \State $M[idx] \gets max\{M[idx], Q(v)\}$
     \EndFunction
     \newline
     \Function{Estimate}{} 
