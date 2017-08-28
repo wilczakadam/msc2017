@@ -73,6 +73,7 @@ Przy czym, dla $n \rightarrow \infty$ możemy zapisać:
 \subsubsection{Szkic danych}
 Zdefiniujemy szkic danych algorytmu \texttt{MinCount}. Szkic $S$ określamy jako parę $(H, {\tau})$, gdzie $H$ to zbiór $k$ najmniejszych (i unikalnych) haszy spośród wszystkich wartości $h(\mathfrak{M})$. Natomiast ${\tau}$ to wartość k-tej statystyki pozycyjnej, czyli największa wartość w zbiorze haszy $H$.
 \AW{Zmienilem oznaczenie zbioru haszy z S na H, żeby nie myliło się ze szkicem - czyli szkic $S = (H, \tau)$}
+\JL{OK, byle konsekwentnie w calej pracy}
 \subsubsection{Algorytm \texttt{MinCount}}
 
 Algorytm \texttt{MinCount} opisany w poniższym pseudokodzie działa w następujący sposób.
@@ -271,4 +272,5 @@ Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ pr
 \end{algorithm}
 
 \AW{czy ten histogram dla HLL mam wygenerować samemu - czy użyć tego z oryginalnej pracy?}
+\JL{Najlepiej wygenerować samemu, ale można napisać że jest też w pracy z HLL i najlepiej to zdanie, że to wynika z usredniania- tzn. liczenia sredniej harmonicznej i CTG}
 

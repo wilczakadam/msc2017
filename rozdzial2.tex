@@ -82,6 +82,7 @@ Istnieje również drugi, mniej znany wariant algorytmu \texttt{MinHash}, który
 Omówimy teraz naiwne metody wyników estymacji operacji teoriomnogościowych na szkicach, skupimy się na operacji sumy i przekroju. Dla niektóre szkiców danych operacja sumy może być zdefiniowana w stosunkowo naturalny sposób. Dla przykładu, łatwo zauważyć, że  oszacowanie liczności dla sumy dwóch zbiorów $A_1$ i $A_2$ przy użyciu szkiców $M_1$ i $M_2$ związanych z algorytmem \texttt{HyperLogLog} sprowadza się do stworzenia nowego szkicu $M_{A_1\cup A_2}$, takiego, że 
 $$M_{A_1\cup A_2}[i] = \max(M_{A_1}[i], M_{A_2}[i]).$$ 
 \AW{Czy tutaj konieczne jest pokazanie tego wzoru? Bo w nastepnym podrozdziale on znowu się pojawia i tam jest omówiony troche dokladniej}
+\JL{Ja bym zostawił, ale napisał ze w nastepnym rozdziale zajmiemy sie tym dokladniej.}
 Najważniejszą własnością powyższej operacji jest to, że powstały szkic jest identyczny ze szkicem, który powstałby z sumy zbiorów wejściowych $A_1\cup A_2$ oraz fakt, że suma dwóch szkiców daje w wyniku nowy szkic. Oznacza to że operacja sumy jest zamknięta i pozawala m.in. na sumowanie ze sobą sekwencyjnie większej liczby szkiców.
 Bardziej formalnie, możemy zdefiniować taką operację $\dot{\cup}$, że dla dwóch dowolnych zbiorów $A, B$:
 \begin{equation}
@@ -149,6 +150,7 @@ W poprzedniej sekcji wyjaśniliśmy, że algorytm \texttt{HyperLogLog} posiada n
 Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach $p$ i $q$ (patrz rozdział \ref{HLL_sketch}). Istnieje jednak możliwość sumowania dwóch szkiców o różnych parametrach parach $(p, q)$ oraz $(p',q')$, albowiem każdy szkic \texttt{HyperLogLog} opisany przez parę $(p, q)$ może zostać zredukowany do szkicu opisanego przez $(p', q')$, jeśli spełniony jest warunek $p' \leq p$ oraz $p' + q' \leq p + q$. Taka transformacja jest bezstratna, tj. powstały szkic jest taki sam jak szkic który powstałby przez dodawanie tych wszystkich elementów od początku do szkicu opisanego przez $(p', q')$ \cite{oertl}. Algorytm \ref{HLL_compress} przedstawia pseudokod procedury wykonującej taką transformację.
 %\JL{opisac doklanie jak tak redukacja sie odbywa!
 \AW{Czy wystarczy pseudokod z pracki w której go znalazłem? Nawet tam nie jest dokładnie opisane co tu się dzieje, więc nie wiem czy jest sens sie nad tym rozpisywac - ten fakt o kompresji chcialem tutaj podac tak bardziej informacyjnie zeby bylo wiadomo ze mozna sumowac szkice o roznych p i q}
+\JL{Na razie, niech tak zostanie}
 \begin{algorithm}
 	\begin{algorithmic}
 		\State $p, q, M $ - parametry oraz kolekcja rejestrów kompresowanego szkicu
@@ -202,6 +204,8 @@ Posiadając $2k$ haszy ze zbiorów $H_1$ i $H_2$ odrzucamy połowę z nich - pro
  Najlepszym estymatorem byłby w tym przypadku $\hat{N}(S_1 \cup S_2) = \hat{N}(S_1) + \hat{N}(S_2)$. Jego wariancja - zgodnie ze wzorem \ref{mincount_var} wynosi $$Var(\hat{N}(S_1 \cup S_2)) \approx \frac{|A_1|^2}{k} + \frac{|A_2|^2}{k} = \frac{|A_1|^2 + |A_2|^2}{k}$$ Ponieważ zbiory $A_1$ i $A_2$ posiadają tyle samo elementów, możemy skorzystać z tożsamości $x^2 + x^2  = \frac{(2x)^2}{2}$ oraz faktu, iż zbiory $A_1$ oraz $A_2$ są rozłączne, aby przedstawić wariancję w postaci $$\frac{|A_1|^2 + |A_2|^2}{k} = \frac{|A_1 \cup A_2|^2}{2k}$$ Jednak pamiętajmy, że nasza dotychczasowa operacja sumy odrzuca $k$ haszy co powoduje dwukrotny wzrost wariancji do $\frac{|A_1 \cup A_2|^2}{k}$.
 %\JL{Wyprowadzić dokładnie te fomuły na wariancję, z tego co policzylismy na poczatku dla MinCounta i z prostej obserwacji, że $x^2 + x^2  = \frac{(2x)^2}{2}$}
 \AW{Czy takie wyjasnienie będzie OK?}
+\JL{OK. Tylko mam taką uwagę, żeby w całej pracy po wzorach dawać kropki lub przecinki, tak jakby to były normalne zdania. To jest w dobrym tonie.
+I najlepiej jeszcze odwołania do wzorów brać w nawiasy, tzn. ''ze wzoru (3.1) mamy''.}
 
 W pracy \cite{ting} zaproponowana została modyfikacja, która zamiast ograniczać nowo powstały szkic do $k$ wartości, tworzy największy możliwy szkic, dzięki czemu nie następuje utrata informacji.
 Oznaczmy przez ${\tau}(S)$ największy przechowywany hasz w szkicu $S$, przez $h(S)$ zbiór haszy przechowywanych w szkicu $S$ oraz $h(S, \tau)$ niech będzie zbiorem haszy w szkicu $S$ których wartości są mniejsze bądź równe $\tau$. Nowy operator sumy $\dot{\cup}$ na szkicach \texttt{MinCount} wygląda następująco:
@@ -232,10 +236,11 @@ Możemy jednak zdefiniować operator przekroju w podobny sposób, jak zdefiniowa
 \end{flalign}
 Jedną z największych zalet takiej definicji jest fakt, że otrzymujemy tutaj operator zamknięty, czyli taki który w wyniku operacji przekroju na dwóch szkicach daje w wyniku nowy szkic. Estymator liczności dla tak zdefiniowanej operacji przekroju ma postać:
 \begin{equation}
-    {\hat{N}}_{impr}(S_1 \dot{\cap} S_2) = \frac{|h(S_1 \dot{\cap} S_2)| - \alpha(S_1, S_2)}{{\tau}_{min}},
+    {\hat{N}}_{impr}(S_1 \dot{\cap} S_2) = \frac{|h(S_1 \dot{\cap} S_2)| - \alpha(S_1, S_2)}{{\tau}_{min}}.
 \end{equation}
 Pamiętajmy, że aby zachować właściwą postać wzoru - w przypadku przekroju jedynkę w liczniku musimy odjąć tylko jeśli $\tau_{min}$ znajduje się przekroju. Stąd we wzorze pojawia się funkcja $\alpha(S_1, S_2)$ zdefiniowana jako:
 \AW{Czy takie wyjasnienie wystaczy?}
+\JL{To zdanie jest jakos nieskladne, postac jakiego wzoru chcemy zachowac?}
 $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
  1 &\mbox{ jeśli ${\tau}_{min} \in h(S_1 \dot{\cap} S_2)$}, \\
   0 &\mbox{ w p.p.}
@@ -246,13 +251,17 @@ $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
        
        Przyjmijmy, że dysponujemy szkicami dla pewnych zbiorów $A_1$ i $A_2$. Estymacja liczności dla zbiorów $A_1 \cup A_2$ czy 
        $A_1 \cap A_2$ w oparciu o te szkice, jest problemem estymacji parametru rozkładu \cite{ting}. Rozsądnym może więc wydawać się wyprowadzenie estymatorów dla wyników operacji teoriomnogościowych metodą \textit{największej wiarygodności} (NW).
-       Estymator wyprowadzony tą metodą ma szereg istotnych własności. Wraz ze wzrostem rozmiary próby jest asymptotycznie nieobciążony, asymptotycznie najefektywniejszy, ma asymptotycznie rozkład normalny, a także jest zgodny. Estymator $T_n$ parametru $\theta$ nazywamy \textit{zgodnym} jeśli jest \textit{zbieżny w prawdopodobieństwie} \AW{nie wiem czy dobrze przetłumaczyłem? "converges in probability"} do prawdziwej wartości parametru, czyli inaczej mówiąc - jeśli spełniona jest równość:
+       Estymator wyprowadzony tą metodą ma szereg istotnych własności. Wraz ze wzrostem rozmiary próby jest asymptotycznie nieobciążony, asymptotycznie najefektywniejszy, ma asymptotycznie rozkład normalny, a także jest zgodny. Estymator $T_n$ parametru $\theta$ nazywamy \textit{zgodnym} jeśli jest \textit{zbieżny w prawdopodobieństwie} 
+       \AW{nie wiem czy dobrze przetłumaczyłem? "converges in probability"}
+       \JL{To sie chyba tlumaczy jako ''zbiega według prawdopodobienstwa''}
+        do prawdziwej wartości parametru, czyli inaczej mówiąc - jeśli spełniona jest równość:
        \begin{equation}
      		\lim_{n \to \infty} Pr[|T_n - \theta| < \epsilon] = 1
      		\label{consistent_def}
        \end{equation}
        dla każdego $\epsilon > 0$.
        \AW{może być cos takiego? taką definicję udalo mi sie znalezc i wyglada najsensowniej}
+       \JL{Zgrubsza OK, tylko chyba nie estymator $T_n$ zbiega, a ciag estymatorow $(T_n)_{n\geq1}$ zbiega, prosze zobaczyc np na angielska wikipedie}
 %       
 %       Estymator nazywamy zgodnym jeśli prawdopodobieństwo, że jego wartość będzie bliska wartości szacowanego przez niego parametru, wzrasta wraz z podniesieniem liczności próby \cite{cons}.
       
