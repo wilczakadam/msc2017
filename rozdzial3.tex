@@ -102,7 +102,7 @@ Aby wyliczyć wariancję estymatora składowego zapiszmy:
 \label{decomp}
     \sqrt{k_i}(\hat{{\alpha}_i}\hat{N}(S_i) - n_{i}{\alpha}_{i}) = \sqrt{k_i}\hat{{\alpha}_i}(\hat{N}(S_i) - n_{i}) + \sqrt{k_i}(\hat{{\alpha}_i} - {\alpha}_i)n_i
 \end{equation}
-i skorzystajmy ze wzoru $Var(X + Y) = Var(X) + Var(Y) + 2Cov(X, Y)$. Kowariancja między składniami sumy we wzorze (\ref{decomp}) jest  jednak  pomijalnie mała \cite{ting}, 
+i skorzystajmy ze wzoru $Var(X + Y) = Var(X) + Var(Y) + 2Cov(X, Y)$. Kowariancja między składniami sumy we wzorze (\ref{decomp}) jest  jednak  pomijalna \cite{ting}, 
 mamy zatem
 \begin{flalign}
     Var(\sqrt{k_i}(\hat{{\alpha}_i}\hat{N}(S_i) - n_{i}{\alpha}_{i}))=
@@ -144,7 +144,7 @@ Var(\hat{{\alpha}_i}) =
     \frac{{\alpha}_i(1 - {\alpha}_i)}{z}.
 \end{flalign}
 
-Wyprowadzenie wzoru na przybliżenie  $Var(\hat{{\beta}_i}) $ nie wydaje się już takie oczywiste. Rozumowanie oparte na technice zwanej \textit{delta metodą} zaproponujemy w kolejnym podrozdziale związanym z algorytmem \texttt{HyperLogLog}.
+Wyprowadzenie wzoru na przybliżenie  $Var(\hat{{\beta}_i}) $ nie wydaje się już takie oczywiste. Możemy otrzymać podobną formułę wykorzystując rozumowanie oparte na technice zwanej \textit{delta metodą}. Rozumowanie to opiszemy kolejnym podrozdziale związanym z algorytmem \texttt{HyperLogLog}.
 
 
 Powyższe przybliżenia wariancji możemy  zastosować do wzoru (4.19) co daje nam  przybliżenie wariancji $  \hat{N_i}(S_1 \cap S_2) = \hat{{\alpha}_i}\hat{N}(S_i)$:
