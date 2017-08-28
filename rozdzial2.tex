@@ -23,11 +23,13 @@ Algorytm \texttt{MinHash} korzysta z techniki tzw. \textit{min-wise hashing}. Sc
 Niech $h$ będzie funkcją haszującą, która mapuje elementy ze zbiorów na liczby.
  %całkowite. 
  \JL{czy to ma isitotne znaczenie, ze calkowite?}
+ \AW{chyba niekoniecznie - przetlumaczylem doslownie z "integer"}
  Dla dowolnego zbioru $X$ zdefiniujmy $h_{min}(X)$ jako minimalny element z $X$ względem funkcji $h$ , to jest taki element $x \in X$ dla którego $h(x)$ osiąga najmniejszą wartość.
 
 Zastosujemy funkcję $h_{min}$ na zbiorach $A$ i $B$. Zakładając że nie wystąpią żadne kolizje haszy, otrzymamy dokładnie tę samą wartość, jeśli element $x$ należący do sumy zbiorów $A \cup B$ osiągający minimalną wartość $h(x)$ znajduje się także w przecięciu tych zbiorów $A \cap B$. Prawdopodobieństwo zajścia takiego zdarzenia jest równe właśnie indeksowi \textit{Jaccarda} tych zbiorów:
 \begin{equation}
     Pr(h_{min}(A) = h_{min}(B)) = J(A, B)
+    \label{jacc_prob}
 \end{equation}
 Łatwo zatem pokazać, że jeśli $I$ jest zmienną losową przyjmującą wartość $1$ gdy $h_{min}(A) = h_{min}(B)$ i $0$ w przeciwnym przypadku, wówczas $I$ jest nieobciążonym estymatorem dla $J(A, B)$ \cite{minhash}.
 
@@ -38,17 +40,30 @@ Estymator $J(A, B)$ w tej wersji algorytmu wygląda następująco:
     \label{jacc_est}
 \end{equation}
 gdzie $[x]$ jest notacją \textit{Iversona} dla zdarzenia $x$, zdefiniowaną jako 
-$$[x] = ... .$$ \JL{uzupelnić}
+$$[x] = \left\{ \begin{array}{rl}
+	1 &\mbox{ jeśli zdarzenie $x$ jest prawdziwe, } \\
+	0 &\mbox{ w p.p.}
+\end{array} \right.$$ \JL{uzupelnić}
 Tak zdefiniowany estymator jest nieobciążonym estymatorem $J(A, B)$ \cite{minhash}, a jego wariancja wynosi:
 \begin{equation}
     Var(\hat{J}(A,B)) = \frac{J(A, B)(1 - J(A, B))}{k}
 \end{equation}
-
-Ten wzór można łatwo wyprowadzić:...
-%JL % % % % % % % % % % % % % % % % % % % %
- w podobny sposób jak wzór $(4.24)$. \JL{przeniesc tamto wyprowadzenie tutaj} Estymator ten jest zmienną losową będącą sumą $k$ niezależnych prób \textit{Bernoulliego} postaci $[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$, a jak wiemy ze wzoru $(4.38)$ prawdopodobieństwo sukcesu takiej jednej próby jest równe $J(A, B)$.
-\JL{zastanowic sie czy wtedy powyzsze zdanie jest potrzebne}
-%JL % % % % % % % % % % % % % % % % % %
+Ten wzór można łatwo wyprowadzić. Zauważmy, że estymator $\hat{J}(A, B)$ jest zmienną losową będącą sumą $k$ niezależnych prób \textit{Bernoulliego} postaci $[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$, a jak wiemy ze wzoru \ref{jacc_prob} prawdopodobieństwo sukcesu takiej jednej próby jest równe $J(A, B)$. Oznaczmy przez $X_i = [h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$. Wówczas możemy zapisać:
+\begin{equation}
+	\hat{J}(A,B) = \frac{1}{k}\sum_{i=1}^{k}X_i
+\end{equation}
+Nakładając wariancję otrzymujemy:
+\begin{flalign}
+	Var(\frac{1}{k}\sum_{i=1}^{k}X_i) = 
+	\\
+	\frac{1}{k^2}Var(\sum_{i=1}^{k}X_i) = 
+	\\
+	\frac{1}{k^2}\sum_{i=1}^{k}Var(X_i) =
+	\\
+	\frac{1}{k^2}\sum_{i=1}^{k}J(A, B)(1 - J(A, B)) =
+	\\
+	\frac{J(A, B)(1 - J(A, B))}{k}
+\end{flalign}
 
 Istnieje również drugi, mniej znany wariant algorytmu \texttt{MinHash}, który będziemy wykorzystywać w dalszej części tego rozdziału.
  Używa on analogicznego estymatora jak \ref{jacc_est}, ale korzysta z tylko jednej funkcji haszującej. Zamiast generować $k$ różnych funkcji haszujących, przechowujemy $k$ najmniejszych wartości dla porównywanych zbiorów $A_1, A_2$ i korzystamy z tylko jednej funkcji haszującej (analogicznie jak w algorytmie \texttt{MinCount}) \cite{adroll}. Posiadamy zatem zbiór haszy, który możemy traktować jako losową próbkę z $\bigcup A_i$. Następnie dla $k$ najmniejszych wartości z tej próbki zliczamy ile z nich znajduje się również wśród $k$ najmniejszych wartości w próbkach poszczególnych zbiorów. Całość dzielimy przez $k$ i otrzymujemy alternatywną wersję estymatora indeksu \textit{Jaccarda} \cite{adroll}:
@@ -62,9 +77,11 @@ Istnieje również drugi, mniej znany wariant algorytmu \texttt{MinHash}, który
 \end{equation}
 
 \section{Naiwna estymacja operacji teoriomnogościowych}
+\label{naive_est}
 
 Omówimy teraz naiwne metody wyników estymacji operacji teoriomnogościowych na szkicach, skupimy się na operacji sumy i przekroju. Dla niektóre szkiców danych operacja sumy może być zdefiniowana w stosunkowo naturalny sposób. Dla przykładu, łatwo zauważyć, że  oszacowanie liczności dla sumy dwóch zbiorów $A_1$ i $A_2$ przy użyciu szkiców $M_1$ i $M_2$ związanych z algorytmem \texttt{HyperLogLog} sprowadza się do stworzenia nowego szkicu $M_{A_1\cup A_2}$, takiego, że 
 $$M_{A_1\cup A_2}[i] = \max(M_{A_1}[i], M_{A_2}[i]).$$ 
+\AW{Czy tutaj konieczne jest pokazanie tego wzoru? Bo w nastepnym podrozdziale on znowu się pojawia i tam jest omówiony troche dokladniej}
 Najważniejszą własnością powyższej operacji jest to, że powstały szkic jest identyczny ze szkicem, który powstałby z sumy zbiorów wejściowych $A_1\cup A_2$ oraz fakt, że suma dwóch szkiców daje w wyniku nowy szkic. Oznacza to że operacja sumy jest zamknięta i pozawala m.in. na sumowanie ze sobą sekwencyjnie większej liczby szkiców.
 Bardziej formalnie, możemy zdefiniować taką operację $\dot{\cup}$, że dla dwóch dowolnych zbiorów $A, B$:
 \begin{equation}
@@ -124,14 +141,49 @@ Powyższe metody estymacji nie są jednak zbyt dokładne. Zwłaszcza w przypadku
 
 \subsection{Operacja sumy}
 
-W poprzedniej sekcji wyjaśniliśmy, że algorytm \texttt{HyperLogLog} posiada naturalną, zamkniętą operację sumy teoriomnogościowej na swoich szkicach. Jest ona wyjątkowo nieskomplikowana i sprowadza się do znalezienia maksimum na każdym z rejestrów spośród sumowanych szkiców \cite{oertl}. Mając dwa szkice \texttt{HyperLogLog-a} rozmiaru $m$: $M_1 = (M_{11}, ..., M_{1m})$ oraz $M_2 = (M_{21}, ..., M_{2m})$ reprezentujące dwa zbiory $A_1$ oraz odpowiednio $A_2$, procedura tworząca szkic $M_u = (M_{u1}, ..., M_{um})$ reprezentujący sumę $A_1 \cup A_2$ wygląda następująco:
+W poprzedniej sekcji wyjaśniliśmy, że algorytm \texttt{HyperLogLog} posiada naturalną, zamkniętą operację sumy teoriomnogościowej na swoich szkicach. Jest ona wyjątkowo nieskomplikowana i sprowadza się do znalezienia maksimum na każdym z rejestrów spośród sumowanych szkiców \cite{oertl}. Mając dwa szkice \texttt{HyperLogLog-a} rozmiaru $m$: $M_{A_1} = (M_{A_1}[1], ..., M_{A_1}[m])$ oraz $M_{A_2} = (M_{A_2}[1], ..., M_{A_2}[m])$ reprezentujące dwa zbiory $A_1$ oraz odpowiednio $A_2$, procedura tworząca szkic $M_{A_1 \cup A_2} = (M_{A_1 \cup A_2}[1], ..., M_{A_1 \cup A_2}[m])$ reprezentujący sumę $A_1 \cup A_2$ wygląda następująco:
 \begin{equation}
-    M_{ui} = max(M_{1i}, M_{2i}) \quad \textbf{dla} \quad i = 1,..., m.
+    M_{A_1 \cup A_2} = \max(M_{A_1}[i], M_{A_2}[i]) \quad \textbf{dla} \quad i = 1, ..., m.
 \end{equation}
-\JL{ujednolicić notacje dla M-ów z tym co w poprzedniej sekcji}
 
-Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach $p$ i $q$ (patrz rozdział:... \JL{uzupelnic rozdzial gdzie s a te parametry opisane}). Parametr $p$ kontroluje błąd względny, natomiast $q$ określa zakres wartości dla rejestrów. Suma $p + q$ określa liczbę używanych bitów haszu i definiuje tym samym maksymalna liczność jaką możemy wyznaczyć. Warto zauważyć, że jeśli liczność zbioru zbliża się do $2^{p+q}$ kolizje haszy stają się coraz częstsze i błąd znacznie wzrasta. Istnieje jednak możliwość sumowania dwóch szkiców o różnych parametrach parach $(p, q)$ oraz $(p',q')$, albowiem każdy szkic \texttt{HyperLogLog} opisany przez parę $(p, q)$ może zostać zredukowany do szkicu opisanego przez $(p', q')$, jeśli spełniony jest warunek $p' \leq p$ oraz $p' + q' \leq p + q$. Taka transformacja jest bezstratna, tj. powstały szkic jest taki sam jak szkic który powstałby przez dodawanie tych wszystkich elementów od początku do szkicu opisanego przez $(p', q')$ \cite{oertl}.
-\JL{opisac doklanie jak tak redukacja sie odbywa!}
+Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach $p$ i $q$ (patrz rozdział \ref{HLL_sketch}). Istnieje jednak możliwość sumowania dwóch szkiców o różnych parametrach parach $(p, q)$ oraz $(p',q')$, albowiem każdy szkic \texttt{HyperLogLog} opisany przez parę $(p, q)$ może zostać zredukowany do szkicu opisanego przez $(p', q')$, jeśli spełniony jest warunek $p' \leq p$ oraz $p' + q' \leq p + q$. Taka transformacja jest bezstratna, tj. powstały szkic jest taki sam jak szkic który powstałby przez dodawanie tych wszystkich elementów od początku do szkicu opisanego przez $(p', q')$ \cite{oertl}. Algorytm \ref{HLL_compress} przedstawia pseudokod procedury wykonującej taką transformację.
+%\JL{opisac doklanie jak tak redukacja sie odbywa!
+\AW{Czy wystarczy pseudokod z pracki w której go znalazłem? Nawet tam nie jest dokładnie opisane co tu się dzieje, więc nie wiem czy jest sens sie nad tym rozpisywac - ten fakt o kompresji chcialem tutaj podac tak bardziej informacyjnie zeby bylo wiadomo ze mozna sumowac szkice o roznych p i q}
+\begin{algorithm}
+	\begin{algorithmic}
+		\State $p, q, M $ - parametry oraz kolekcja rejestrów kompresowanego szkicu
+		\State $p', q' $ - parametry wejściowe szkicu docelowego
+		\State Założenie: $ p' \leq p$ oraz $p' + q' \leq p + q$
+		\State $Q(s) $ -  funkcja zwracając pozycję pierwszej jedynki w ciągu bitów $s$ 
+		\newline
+		\Function{Compress}{$M$}
+		\State $m' = 2^{p'}$
+		\For {$i = 1 .. m'$}
+			\State $M'[i] \gets 0$
+		\EndFor
+		\For {$i = 1 .. m'$}
+			\State $b \gets (i - 1)2^{p-p'}$
+			\State $j \gets 1$
+			\While {$j \leq 2^{p-p'}$ and $M[b+j] = 0$}
+				\State $j \gets j + 1$
+			\EndWhile
+			\If {$j = 1$}
+				\State $M'[i] \gets \min(M[b+j] + (p - p'), q' + 1)$
+			\ElsIf {$j \leq 2^{p-p'}$}
+				\State ${{\langle}e_1, e_2, ..., e_{p-p'}{\rangle}}_2 \gets j - 1$
+				\State $v \gets {{\langle}e_1, e_2, ..., e_{p-p'}{\rangle}}_2$ 
+				\State $M'[i] \gets Q(v)$
+			\Else
+				\State $M'[i] = 0$
+			\EndIf
+		\EndFor
+		\State \Return $M'$
+		\EndFunction
+		
+	\end{algorithmic}
+	\caption{Procedura kompresji szkicu \texttt{HyperLogLog}}
+	\label{HLL_compress}
+\end{algorithm}
 
 \subsection{Operacja przekroju i różnicy}
 
@@ -143,58 +195,64 @@ O ile metoda oparta na zasadzie włączeń i wyłączeń nie sprawdza się w tym
 \section{MinCount}
 
 \subsection{Operacja sumy}
+\label{impr_sum}
 
-Przyjrzyjmy się teraz operacji sumy dla algorytmu \texttt{MinCount}. Załóżmy, że posiadamy dwa szkice danych $(S_1, {\tau}_1)$ oraz $(S_2, {\tau}_2)$ dla zbiorów $A_1$ i $A_2$. Chcemy otrzymać szkic $(S_u, {\tau}_u)$ zbioru $A_1 \cup A_2$. W tym przypadku naturalne wydaje się być wykonanie sumy zbiorów haszy $S_1$ oraz $S_2$ i utworzenie z nich nowego zbioru $S_u$ zawierającego, $k$ najmniejszych haszy z sumy $S_1 \cup S_2$. Takie podejście  odrzuca jednak dużą ilość informacji. Weźmy jako przykład dwa zbiory $A_1$ oraz $A_2$, które są rozłączne i o tej samej liczności.
-Posiadając $2k$ haszy ze zbiorów $S_1$ i $S_2$ odrzucamy połowę z nich - prowadzi to nawet do dwukrotnego zwiększenia wariancji estymatora. 
- Najlepszym estymatorem byłby w tym przypadku $\hat{N}(S_1 \cup S_2) = \hat{N}(S_1) + \hat{N}(S_2)$. Jego wariancja wynosi $\frac{|A_1|^2 + |A_2|^2}{k} = \frac{|A_1 \cup A_2|^2}{2k}$. Jednak nasza operacja sumy odrzuca $k$ haszy co powoduje dwukrotny wzrost wariancji do $\frac{|A_1 \cup A_2|^2}{k}$.
-\JL{Wyprowadzić dokładnie te fomuły na wariancję, z tego co policzylismy na poczatku dla MinCounta i z prostej obserwacji, że $x^2 + x^2  = \frac{(2x)^2}{2}$}
+Przyjrzyjmy się teraz operacji sumy dla algorytmu \texttt{MinCount}. Załóżmy, że posiadamy dwa szkice danych $S_1 = (H_1, {\tau}_1)$ oraz $S_2 = (H_2, {\tau}_2)$ dla zbiorów $A_1$ i $A_2$. Chcemy otrzymać szkic $(H_u, {\tau}_u)$ zbioru $A_1 \cup A_2$. W tym przypadku naturalne wydaje się być wykonanie sumy zbiorów haszy $H_1$ oraz $H_2$ i utworzenie z nich nowego zbioru $H_u$ zawierającego, $k$ najmniejszych haszy z sumy $H_1 \cup H_2$. Takie podejście  odrzuca jednak dużą ilość informacji. Weźmy jako przykład dwa zbiory $A_1$ oraz $A_2$, które są rozłączne i o tej samej liczności.
+Posiadając $2k$ haszy ze zbiorów $H_1$ i $H_2$ odrzucamy połowę z nich - prowadzi to nawet do dwukrotnego zwiększenia wariancji estymatora. 
+ Najlepszym estymatorem byłby w tym przypadku $\hat{N}(S_1 \cup S_2) = \hat{N}(S_1) + \hat{N}(S_2)$. Jego wariancja - zgodnie ze wzorem \ref{mincount_var} wynosi $$Var(\hat{N}(S_1 \cup S_2)) \approx \frac{|A_1|^2}{k} + \frac{|A_2|^2}{k} = \frac{|A_1|^2 + |A_2|^2}{k}$$ Ponieważ zbiory $A_1$ i $A_2$ posiadają tyle samo elementów, możemy skorzystać z tożsamości $x^2 + x^2  = \frac{(2x)^2}{2}$ oraz faktu, iż zbiory $A_1$ oraz $A_2$ są rozłączne, aby przedstawić wariancję w postaci $$\frac{|A_1|^2 + |A_2|^2}{k} = \frac{|A_1 \cup A_2|^2}{2k}$$ Jednak pamiętajmy, że nasza dotychczasowa operacja sumy odrzuca $k$ haszy co powoduje dwukrotny wzrost wariancji do $\frac{|A_1 \cup A_2|^2}{k}$.
+%\JL{Wyprowadzić dokładnie te fomuły na wariancję, z tego co policzylismy na poczatku dla MinCounta i z prostej obserwacji, że $x^2 + x^2  = \frac{(2x)^2}{2}$}
+\AW{Czy takie wyjasnienie będzie OK?}
 
 W pracy \cite{ting} zaproponowana została modyfikacja, która zamiast ograniczać nowo powstały szkic do $k$ wartości, tworzy największy możliwy szkic, dzięki czemu nie następuje utrata informacji.
-Oznaczmy przez ${\tau}(S)$ największy przechowywany hasz w szkicu $S$, przez $h(S)$ zbiór haszy przechowywanych w szkicu $S$ oraz $h(S, \tau)$ niech będzie zbiorem haszy w szkicu $S$ których wartości są mniejsze bądź równe $\tau$. Nowy operator sumy na szkicach \texttt{MinCount} wygląda następująco:
-\JL{powyżej S jest oznaczeniem dla zbioru haszy i dla szkicu, to bardzo mylaće, nie może tak być} 
+Oznaczmy przez ${\tau}(S)$ największy przechowywany hasz w szkicu $S$, przez $h(S)$ zbiór haszy przechowywanych w szkicu $S$ oraz $h(S, \tau)$ niech będzie zbiorem haszy w szkicu $S$ których wartości są mniejsze bądź równe $\tau$. Nowy operator sumy $\dot{\cup}$ na szkicach \texttt{MinCount} wygląda następująco:
 \JL{wprowadzić osobne oznaczenie $\dot{\cup} $ dla sumy na szkicach, rozumiem, że poniżej $S_1$ i $S_2$ to są szkice a nie zbiory haszy?}
 \begin{flalign}
-        {\tau}_{min} = \tau(S_1 \cup S_2) = min({\tau}_1, {\tau}_2) \\
-        h(S_1 \cup S_2) = h(S_1, {\tau}_{min}) \cup h(S_2, {\tau}_{min})
+        {\tau}_{min} = \tau(S_1 \dot{\cup} S_2) = min({\tau}_1, {\tau}_2) \\
+        h(S_1 \dot{\cup} S_2) = h(S_1, {\tau}_{min}) \cup h(S_2, {\tau}_{min})
 \end{flalign}
 
 W tej modyfikacji algorytmu odrzucamy te wartości które są większe niż wartość graniczna ${\tau}_{min}$, a szkice są następnie łączone poprzez sumę teoriomnogościową na zbiorach pozostałych haszy.
 
 Zauważmy, że powstały szkic jest identyczny ze szkicem wielkości $|h(S_1 \cup S_2)|$ skonstruowanym z elementów ze zbioru $A_1 \cup A_2$. Naturalnie, estymator liczności dla tak stworzonego szkicu zdefiniowany jest następująco:
 \begin{equation}
-    {\hat{N}}_{impr}(S_1 \cup S_2) = \frac{|h(S_1 \cup S_2)| - 1}{{\tau}_{min}}.
+    {\hat{N}}_{impr}(S_1 \dot{\cup} S_2) = \frac{|h(S_1 \dot{\cup} S_2)| - 1}{{\tau}_{min}}.
 \end{equation}
 
 \subsection{Operacja przekroju}
+\label{impr_inter}
 
-Rozpatrzmy teraz operację przekroju dla algorytmu \texttt{MinCount}. W naiwnym podejściu wykorzystujemy zasadę włączeń i wyłączeń, jak zostało to pokrótce opisane w sekcji\JL{podać numer sekcji przez \ref{}}. Podejście to jednak nie pozawala nam na zdefiniowanie zamkniętego operatora przekroju, a jedynie na wyznaczenie estymacji liczności przekroju.
+Rozpatrzmy teraz operację przekroju dla algorytmu \texttt{MinCount}. W naiwnym podejściu wykorzystujemy zasadę włączeń i wyłączeń, jak zostało to pokrótce opisane w sekcji \ref{naive_est}. Podejście to jednak nie pozwala nam na zdefiniowanie zamkniętego operatora przekroju, a jedynie na wyznaczenie estymacji liczności przekroju.
 Ponadto, takie podejście prowadzi zazwyczaj do dużych błędów estymacji, a także amonali w postaci ujemnych wartości estymacji.
 
-Możemy jednak zdefiniować operator przekroju w podobny sposób, jak zdefiniowaliśmy poprawiony operator sumy w poprzednim podrozdziale\JL{podać numer podrodzialu}. Tak jak poprzednio, zamiast szkicu ograniczonego do $k$ wartości, tworzymy największy możliwy szkic. Nowy operator przekroju na szkicach \texttt{MinCount} może być zdefiniowany następująco \cite{ting}:
-\JL{poprawić poniżej oznaczenia przekroju szkiców}
+Możemy jednak zdefiniować operator przekroju w podobny sposób, jak zdefiniowaliśmy poprawiony operator sumy w poprzednim podrozdziale \ref{impr_sum}. Tak jak poprzednio, zamiast szkicu ograniczonego do $k$ wartości, tworzymy największy możliwy szkic. Nowy operator przekroju na szkicach \texttt{MinCount} może być zdefiniowany następująco \cite{ting}:
 \begin{flalign}
-        {\tau}_{min} = \tau(S_1 \cup S_2) = \tau(S_1 \cap S_2) = min({\tau}_1, {\tau}_2) \\
-        \label{sketch-cut}   
-        h(S_1 \cap S_2) = h(S_1, {\tau}_{min}) \cap h(S_2, {\tau}_{min})
+        {\tau}_{min} = \tau(S_1 \dot{\cup} S_2) = \tau(S_1 \dot{\cap} S_2) = min({\tau}_1, {\tau}_2), \\
+        \label{sketch-cut}
+        h(S_1 \dot{\cap} S_2) = h(S_1, {\tau}_{min}) \cap h(S_2, {\tau}_{min}).
 \end{flalign}
 Jedną z największych zalet takiej definicji jest fakt, że otrzymujemy tutaj operator zamknięty, czyli taki który w wyniku operacji przekroju na dwóch szkicach daje w wyniku nowy szkic. Estymator liczności dla tak zdefiniowanej operacji przekroju ma postać:
-\JL{poprawić poniżej oznaczenia przekroju szkiców}
 \begin{equation}
-    {\hat{N}}_{impr}(S_1 \cap S_2) = \frac{|h(S_1 \cap S_2)| - \alpha(S_1, S_2)}{{\tau}_{min}},
+    {\hat{N}}_{impr}(S_1 \dot{\cap} S_2) = \frac{|h(S_1 \dot{\cap} S_2)| - \alpha(S_1, S_2)}{{\tau}_{min}},
 \end{equation}
-gdzie $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
- 1 &\mbox{ jeśli ${\tau}_{min} \in h(S_1 \cap S_2)$}, \\
+Pamiętajmy, że aby zachować właściwą postać wzoru - w przypadku przekroju jedynkę w liczniku musimy odjąć tylko jeśli $\tau_{min}$ znajduje się przekroju. Stąd we wzorze pojawia się funkcja $\alpha(S_1, S_2)$ zdefiniowana jako:
+\AW{Czy takie wyjasnienie wystaczy?}
+$$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
+ 1 &\mbox{ jeśli ${\tau}_{min} \in h(S_1 \dot{\cap} S_2)$}, \\
   0 &\mbox{ w p.p.}
        \end{array} \right.$$
-       
-\JL{Tutaj zdanie wyjasnienia z czego wynika odejmowanie tej alfy}       
+%\JL{Tutaj zdanie wyjasnienia z czego wynika odejmowanie tej alfy}       
        
        \section{Estymacja metodą największej wiarygodności}
        
        Przyjmijmy, że dysponujemy szkicami dla pewnych zbiorów $A_1$ i $A_2$. Estymacja liczności dla zbiorów $A_1 \cup A_2$ czy 
        $A_1 \cap A_2$ w oparciu o te szkice, jest problemem estymacji parametru rozkładu \cite{ting}. Rozsądnym może więc wydawać się wyprowadzenie estymatorów dla wyników operacji teoriomnogościowych metodą \textit{największej wiarygodności} (NW).
-       Estymator wyprowadzony tą metodą ma szereg istotnych własności. Wraz ze wzrostem rozmiary próby jest asymptotycznie nieobciążony, asymptotycznie najefektywniejszy, ma asymptotycznie rozkład normalny, a także jest zgodny.
-       \JL{wyjasnic co znaczy zgodny, ale zamiast tego ponizszego zdanie prosze napisac lepiej wzor}
+       Estymator wyprowadzony tą metodą ma szereg istotnych własności. Wraz ze wzrostem rozmiary próby jest asymptotycznie nieobciążony, asymptotycznie najefektywniejszy, ma asymptotycznie rozkład normalny, a także jest zgodny. Estymator $T_n$ parametru $\theta$ nazywamy \textit{zgodnym} jeśli jest \textit{zbieżny w prawdopodobieństwie} \AW{nie wiem czy dobrze przetłumaczyłem? "converges in probability"} do prawdziwej wartości parametru, czyli inaczej mówiąc - jeśli spełniona jest równość:
+       \begin{equation}
+     		\lim_{n \to \infty} Pr[|T_n - \theta| < \epsilon] = 1
+     		\label{consistent_def}
+       \end{equation}
+       dla każdego $\epsilon > 0$.
+       \AW{może być cos takiego? taką definicję udalo mi sie znalezc i wyglada najsensowniej}
 %       
 %       Estymator nazywamy zgodnym jeśli prawdopodobieństwo, że jego wartość będzie bliska wartości szacowanego przez niego parametru, wzrasta wraz z podniesieniem liczności próby \cite{cons}.
       
@@ -209,7 +267,7 @@ gdzie $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
         W dalszej części naszej pracy omówimy  \textit{metodę estymatora ważonego} w kontekście algorytmu 
         \texttt{MinCount}. 
         Estymatory wyprowadzone tą metodą powinny był łatwo implementowalne, mieć niemal te same własności, jak estymatory wyprowadzone metodą \textit{estymatora największej wiarygodności} oraz łatwo uogólniać się na operacje teoriomnogościowe na większej liczbie zbiorów \cite{ting}.         
-        Rozważmy zatem także  możliwość uogólnienia tej metody  dla szkiców algorytmu \texttt{HyperLogLog}.
+        Rozważymy zatem także  możliwość uogólnienia tej metody  dla szkiców algorytmu \texttt{HyperLogLog}.
         
         
 
