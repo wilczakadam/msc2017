@@ -35,6 +35,8 @@ Poniżej prezentujemy lemat z pracy \cite{ting}:
 	 gdzie $1_n$ to wektor jednostkowy długości $n$. Powstały estymator jest nieobciążony (bądź zgodny) o wariancji ${{1_n}^{T}\Sigma^{-1}1_n}^{-1}$.
 \end{lemma}
 \AW{Przepisalem ten akapit w formie lematu}
+\JL{Ta czesc pracy dalej nie ma sensu. W lemacie mowimy o minimalizowaniu wariancji, ale czego?
+Estymator ni jest jeszcze zdefiniowany? Wszystko nie układa sie w spojna całosc.}
 W praktyce jednak macierz kowariancji $\Sigma$ rzadko jest znana i potrzebna jest jakaś jej aproksymacja.
 Jeśli przyjemy, że estymatory składowe są niezależne
 lub prawie niezależne, możemy poprzestać na wyliczeniu przekątnej macierzy kowariancji, czyli wariancji estymatorów składowych. Wówczas, \textit{estymator ważony} $\hat{N}_w$  ma następującą postać:
@@ -163,6 +165,7 @@ gdzie $\hat{n_i}$ jest kroczącą estymatą liczności szkicu $S_i$ dla algorytm
 $$Var(\hat{n_i}) = \frac{{{n}_i}^2}{2(k_i - 1)} \approx \frac{{\hat{n}_i}^2}{2k_i}.$$
 \JL{wyjasnic czym jest $\hat{n_i}$ i skad sie wzielo przyblizenie wariancji dla estymatora licznosci}
 \AW{".. skad sie wzielo przyblizenie wariancji dla estymatora licznosci" - ma Pan na mysli wariancję $\hat{n}_i$? - jesli tak to dodalem ją cytując zrodlo powyzej}
+\JL{jest OK}
 Ostatecznie:
 \begin{equation}
     \hat{Var}(\hat{N_i}(S_1 \dot{\cap} S_2)) \approx \hat{N_i}(S_1 \dot{\cap} S_2)^{2}(\frac{1}{2{k}_i} + \frac{(1 - \hat{{\alpha}_i})}{\hat{{\alpha}_i}|h(S_i, {\tau}_{min}|}).

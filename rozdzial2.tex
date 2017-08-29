@@ -20,10 +20,12 @@ Definicję tę możemy także uogólnić  na $n$ zbiorów \cite{adroll}:
 W tym podrozdziale opiszemy działanie algorytmu \texttt{MinHash} oraz wyjaśnimy w jaki sposób możemy go zastosować do estymacji \textit{podobieństwa Jaccarda} wbiorów.
 Algorytm \texttt{MinHash} korzysta z techniki tzw. \textit{min-wise hashing}. Schemat ten został po raz pierwszy zaproponowany przez Andrei Brodera \cite{broder}, jako narzędzie do określania podobieństwa stron internetowych.
 
-Niech $h$ będzie funkcją haszującą, która mapuje elementy ze zbiorów na liczby.
+Niech $h$ będzie funkcją haszującą.
+%., która mapuje elementy ze zbiorów na liczby.
  %całkowite. 
  \JL{czy to ma isitotne znaczenie, ze calkowite?}
  \AW{chyba niekoniecznie - przetlumaczylem doslownie z "integer"}
+ \JL{Może tak jak teraz?}
  Dla dowolnego zbioru $X$ zdefiniujmy $h_{min}(X)$ jako minimalny element z $X$ względem funkcji $h$ , to jest taki element $x \in X$ dla którego $h(x)$ osiąga najmniejszą wartość.
 
 Zastosujemy funkcję $h_{min}$ na zbiorach $A$ i $B$. Zakładając że nie wystąpią żadne kolizje haszy, otrzymamy dokładnie tę samą wartość, jeśli element $x$ należący do sumy zbiorów $A \cup B$ osiągający minimalną wartość $h(x)$ znajduje się także w przecięciu tych zbiorów $A \cap B$. Prawdopodobieństwo zajścia takiego zdarzenia jest równe właśnie indeksowi \textit{Jaccarda} tych zbiorów:
@@ -262,7 +264,8 @@ $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
        \AW{może być cos takiego? taką definicję udalo mi sie znalezc i wyglada najsensowniej}
        \JL{Zgrubsza OK, tylko chyba nie estymator $T_n$ zbiega, a ciag estymatorow $(T_n)_{n\geq1}$ zbiega, prosze zobaczyc np na angielska wikipedie}
        \AW{updated}
-%       
+       \JL{OK}
+%      
 %       Estymator nazywamy zgodnym jeśli prawdopodobieństwo, że jego wartość będzie bliska wartości szacowanego przez niego parametru, wzrasta wraz z podniesieniem liczności próby \cite{cons}.
       
       W pracach \cite{ting} oraz \cite{oertl} podjęto wysiłki
