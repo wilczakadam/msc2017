@@ -15,6 +15,7 @@ W ogólnym przypadku, nie posiadając żadnych informacji na temat danych, aby z
 
 
 \section{Algorytm MinCount}
+\label{mincount}
 
 Pierwszym algorytmem przybliżonego zliczania, którym się zajmiemy jest \texttt{MinCount} znany również pod innymi nazwami, np.  \texttt{K-th Minimum Value} (KMV) \cite{kmv}. Algorytm ten opiera się na statystykach pozycyjnych.
 
@@ -125,6 +126,7 @@ W oparciu o szkic $(H, {\tau})$ jesteśmy w stanie w dowolnym momencie wyliczyć
 \newpage
 
 \section{Algorytm Streaming MinCount}
+\label{smincount}
 
 Jednym z mniej znanych algorytmów opartych na statystykach pozycyjnych, który będziemy rozważać w dalszej części pracy jest algorytm \texttt{Streaming MinCount} \cite{streamed}. Algorytm ten różni się od klasycznego \texttt{MinCounta} sposobem estymacji liczności. Wykorzystuje on taki sam szkic, ale wykonuje tzw. \textit{estymację kroczącą}. Tzn. wykorzystuje do estymacji również informacje o zmianach w szkicu, a nie tylko końcową postać szkicu:
 \begin{equation}
@@ -176,6 +178,7 @@ Na wykresie \ref{fig:str_mincount_hist} zamieszczamy również histogram prezent
 \end{figure}
 
 \section{Algorytm HyperLogLog}
+\label{hll}
 
 Trzecim algorytmem przybliżonego zliczania, który omówimy w tej pracy jest \texttt{HyperLogLog} zaprezentowany w pracy \cite{hll}. Podobnie jak w algorytmie \texttt{MinCount}  haszuje on elementy wejściowego  multizbioru $\mathfrak{M}$ w odcinek $(0,1)$. Jednak tym razem hasze są traktowane nie jak liczby w zapisie binarnym, a jak ciągi złożone z zer i jedynek. Algorytm na bieżąco śledzi maksymalną liczbę zer wiodących wśród wszystkich haszy. Idea algorytmu jest następująca: przy założeniu, że na każdej pozycji zero i jedynka pojawia się z jednakowym prawdopodobieństwem,  hasze które zawierają więcej zer wiodących są rzadziej spotykane. Wskazują zatem na większą liczność zbioru wejściowego. Innymi słowy, jeśli ciąg bitów postaci $0^{q-1}1$ pojawi się na początku hasza, wówczas przy założeniu, że funkcja $h$ zwraca wartości zgodnie z rozkładem jednostajnym, możemy estymować liczbę różnych elementów multizbioru wejściowego na $2^{q}$.
 

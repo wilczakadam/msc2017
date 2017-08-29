@@ -50,7 +50,7 @@ gdzie $c$ to stała normalizacyjna, zapewniająca, że wagi sumują się do jedy
 
 \section{Estymatory składowe dla algorytmu \texttt{Streaming MinCount}}
 
-W dalszej części tego rozdziału, dotyczącej szkiców algorytmu \texttt{MinCount}, zakładamy użycie algorytmu \texttt{Streaming MinCount} opisanego w rozdziale $2.3$.
+W dalszej części tego rozdziału, dotyczącej szkiców algorytmu \texttt{MinCount}, zakładamy użycie algorytmu \texttt{Streaming MinCount} opisanego w rozdziale \ref{smincount}.
 Estymator w tej wersji algorytmu jest bardziej skoncentrowany, a ponadto, co okaże się istotne, jego rozkład może być aproksymowany przez rozkład normalny (patrz wykres \ref{fig:str_mincount_hist}). 
 
 Omówimy teraz metodę  definiowania estymatorów składowych. Naszym celem jest zdefiniowanie estymatorów opartach na dostępnym szkicu, które są jak najmniej nawzajem ze sobą skorelowane, oraz takich, których wariancję jesteśmy w stanie efektywnie wyliczyć lub przybliżyć. Poniżej przedstawiamy pomysł z pracy \cite{ting} umożliwiający wyrażenie estymatora ważonego sumy i przekroju jako  liniowej kombinacją  estymatorów liczności opartych na szkicach \texttt{MinCount}.
@@ -68,6 +68,7 @@ mamy zatem:
  Naturalnymi estymatorami dla $\alpha_i$ oraz $\beta_i$ zdefiniowanymi w oparciu o szkice \texttt{MinCount} wydają się być:
 \begin{flalign}
      \hat{{\alpha}_{i}} = \frac{|h(S_1 \dot{\cap} S_2)|}{|h(S_i, {\tau}_{min})|},\\
+     \label{var_alpha}
     \hat{{\beta}_{i}} = \frac{|h(S_1 \dot{\cup} S_2)|}{|h(S_i, {\tau}_{min})|}.
 \end{flalign}
 Zauważmy, że $\alpha_i$ oraz $\beta_i$ możemy interpretować jako stosunek mocy przekroju (i odpowiednio sumy) do mocy pojedynczego zbioru $A_i$. Ten stosunek estymujemy zatem korzystając z mocy zbiorów haszy dostępnych w naszych szkicach $S_1$ oraz $S_2$. $|h(S_1 \dot{\cap} S_2)|$ reprezentuje liczbę haszy w przekroju dwóch szkiców (zauważmy uzycie operacji $\dot{\cap}$ zdefiniowanej w (\ref{sketch-cut})), natomiast $|h(S_i, {\tau}_{min})|$ reprezentuje liczbę haszy w szkicu $S_i$. Stosunek tych dwóch wartości jest zatem estymatorem stosunku $\frac{|A_1 \cap A_2|}{|A_i|}$. Analogicznie zdefiniowany jest estymator dla $\beta_i$.
@@ -169,6 +170,7 @@ $$Var(\hat{n_i}) = \frac{{{n}_i}^2}{2(k_i - 1)} \approx \frac{{\hat{n}_i}^2}{2k_
 Ostatecznie:
 \begin{equation}
     \hat{Var}(\hat{N_i}(S_1 \dot{\cap} S_2)) \approx \hat{N_i}(S_1 \dot{\cap} S_2)^{2}(\frac{1}{2{k}_i} + \frac{(1 - \hat{{\alpha}_i})}{\hat{{\alpha}_i}|h(S_i, {\tau}_{min}|}).
+    \label{var_sum_final}
 \end{equation}
 Wyprowadzenie dla $\hat{N_i}(S_1 \dot{\cup} S_2)$ wygląda analogicznie:
 \begin{flalign}
@@ -195,10 +197,11 @@ co niejako sprowadza nas do już rozwiązanego problemu estymacji przekroju zbio
 Analogicznie do wcześniejszego rozumowania  dla przekroju, moc różnicy dwóch zbiorów możemy przedstawić jako:
 \begin{equation}
     |A_1 \setminus A_2| = \frac{|A_1 \setminus A_2|}{|A_i|}|A_i| = \frac{|A_1 \cap {A_2}^{c}|}{|A_i|}|A_i|.
+    \label{diff_fact}
 \end{equation}
 Nieoczywistą kwestią może wydawać się wykorzystanie szkiców do estymacji rozmiaru dopełnienia zbioru.
 Zauważmy, że moc $A_1 \cap A_2$ może być w przybliżeniu określona przez hasze $h(S_1) \cap h(S_2)$.
-Aby estymować moc  $A_1 \cap A_2^c$ możemy zatem odrzucimy ze zbioru haszy $h(S_1)$ hasze znajdujące się w $h(S_2)$.
+Aby estymować moc  $A_1 \cap A_2^c$ możemy zatem odrzucić ze zbioru haszy $h(S_1)$ hasze znajdujące się w $h(S_2)$.
 Zdefiniujmy zatem mnożnik $${\gamma}_{i} = \frac{|A_1 \cap {A_2}^{c}|}{|A_i|}$$
 % % % = \frac{|A_1 \setminus A_2|}{|A_i|}$ 
 oraz jego estymator:
@@ -206,17 +209,16 @@ oraz jego estymator:
     \hat{{\gamma}_i} = \frac{|h(S_1 \dot{\setminus} S_2)|}{|h(S_i, {\tau}_{min})|},
 \end{equation}
 gdzie $S_1 \dot{\setminus} S_2$ oznacza...\JL{Uzupełnic}.
- Korzystając z faktu $(4.34)$
-\JL{cos chyba nie tak z numeracja, fakt 4.34?, najlepiej robic odniesnienia przez \ref{}}
+ Korzystając z faktu (\ref{diff_fact})
+%\JL{cos chyba nie tak z numeracja, fakt 4.34?, najlepiej robic odniesnienia przez \ref{}}
 możemy przybliżyć $Var(\hat{{\gamma}_i})$ takim samym wzorem jak dla $\hat{{\alpha}_i}$, czyli:
 \begin{equation}
     Var(\hat{{\gamma}_i}) \approx \frac{{\hat{\gamma}}_i(1 - {\hat{\gamma}}_i)}{|h(S_i, {\tau}_{min})|}.
 \end{equation}
-Ostatecznie, przeprowadzając analogiczne obliczenia jak w $(4.31)$,
-\JL{cos chyba nie tak z numeracja, 4.31?, odniesnienia przez \ref{}}
+Ostatecznie, przeprowadzając analogiczne obliczenia jak w (\ref{var_sum_final}),
  otrzymujemy wzór na wariancję estymatora różnicy postaci:
 \begin{equation}
-    \hat{Var}(\hat{N_i}(S_1 \setminus S_2)) \approx \hat{N_i}(S_1 \setminus S_2)^{2}(\frac{1}{2{k}_i} + \frac{(1 - \hat{{\gamma}_i})}{\hat{{\gamma}_i}|h(S_i, {\tau}_{min}|}).
+    \hat{Var}(\hat{N_i}(S_1 \dot{\setminus} S_2)) \approx \hat{N_i}(S_1 \dot{\setminus} S_2)^{2}(\frac{1}{2{k}_i} + \frac{(1 - \hat{{\gamma}_i})}{\hat{{\gamma}_i}|h(S_i, {\tau}_{min}|}).
 \end{equation}
 \JL{zmienić $\setminus$ nad $\dot{\setminus}$, choc głupio wyglada}
 
@@ -240,10 +242,10 @@ Zatem, aby oszacować ${\alpha}_i$ oraz ${\beta}_i$, możemy posłużyć się es
     \hat{{\beta}_{i}} = \hat{J}(A_i, A_1 \cup A_2,)^{-1},
 \end{flalign}
 które z kolei możemy łatwo uzyskać korzystając z algorytmu \texttt{MinHash} zaprezentowanego
-w rozdziale...\JL{uzupełnic}. Zwróćmy, również uwagę, iż dzięki zastosowaniu techniki \textit{stochastycznego uśredniania}
+w rozdziale \ref{minhash}. Zwróćmy, również uwagę, iż dzięki zastosowaniu techniki \textit{stochastycznego uśredniania}
 algorytm \texttt{HyperLogLog} wykorzystuje jedynie jedną funkcję skrótu. W praktycznych zastosowaniach
 użyteczne byłoby zatem oprzeć  również algorytm \texttt{MinHash} na jednej, a nie na $k$ niezależnych funkcjach skrótu.
-Umożliwi nam to wersja tego algorytmu zaprezentowana na końcu podrozdziału....\JL{Uzupelnić}.
+Umożliwi nam to wersja tego algorytmu zaprezentowana na końcu rozdziału \ref{minhash}.
 
 
 Wariancję powyższych estymatorów możemy przybliżyć używając następujących wzorów. Dla $\hat{{\alpha}_i}$ będzie to po prostu wariancja estymatora $\hat{J}(A_1 \cap A_2, A_i)$, którą znamy dla algorytmu \texttt{MinHash}:
@@ -259,8 +261,9 @@ Wyznaczenie wariancji dla $\hat{{\beta}_i}$ jest nieco trudniejsze, ponieważ es
  pozwalającej na oszacowanie wariancji funkcji zmiennej losowej, przy odpowiednich założeniach:
 \begin{equation}
    Var(f(X)) \approx (f'(E[X]))^{2}Var(X).
+   \label{delta_method}
 \end{equation}
-Oznaczmy przez $b_i = \frac{1}{{\hat{\beta}}_i} = \hat{J}(A_i, A_1 \cup A_2)$, oraz niech $f(x) = \frac{1}{x}$. Wówczas ${{\hat{\beta}}_i} = f(b_i)$. Podstawiając do wzoru $(4.43)$\JL{numeracja wzorow sie nie zgadza}
+Oznaczmy przez $b_i = \frac{1}{{\hat{\beta}}_i} = \hat{J}(A_i, A_1 \cup A_2)$, oraz niech $f(x) = \frac{1}{x}$. Wówczas ${{\hat{\beta}}_i} = f(b_i)$. Podstawiając do wzoru (\ref{delta_method})
  otrzymujemy:
 \begin{flalign}
     Var(\hat{{\beta}_{i}}) \approx  ((\frac{1}{{b_i}})')^{2}Var({b_i}) =
@@ -289,10 +292,10 @@ Ponieważ ${{\hat{N}}_i}^{HLL}(S)$ jest estymatorem asymptotycznie prawie nieobc
 \end{equation}
 
 
-Aby policzyć wariancję dla estymatorów składowych przekroju ${{\hat{N}}_i}^{HLL}(S_1 \cap S_2) = \hat{{\alpha}_i}{{\hat{N}}_i}^{HLL}(S_i)$  wykorzystamy wzór $(4.11)$.
+Aby policzyć wariancję dla estymatorów składowych przekroju ${{\hat{N}}_i}^{HLL}(S_1 \cap S_2) = \hat{{\alpha}_i}{{\hat{N}}_i}^{HLL}(S_i)$  wykorzystamy wzór (\ref{var_inter}).
 \JL{zmienic na ref odniesienie do wzoru}
 Zauważmy, że estymator w \texttt{HyperLogLog} zbiega do rozkładu normalnego, 
-patrz rozdział...\JL{podac rozzdial z HLL}.
+patrz rozdział \ref{hll}.
  Obliczenia będą przebiegały analogicznie jak dla algorytmu \texttt{MinCount}, z tą różnicą, że teraz rozmiarem naszej próby nie jest już liczba przechowywanych haszy $k$, ale liczba rejestrów $m$:
 \begin{flalign}
     Var((\hat{{\alpha}_i}\hat{N}^{HLL}(S_i))) \approx {\hat{{\alpha}_i}}^{2}({{\hat{n_i}\frac{b_{m}}{\sqrt{m}}}})^{2} + {\hat{n_i}}^{2}\frac{\hat{{\alpha}_i}(1 - \hat{{\alpha}_i})}{k} =
@@ -310,8 +313,7 @@ Dla estymacji sumy ${{\hat{N}}_i}^{HLL}(S_1 \cup S_2) = \hat{{\beta}_i}{{\hat{N}
 \begin{equation}
     \hat{Var}(\hat{N_i}^{HLL}(S_1 \cup S_2)) \approx \hat{N_i}(S_1 \cup S_2)^{2}(\frac{b_{m}^2}{m} + \frac{(\hat{{\beta}_i} - 1)}{k}).
 \end{equation}
-Tak wyznaczone przybliżenia wariancji możemy następnie użyć we wzorze na \textit{estymator ważony} $(4.1)$,
-\JL{odniesienie do wzoru sprawdzic}
+Tak wyznaczone przybliżenia wariancji możemy następnie użyć we wzorze na \textit{estymator ważony} (\ref{weighted_est}),
  analogicznie jak w przypadku algorytmu \texttt{MinCount}.
 
 
