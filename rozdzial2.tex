@@ -65,7 +65,7 @@ Nakładając wariancję otrzymujemy:
 	\frac{J(A, B)(1 - J(A, B))}{k}
 \end{flalign}
 
-Istnieje również drugi, mniej znany wariant algorytmu \texttt{MinHash}, który będziemy wykorzystywać w dalszej części tego rozdziału.
+Istnieje również drugi, mniej znany wariant algorytmu \texttt{MinHash}, który będziemy wykorzystywać w dalszej części pracy.
  Używa on analogicznego estymatora jak \ref{jacc_est}, ale korzysta z tylko jednej funkcji haszującej. Zamiast generować $k$ różnych funkcji haszujących, przechowujemy $k$ najmniejszych wartości dla porównywanych zbiorów $A_1, A_2$ i korzystamy z tylko jednej funkcji haszującej (analogicznie jak w algorytmie \texttt{MinCount}) \cite{adroll}. Posiadamy zatem zbiór haszy, który możemy traktować jako losową próbkę z $\bigcup A_i$. Następnie dla $k$ najmniejszych wartości z tej próbki zliczamy ile z nich znajduje się również wśród $k$ najmniejszych wartości w próbkach poszczególnych zbiorów. Całość dzielimy przez $k$ i otrzymujemy alternatywną wersję estymatora indeksu \textit{Jaccarda} \cite{adroll}:
  \begin{equation}
  \hat{J}(A_1, A_2) = \frac{|min_{k}\{min_{k} \{ h(A_1) \} \cup min_{k} \{ h(A_2) \} \} \cap (min_{k}\{h(A_1)\} \cap min_{k}\{h(A_2)\})|}{k}
