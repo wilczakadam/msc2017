@@ -119,10 +119,18 @@ W oparciu o szkic $(H, {\tau})$ jesteśmy w stanie w dowolnym momencie wyliczyć
     \caption{Algorytm \texttt{MinCount}}
 \end{algorithm}
 
-%Na wykresie \ref{fig:mincount_hist} zamieszczamy histogram prezentujący rozkład błędu względnego tego algorytmu dla ok. $10^5$ eksperymentów, z parametrem $k=100$. 
 \AW{Dla zwyklego MinCounta tez wrzucic histogram? jesli tak to jak go skomentowac - ze niespecjalnie podchodzi pod rozklad normalny? czy ze troche podchodzi ale nie tak dobrze jak streamingMC?}
 \JL{Prosze sprobowac tak zrobic, zobaczymy jak to bedzie wygladac.}
 
+Na wykresie \ref{fig:mincount_hist} zamieszczamy histogram prezentujący rozkład błędu względnego tego algorytmu dla ok. $10^5$ eksperymentów, z parametrem $k=100$. Jak możemy zauważyć, rozkład wartości błędu na histogramie nie jest tak podobny do krzywej rozkładu normalnego, jak w przypadku algorytmów które omówimy w następnej kolejności: \texttt{Streaming MinCount} oraz \texttt{HyperLogLog}. Fakt ten jest dosyć istotny i uzasadnia wybór \texttt{Streaming MinCount} jako algorytmu, którym docelowo będizemy posługiwać się w rozdziale \ref{weighted_method}.
+\AW{Moze cos takiego? Nie umiem tego zbyt ladnie sformulowac..}
+
+\begin{figure}[h!]
+	\includegraphics[width=0.5\textwidth]{MinCountErrHist.png}
+	\centering
+	\caption{Rozkład błędu względnego dla algorytmu \texttt{MinCount} przy $10^5$ eksperymentach}
+	\label{fig:mincount_hist}
+\end{figure}
 \newpage
 
 \section{Algorytm Streaming MinCount}
@@ -171,7 +179,7 @@ pseudokod dla algorytmu \texttt{Streaming MinCount}:
 Na wykresie \ref{fig:str_mincount_hist} zamieszczamy również histogram prezentujący rozkład błędu względnego tego algorytmu dla ok. $10^5$ eksperymentów, z parametrem $k=100$. Jak możemy wnioskowac z wykresu, dla dużej liczby eksperymentów błąd względny zaczna mieć rozkład bardzo zbliżony do rozkładu normalnego. Ta obserwacja przyda nam się w dalszej części pracy do uzasadnienia pewnych założeń dotyczących nowych metod estymacji.
 
 \begin{figure}[h!]
-	\includegraphics[width=0.6\textwidth]{StreamingMinCountErrHist.png}
+	\includegraphics[width=0.5\textwidth]{StreamingMinCountErrHist.png}
 	\centering
 	\caption{Rozkład błędu względnego dla algorytmu \texttt{StreamingMinCount} przy $10^5$ eksperymentach}
 	\label{fig:str_mincount_hist}
@@ -285,7 +293,7 @@ Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ pr
 Na wykresie \ref{fig:hll_hist} prezentujemy histogram z rozkładem błędu względnego dla algorytmu \texttt{HyperLogLog} dla ok. $10^5$ przeprowadzonych eksperymentów, przy $m=2^{10}$. Jak sugerują autorzy \cite{hll}, oczekiwany rozkład powinien być zbliżony o rozkładu normalnego, ze względu na efekt \textit{uśredniania} oraz w oparciu o \textit{Centralne Twierdzenie Graniczne}, co potwierdzają przeprowadzone przez nas (oraz przez autorów) empiryczne testy.
 
 \begin{figure}[h!]
-	\includegraphics[width=0.6\textwidth]{HLLErrHist.png}
+	\includegraphics[width=0.5\textwidth]{HLLErrHist.png}
 	\centering
 	\caption{Rozkład błędu względnego dla algorytmu \texttt{HyperLogLog} przy $10^5$ eksperymentach}
 	\label{fig:hll_hist}

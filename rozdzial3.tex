@@ -1,4 +1,5 @@
 \chapter{Metoda estymatora ważonego}
+\label{weighted_method}
 \thispagestyle{chapterBeginStyle}
 
 
@@ -8,7 +9,7 @@ W tym rozdziale zajmiemy się metodą estymacji operacji teoriomnogościowych op
 
 \section{Optymalne ważenie estymatorów}
 Na początku wyjaśnimy na czym polega ważenie estymatorów.
-W tym celu przypomnijmy definicje \textit{macierz kowariancji}. Macierz ta jest uogólnieniem pojęcia wariancji na przypadek wielowymiarowy. Dla wektora zmiennych losowych $X_1, X_2, \ldots, X_n$ macierz kowariancji postać:
+W tym celu, na początku przypomnimy definicje \textit{macierzy kowariancji}. Macierz ta jest uogólnieniem pojęcia wariancji na przypadek wielowymiarowy. Dla wektora zmiennych losowych $X_1, X_2, \ldots, X_n$ macierz kowariancji postać:
 \[
 \Sigma =
   \begin{bmatrix}
@@ -25,27 +26,33 @@ gdzie
 %Warto dodać, że macierz kowariancji $\Sigma$ jest macierzą symetryczną, a jej wyznacznik jest nieujemny (jeżeli wektor zmiennych losowych jest niezdegenerowany). \JL{czy powyższa uwaga jest do czegokolwiek przydatna, a jesli tak to co to znaczy wektor niezdegenerowany?} 
 \AW{Usunałem tę uwagę, chyba faktycznie nic nie wnosi}
 
-Poniżej prezentujemy lemat z pracy \cite{ting}:
-
+Przedstawimy najpierw ogólną postać \textit{estymatora ważonego}, którego analizą zajemiemy się w tym podrozdziale. Załóżmy, że posiadamy ciąg zgodnych estymatorów $\hat{N_1}, ..., \hat{N_n}$ jakiegoś szkicu $S$. \textit{Estymatorem ważonym} $\hat{N}_w$ nazywac będziemy estymator powstały przez zsumowanie estymatorów składowych przemnożonych przez nadane im wagi:
+\begin{equation}
+\label{weighted_est_general}
+\hat{N}_w = \sum_{i=1}^{n}w_i\hat{N_i}(S),
+\end{equation}
+Naszym celem jest znalezienie takich wartości $w_i$, które minimalizują wariancję estymatora $\hat{N}_w$. W tym celu skorzystamy z lematu przedstawionego w pracy \cite{ting}.
+Poniżej prezentujemy treść tego lematu:
 \begin{lemma}
-	 Posiadając ciąg zgodnych estymatorów $\hat{N_1}, ..., \hat{N_n}$ jakiegoś szkicu $S$ o nieosobliwej macierzy kowariancji $\Sigma$, optymalne wagi które sumują się do $1$ i minimalizują wariancję dane są przez:
+	 Posiadając ciąg zgodnych estymatorów $\hat{N_1}, ..., \hat{N_n}$ szkicu $S$ o nieosobliwej macierzy kowariancji $\Sigma$, optymalne wagi które sumują się do $1$ i minimalizują wariancję estymatora $\hat{N}_w$ dane są przez:
 	 \begin{equation}
 	 	w_{opt} \propto  \Sigma^{-1}1_n
 	 \end{equation}
-	 gdzie $1_n$ to wektor jednostkowy długości $n$. Powstały estymator jest nieobciążony (bądź zgodny) o wariancji ${{1_n}^{T}\Sigma^{-1}1_n}^{-1}$.
+	 gdzie $1_n$ to wektor jednostkowy długości $n$. Estymator $\hat{N}_w$ wykorzystujący wagi $w_{opt}$ jest nieobciążony (bądź zgodny) o wariancji ${{1_n}^{T}\Sigma^{-1}1_n}^{-1}$.
 \end{lemma}
-\AW{Przepisalem ten akapit w formie lematu}
+%\AW{Przepisalem ten akapit w formie lematu}
 \JL{Ta czesc pracy dalej nie ma sensu. W lemacie mowimy o minimalizowaniu wariancji, ale czego?
 Estymator ni jest jeszcze zdefiniowany? Wszystko nie układa sie w spojna całosc.}
+\AW{Zmienilem aranzację tego podrozdzialu - mysle ze jest troche lepiej? Zmienilem tez troche tresc przytaczanego lematu zeby sie zgadzala z tym co dopisalem, mysle ze to nie jakis duzy grzech, zwlaszcza ze z oryginalnej wersji tez ciezko cos zrozumiec}
 W praktyce jednak macierz kowariancji $\Sigma$ rzadko jest znana i potrzebna jest jakaś jej aproksymacja.
 Jeśli przyjemy, że estymatory składowe są niezależne
-lub prawie niezależne, możemy poprzestać na wyliczeniu przekątnej macierzy kowariancji, czyli wariancji estymatorów składowych. Wówczas, \textit{estymator ważony} $\hat{N}_w$  ma następującą postać:
+lub prawie niezależne, możemy poprzestać na wyliczeniu przekątnej macierzy kowariancji, czyli wariancji estymatorów składowych \cite{ting}. Wówczas naszymi wagami są $$w_i = \frac{1}{Var(\hat{N_i}(S))},$$ a zatem \textit{estymator ważony} $\hat{N}_w$, zgodnie ze wzorem \ref{weighted_est_general}, ma następującą postać:
 \begin{equation}
 \label{weighted_est}
     \hat{N}_w = \sum_{i=1}^{n}c\frac{\hat{N_i}(S)}{Var(\hat{N_i}(S))},
 \end{equation}
-\JL{tzreba by jeszcze zdefinowac co znaczy $\hat{N_i}(S)$ ), bo to chyba nowe oznaczenie jest, czym jest S wyjasnic} 
-\AW{Jest teraz zdefiniowane w tresci lematu}
+%\JL{tzreba by jeszcze zdefinowac co znaczy $\hat{N_i}(S)$ ), bo to chyba nowe oznaczenie jest, czym jest S wyjasnic} 
+%\AW{Jest teraz zdefiniowane w tresci lematu}
 gdzie $c$ to stała normalizacyjna, zapewniająca, że wagi sumują się do jedynki.
 
 \section{Estymatory składowe dla algorytmu \texttt{Streaming MinCount}}
@@ -208,7 +215,7 @@ oraz jego estymator:
 \begin{equation}
     \hat{{\gamma}_i} = \frac{|h(S_1 \dot{\setminus} S_2)|}{|h(S_i, {\tau}_{min})|},
 \end{equation}
-gdzie $S_1 \dot{\setminus} S_2$ oznacza...\JL{Uzupełnic}.
+gdzie $S_1 \dot{\setminus} S_2$ oznacza operację na szkicach odrzucającą ze zbioru haszy $h(S_1)$ hasze znajdujące się w $h(S_2)$.
  Korzystając z faktu (\ref{diff_fact})
 %\JL{cos chyba nie tak z numeracja, fakt 4.34?, najlepiej robic odniesnienia przez \ref{}}
 możemy przybliżyć $Var(\hat{{\gamma}_i})$ takim samym wzorem jak dla $\hat{{\alpha}_i}$, czyli:
@@ -246,7 +253,7 @@ w rozdziale \ref{minhash}. Zwróćmy, również uwagę, iż dzięki zastosowaniu
 algorytm \texttt{HyperLogLog} wykorzystuje jedynie jedną funkcję skrótu. W praktycznych zastosowaniach
 użyteczne byłoby zatem oprzeć  również algorytm \texttt{MinHash} na jednej, a nie na $k$ niezależnych funkcjach skrótu.
 Umożliwi nam to wersja tego algorytmu zaprezentowana na końcu rozdziału \ref{minhash}.
-
+\AW{Tutaj użył Pan okreslenia ''funkcja skrótu'' natomiast w pozostalych miejscach w pracy uzywalismy dotychczas ''funkcja haszująca'' - czy powinienem przejsc wszedzie na ''funkcje skrótu''? Troche dziwnie brzmi, ale jesli to jest oficjalna naukowa nazwa to moze trzeba sie przerzucic :)}
 
 Wariancję powyższych estymatorów możemy przybliżyć używając następujących wzorów. Dla $\hat{{\alpha}_i}$ będzie to po prostu wariancja estymatora $\hat{J}(A_1 \cap A_2, A_i)$, którą znamy dla algorytmu \texttt{MinHash}:
 
@@ -254,7 +261,7 @@ Wariancję powyższych estymatorów możemy przybliżyć używając następując
 \begin{equation}
     Var(\hat{{\alpha}_i}) = \frac{{\alpha}_i(1 - {\alpha}_i)}{k} \approx \frac{\hat{J}(A_1 \cap A_2, A_i)(1 - \hat{J}(A_1 \cap A_2, A_i))}{k} 
 \end{equation}
-Powyższy wzór wynika z rozumowania analogicznego do z.... \JL{podać numer wzoru, gdzie jest to pokazame}.
+Powyższy wzór wynika z rozumowania analogicznego do tego przedstawionego w wyprowadzeniu \ref{jacc_var2}.
 
 Wyznaczenie wariancji dla $\hat{{\beta}_i}$ jest nieco trudniejsze, ponieważ estymator ten jest odwrotnością indeksu \textit{Jaccarda}. Skorzystamy zatem z techniki znanej czasem jako \textit{delta metoda}
 (zobacz: \cite{cichon}),
@@ -293,7 +300,6 @@ Ponieważ ${{\hat{N}}_i}^{HLL}(S)$ jest estymatorem asymptotycznie prawie nieobc
 
 
 Aby policzyć wariancję dla estymatorów składowych przekroju ${{\hat{N}}_i}^{HLL}(S_1 \cap S_2) = \hat{{\alpha}_i}{{\hat{N}}_i}^{HLL}(S_i)$  wykorzystamy wzór (\ref{var_inter}).
-\JL{zmienic na ref odniesienie do wzoru}
 Zauważmy, że estymator w \texttt{HyperLogLog} zbiega do rozkładu normalnego, 
 patrz rozdział \ref{hll}.
  Obliczenia będą przebiegały analogicznie jak dla algorytmu \texttt{MinCount}, z tą różnicą, że teraz rozmiarem naszej próby nie jest już liczba przechowywanych haszy $k$, ale liczba rejestrów $m$:

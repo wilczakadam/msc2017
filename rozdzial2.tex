@@ -50,6 +50,7 @@ $$[x] = \left\{ \begin{array}{rl}
 Tak zdefiniowany estymator jest nieobciążonym estymatorem $J(A, B)$ \cite{minhash}, a jego wariancja wynosi:
 \begin{equation}
     Var(\hat{J}(A,B)) = \frac{J(A, B)(1 - J(A, B))}{k}
+    \label{jacc_var}
 \end{equation}
 Ten wzór można łatwo wyprowadzić. Zauważmy, że estymator $\hat{J}(A, B)$ jest zmienną losową będącą sumą $k$ niezależnych prób \textit{Bernoulliego} postaci $[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$, a jak wiemy ze wzoru (\ref{jacc_prob}) prawdopodobieństwo sukcesu takiej jednej próby jest równe $J(A, B)$. Oznaczmy przez $X_i = [h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$. Wówczas możemy zapisać:
 \begin{equation}
@@ -66,6 +67,7 @@ Nakładając wariancję otrzymujemy:
 	\frac{1}{k^2}\sum_{i=1}^{k}J(A, B)(1 - J(A, B)) =
 	\\
 	\frac{J(A, B)(1 - J(A, B))}{k}
+	\label{jacc_var2}
 \end{flalign}
 
 
