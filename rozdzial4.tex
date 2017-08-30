@@ -1,20 +1,24 @@
 \chapter{Wyniki eksperymentów}
 \thispagestyle{chapterBeginStyle}
 
-W tym rozdziale przyjrzymy się wynikom przeprowadzonych eksperymentów dla omawianych wcześniej algorytmów i ich modyfikacji. Na początku rozważymy algorytm \texttt{Streaming MinCount} - porównamy podejście naiwne, ulepszenia przedstawione w rozdziale \ref{impr_mincount} oraz metodę \textit{estymatora ważonego} dla tego algorytmu. Pokażemy również wyniki dla zaproponowanego przez nas w rozdziale \ref{diff_weighted} estymatora operacji różnicy. Następnie dla algorytmu \texttt{HyperLogLog}, skupimy się głównie na operacji przekroju \JL{Dlaczego niby tylko na przekroju to podejrzane}
+W tym rozdziale przyjrzymy się wynikom  eksperymentów przeprowadzonych dla omawianych wcześniej algorytmów i ich modyfikacji. Na początku rozważymy rozwiązania oparte o algorytm \texttt{Streaming MinCount}. 
+Porównamy podejście naiwne, podejście wykorzystujące ulepszenia przedstawione w rozdziale \ref{impr_mincount} oraz metodę \textit{estymatora ważonego}. Pokażemy również wyniki dla zaproponowanego przez nas w rozdziale \ref{diff_weighted} estymatora operacji różnicy.
+
+ Następnie dla algorytmu \texttt{HyperLogLog}, skupimy się głównie na operacji przekroju
+  \JL{Dlaczego niby tylko na przekroju,  to podejrzane tak pisac, nawet jesli my wiemy o co chodzi}
  - porównamy podejście naiwne, korzystające z indeksu \textit{Jaccarda} i metodę estymatora \textit{ważonego} dla tegoż algorytmu, zaprezentowaną w rozdziale \ref{hll_weighted}. %Na koniec porównamy efektywność obu algorytmów w kontekście operacji teoriomnogościowych i postaramy się określić które z nich sprawdzą się najefektywniej w praktyce. 
 \AW{Nie jestem pewien czy porównywac ze soba wprost te dwa algorytmy (MinCount i HLL) - nie mam do tego jakichs sensownych eksperymentów, trzebaby je jakos zbadac przy wykorzystaniu podobnej ilosci pamieci albo cos w tym stylu - moglibysmy to pozostawic moze jako otwarta kwestię do sprawdzenia w ''przyszlosci''? Jak Pan sądzi?}
 \JL{Ja bym napisal, ze HLL bedzie potrzebowala znacznie mniej pamieci zeby uzyskac tą samą dokladnosc, 
 wiec nie bedziemy ich tutaj porownywac, no chyba, że wymysli Pan jakis sensowny eksperyment}
 
-Eksperymenty przeprowadzone w tym rozdziale badają dokładność algorytmów na przestrzeni różnych indeksów \textit{Jaccarda}. Dokładność algorytmu mierzymy przez $\frac{\hat{n}}{n}$, czyli stosunek liczności zbioru wyznaczonej przez estymator do prawdziwej liczności zbioru.
+Eksperymenty przeprowadzone w tym rozdziale badają dokładność estymacji dla różnych wartości indeksów \textit{Jaccarda} dla zbiorów, na których wykonywane są operacje. Dokładność algorytmu mierzymy przez $\frac{\hat{n}}{n}$, czyli stosunek estymacji liczności danego zbioru wyznaczonej do prawdziwej liczności zbioru.
 
 \section{Wyniki dla algorytmu Streaming MinCount}
 Na początek przedstawiamy wyniki dla trzech metod estymacji dla algorytmu \texttt{Streaming MinCount}:
 \begin{enumerate}
-	\item metoda naiwna (z \textit{zasady włączeń i wyłączeń})
-	\item ulepszenia zaproponowane w rozdziałach \ref{impr_sum} oraz \ref{impr_inter}
-	\item metoda \textit{estymatora ważonego}
+	\item metoda naiwna (z \textit{zasady włączeń i wyłączeń}),
+	\item ulepszenia zaproponowane w rozdziałach \ref{impr_sum} oraz \ref{impr_inter},
+	\item metoda \textit{estymatora ważonego}.
 \end{enumerate}
 We wszystkich eksperymentach dla tego algorytmu, ustaliliśmy parametr $k = 100$, czyli szkice przetrzymywały 100 najmniejszych haszy.
 Na wykresach przedstawiamy wartości $\frac{\hat{n}}{n}$ dla poszczególnych metod, oznaczone na legendzie przez odpowiednio:
