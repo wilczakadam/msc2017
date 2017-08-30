@@ -40,6 +40,7 @@ Poniżej prezentujemy treść tego lematu:
 	 \end{equation}
 	 gdzie $1_n$ to wektor jednostkowy długości $n$. Estymator $\hat{N}_w$ wykorzystujący wagi $w_{opt}$ jest nieobciążony (bądź zgodny) 
 	 \JL{słowo bądź sugeruje, że jest albo tak albo tak, czy to miał Pan na mysli?}
+	 \AW{Tak wynika z bezposredniego tlumaczenia z pracy Tinga - ''The resulting estimator is unbiased (or consistent)'' - tez mnie to zastanawialo, no ale tak jest tam napisane to uznalem ze przetlumacze wprost}
 	 o wariancji ${{1_n}^{T}\Sigma^{-1}1_n}^{-1}$.
 \end{lemma}
 %\AW{Przepisalem ten akapit w formie lematu}
@@ -258,6 +259,7 @@ użyteczne byłoby zatem oprzeć  również algorytm \texttt{MinHash} na jednej,
 Umożliwi nam to wersja tego algorytmu zaprezentowana na końcu rozdziału \ref{minhash}.
 \AW{Tutaj użył Pan okreslenia ''funkcja skrótu'' natomiast w pozostalych miejscach w pracy uzywalismy dotychczas ''funkcja haszująca'' - czy powinienem przejsc wszedzie na ''funkcje skrótu''? Troche dziwnie brzmi, ale jesli to jest oficjalna naukowa nazwa to moze trzeba sie przerzucic :)}
 \JL{Nie, to nie ma znaczenia żadnego :-) Może Pan zrobić, jak Pan uważa.}
+\AW{ok, to zostane przy ''funkcji haszujacej''}
 
 Wariancję powyższych estymatorów możemy przybliżyć używając następujących wzorów. Dla $\hat{{\alpha}_i}$ będzie to po prostu wariancja estymatora $\hat{J}(A_1 \cap A_2, A_i)$, którą znamy dla algorytmu \texttt{MinHash}:
 

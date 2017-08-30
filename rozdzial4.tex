@@ -6,6 +6,7 @@ Porównamy podejście naiwne, podejście wykorzystujące ulepszenia przedstawion
 
  Następnie dla algorytmu \texttt{HyperLogLog}, skupimy się głównie na operacji przekroju
   \JL{Dlaczego niby tylko na przekroju,  to podejrzane tak pisac, nawet jesli my wiemy o co chodzi}
+  \AW{ok, poprawie to zdanie}
  - porównamy podejście naiwne, korzystające z indeksu \textit{Jaccarda} i metodę estymatora \textit{ważonego} dla tegoż algorytmu, zaprezentowaną w rozdziale \ref{hll_weighted}. %Na koniec porównamy efektywność obu algorytmów w kontekście operacji teoriomnogościowych i postaramy się określić które z nich sprawdzą się najefektywniej w praktyce. 
 \AW{Nie jestem pewien czy porównywac ze soba wprost te dwa algorytmy (MinCount i HLL) - nie mam do tego jakichs sensownych eksperymentów, trzebaby je jakos zbadac przy wykorzystaniu podobnej ilosci pamieci albo cos w tym stylu - moglibysmy to pozostawic moze jako otwarta kwestię do sprawdzenia w ''przyszlosci''? Jak Pan sądzi?}
 \JL{Ja bym napisal, ze HLL bedzie potrzebowala znacznie mniej pamieci zeby uzyskac tą samą dokladnosc, 
@@ -14,6 +15,7 @@ wiec nie bedziemy ich tutaj porownywac, no chyba, że wymysli Pan jakis sensowny
 Eksperymenty przeprowadzone w tym rozdziale badają dokładność estymacji dla różnych wartości indeksów \textit{Jaccarda} dla zbiorów, na których wykonywane są operacje. Dokładność algorytmu mierzymy przez $\frac{\hat{n}}{n}$, czyli stosunek estymacji liczności danego zbioru wyznaczonej do prawdziwej liczności zbioru.
 
 \section{Wyniki dla algorytmu Streaming MinCount}
+\AW{Wstawilem nowe wykresy dla MC}
 Na początek przedstawiamy wyniki dla trzech metod estymacji dla algorytmu \texttt{Streaming MinCount}:
 \begin{enumerate}
 	\item metoda naiwna (z \textit{zasady włączeń i wyłączeń}),
@@ -86,10 +88,11 @@ Ostatnimi eksperymentami przeprowadzonymi dla algorytmu \texttt{MinCount} było 
     \label{fig:KMV_2_sets_diff}
 \end{figure}
 
-Zauważmy ze metody $2.$ oraz $3.$ po raz kolejny wypadają znacznie lepiej od metody naiwnej, a metoda \textit{estymatora ważonego}, podobnie jak w przypadku sumy i przekroju, pokrywa się z tendencją metody $2.$, ale w większości przypadków posiada mniejszy błąd.
+Zauważmy ze metoda \textit{estymatora ważonego} po raz kolejny wypada znacznie lepiej od metody naiwnej i utrzymuje mniej więcej stały błąd niezależnie od wartości \textit{indeksu Jaccarda} zbiorów. Nie możemy tego powiedzieć o metodzie naiwnej, której błąd znacznie rośnie wzrast z wzrostem podobieństwa zbiorów.
 
 \newpage
 \section{Wyniki dla algorytmu HyperLogLog}
+\AW{przez noc wygeneruje jeszcze dokladniejsze wykresy dla HLL}
 W tym podrozdziale przedstawimy wyniki dla algorytmu \texttt{HyperLogLog}. Zestawiliśmy ze sobą dwie metody:
 \begin{enumerate}
 	\item metoda naiwna z użyciem indeksu \textit{Jaccarda} (wzór (\ref{jacc_1}))
