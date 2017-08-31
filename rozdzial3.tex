@@ -5,11 +5,11 @@
 
 
 
-W tym rozdziale zajmiemy się metodą estymacji operacji teoriomnogościowych opisaną w \cite{ting}. Estymatory oparte na tej metodzie są definiowane jako średnia ważonej pewnej liczby  tzw. estymatorów składowych. Opiszemy w jaki sposób można zdefiniować estymatory składowe oraz jak jest optymalny sposób ich ważenia. 
+W tym rozdziale zajmiemy się metodą estymacji operacji teoriomnogościowych opisaną w \cite{ting}. Estymatory oparte na tej metodzie są definiowane jako średnia ważonea pewnej liczby  tzw. estymatorów składowych. Opiszemy w jaki sposób można zdefiniować estymatory składowe oraz jaki jest optymalny sposób ich ważenia. 
 
 \section{Optymalne ważenie estymatorów}
 Na początku wyjaśnimy na czym polega ważenie estymatorów.
-W tym celu, na początku przypomnimy definicje \textit{macierzy kowariancji}. Macierz ta jest uogólnieniem pojęcia wariancji na przypadek wielowymiarowy. Dla wektora zmiennych losowych $X_1, X_2, \ldots, X_n$ macierz kowariancji postać:
+W tym celu, na początku przypomnimy definicję \textit{macierzy kowariancji}. Macierz ta jest uogólnieniem pojęcia wariancji na przypadek wielowymiarowy. Dla wektora zmiennych losowych $X_1, X_2, \ldots, X_n$ macierz kowariancji postać:
 \[
 \Sigma =
   \begin{bmatrix}
@@ -26,7 +26,7 @@ gdzie
 %Warto dodać, że macierz kowariancji $\Sigma$ jest macierzą symetryczną, a jej wyznacznik jest nieujemny (jeżeli wektor zmiennych losowych jest niezdegenerowany). \JL{czy powyższa uwaga jest do czegokolwiek przydatna, a jesli tak to co to znaczy wektor niezdegenerowany?} 
 %\AW{Usunałem tę uwagę, chyba faktycznie nic nie wnosi}
 
-Przedstawimy najpierw ogólną postać \textit{estymatora ważonego}, którego analizą zajemiemy się w tym podrozdziale. Załóżmy, że posiadamy ciąg zgodnych estymatorów $\hat{N_1}, ..., \hat{N_n}$ jakiegoś szkicu $S$. \textit{Estymatorem ważonym} $\hat{N}_w$ nazywac będziemy estymator powstały przez zsumowanie estymatorów składowych przemnożonych przez nadane im wagi:
+Przedstawimy najpierw ogólną postać \textit{estymatora ważonego}, którego analizą zajemiemy się w tym podrozdziale. Załóżmy, że posiadamy ciąg zgodnych estymatorów $\hat{N_1}, ..., \hat{N_n}$ jakiegoś szkicu $S$. \textit{Estymatorem ważonym} $\hat{N}_w$ nazywać będziemy estymator powstały przez zsumowanie estymatorów składowych przemnożonych przez nadane im wagi:
 \begin{equation}
 \label{weighted_est_general}
 \hat{N}_w = \sum_{i=1}^{n}w_i\hat{N_i}(S).
@@ -59,7 +59,7 @@ lub prawie niezależne, możemy poprzestać na wyliczeniu przekątnej macierzy k
 %\AW{Jest teraz zdefiniowane w tresci lematu}
 gdzie $c$ to stała normalizacyjna, zapewniająca, że wagi sumują się do jedynki.
 
-\section{Estymatory składowe dla algorytmu \texttt{Streaming MinCount}}
+\section{Estymatory składowe dla algorytmu Streaming MinCount}
 
 W dalszej części tego rozdziału, dotyczącej szkiców algorytmu \texttt{MinCount}, zakładamy użycie algorytmu \texttt{Streaming MinCount} opisanego w rozdziale \ref{smincount}.
 Estymator w tej wersji algorytmu jest bardziej skoncentrowany, a ponadto, co okaże się istotne, jego rozkład może być aproksymowany przez rozkład normalny (patrz wykres \ref{fig:str_mincount_hist}). 
@@ -239,7 +239,7 @@ Ostatecznie, przeprowadzając analogiczne obliczenia jak w (\ref{var_sum_final})
 
 Jak dotąd omówiliśmy zastosowanie metody \textit{estymatora ważonego} w kontekście algorytmu \texttt{MinCount}. W tym podrozdziale przedstawimy nasz pomysł umożliwiający uogólnienia tej metody na szkice  algorytmu \texttt{HyperLogLog}.
 Potrzebne będą nam do tego estymatory mnożników ${\alpha}_i$ oraz ${\beta}_i$. 
-Niestety nie wydaje się oczywistym, jak można by je uzyskać korzystając bezpośrednio z informacji przechowywanych w szkicach algorytmu \texttt{HyperLogLog}. Zauważmy jednak że zarówno ${\alpha}_i$ jak i ${\beta}_i$ możemy wyrazić za pomocą podobieństwa \textit{Jaccarda}:
+Niestety nie wydaje się oczywiste, jak można by je uzyskać korzystając bezpośrednio z informacji przechowywanych w szkicach algorytmu \texttt{HyperLogLog}. Zauważmy jednak że zarówno ${\alpha}_i$ jak i ${\beta}_i$ możemy wyrazić za pomocą podobieństwa \textit{Jaccarda}:
 
 \begin{flalign}
     {\alpha}_{i} = \frac{|A_1 \cap A_2|}{|A_i|} = J(A_1 \cap A_2, A_i),

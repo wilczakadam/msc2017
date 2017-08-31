@@ -12,7 +12,7 @@ oraz to,  w jak dużych ilościach i z jaką częstotliwością te dane napływa
 Często przechowywanie takich danych wymagałoby
 setek terabajtów pamięci, a przestrzeń ta będzie szybko rosła z każdym kolejnym napływającym wpisem.
 
-W odpowiedzi na powyższy problem zaproponowano wykorzystanie algorytmów probabilistycznych, które pozawalają oszacować liczbę unikalne elementy z pewnym kontrolowanym błędem, ale mają istotnie mniejsze wymagania pamięciowe. Algorytmy te operują na tak zwanych szkicach danych będących ich skrótową reprezentacją (np. w postaci haszy wybranych elementów). Jednym z pierwowzorów tego typu algorytmów był, oparty na idei liczników probabilistycznych, algorytm \textit{Probabilistic Counting} \cite{linear}. 
+W odpowiedzi na powyższy problem zaproponowano wykorzystanie algorytmów probabilistycznych, które pozawalają oszacować liczbę unikalnych elementów z pewnym kontrolowanym błędem, ale mają istotnie mniejsze wymagania pamięciowe. Algorytmy te operują na tak zwanych szkicach danych będących ich skrótową reprezentacją (np. w postaci haszy wybranych elementów). Jednym z pierwowzorów tego typu algorytmów był oparty na idei liczników probabilistycznych, algorytm \textit{Probabilistic Counting} \cite{linear}. 
 Jego idea została rozwinięta w algorytmie \textit{LogLog} \cite{loglog},
 a ostatecznie znalazła zastosowanie w dobrze dziś znanym
 algorytmie \textit{HyperLogLog} \cite{hll}.
@@ -22,17 +22,17 @@ jak Google \cite{hllpp} czy Oracle \cite{oracle}.
 Inna, popularna rodzina algorytmów przybliżonego zliczania jest oparta na pomyśle związanym ze statystykami pozycyjnymi. Do tej rodziny należy m.in. znany pod kilkoma różnymi nazwami algorytm \textit{MinCount}, który szczegółowo omówimy w tej pracy. Oprócz tego istnieje jeszcze wiele innych algorytmów zliczania takich jak np. \textit{Multiresolution Bitmap, S-Bitmap czy MaxCount}
 \cite{streamed}.
 
-Niniejsza praca ma na celu omówieniem najbardziej popularnych algorytmów przybliżonego zliczania i rozważenie możliwości wykorzystania szkiców danych
-na jakich się opierają do do przeprowadzania operacji teoriomnogościowych na zbiorach danych, z którymi są związane.  Możliwość wykonywanie operacji teoriomnogościowych na szkicach danych jest ostatnio przedmiotem wielu badań \cite{ting} \cite{oertl} \cite{adroll}.
-Operacje teoriomnogościowych na szkicach ma wiele zastosowań praktycznych związanych z agregacją danych i  wykonywaniem  zapytań na wielu szkicach. Jako przykład rozważmy problem zliczania unikatowych użytkowników odwiedzających stronę internetową. Załóżmy, że średnio stronę odwiedza około 100 osób na sekundę i dokładne zliczanie unikalnych adresów IP jest zbyt kosztowne pamięciowo. Możemy użyć jednej z metod aproksymacyjnych do stworzenia szkiców odpowiadających unikalnym użytkownikom odwiedzających stronę  w ciągu każdej godziny. W przyszłości moglibyśmy być jednak zainteresowani innymi informacjami, np. ilu było
-unikalnych użytkowników jednego dnia, jednego mieniąca
+Niniejsza praca ma na celu omówienie najbardziej popularnych algorytmów przybliżonego zliczania i rozważenie możliwości wykorzystania szkiców danych
+na jakich się opierają do przeprowadzania operacji teoriomnogościowych na zbiorach danych, z którymi są związane.  Możliwość wykonywania operacji teoriomnogościowych na szkicach danych jest ostatnio przedmiotem wielu badań \cite{ting} \cite{oertl} \cite{adroll}.
+Operacje teoriomnogościowe na szkicach mają wiele zastosowań praktycznych związanych z agregacją danych i  wykonywaniem  zapytań na wielu szkicach. Jako przykład rozważmy problem zliczania unikatowych użytkowników odwiedzających stronę internetową. Załóżmy, że średnio stronę odwiedza około 100 osób na sekundę i dokładne zliczanie unikalnych adresów IP jest zbyt kosztowne pamięciowo. Możemy użyć jednej z metod aproksymacyjnych do stworzenia szkiców odpowiadających unikalnym użytkownikom odwiedzających stronę  w ciągu każdej godziny. W przyszłości moglibyśmy być jednak zainteresowani innymi informacjami, np. ilu było
+unikalnych użytkowników jednego dnia, jednego miesiąca
 lub ilu jest użytkowników, którzy odwiedzają stronę rano i wieczorem.   
 Wówczas możliwość wykonywania operacji sumowania, przekroju czy różnicy na szkicach umożliwiałaby wykorzystanie istniejących szkiców o małej granulacji czasowej i nie byłoby potrzeby tworzenia wielu szkiców o różnej granulacji czasowej. 
 
 Zauważmy ponadto, że możliwość wykonywania operacji 
 teoriomnogościowych na szkicach umożliwiałaby również
 łatwe zliczanie unikalnych elementów w środowisku rozproszonym. Przykładowo, moglibyśmy podzielić masywny strumień danych na wiele podstrumieni przetwarzanych niezależnie na różnych węzłach klastra (osobne szkice)
-a następnie zagregować informacje wykorzystując operacje sumy.
+a następnie zagregować informacje wykorzystując operację sumy.
 
 \subsubsection{Struktura pracy}
 Praca jest podzielona na pięć rozdziałów. W rozdziale pierwszym omówimy popularne algorytmy przybliżonego zliczania: \textit{MinCount} oraz \textit{HyperLogLog}, a także związane z nimi szkice danych. 

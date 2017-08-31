@@ -141,7 +141,7 @@ Jednym z mniej znanych algorytmów opartych na statystykach pozycyjnych, który 
     \hat{n} = \sum_{t \in T} \frac{Z_t}{\tau_{t}}
     \label{streaming_est}
 \end{equation}
-gdzie $\tau_{t}$ to wartość największego spośród $k$ przechowywanych haszy po przetworzeniu $t$ elementów $\mathfrak{M}$, a $Z_t$ jest zmienna binarną przyjmującą wartość $1$ jeśli szkic zmienił się w momencie $t$ lub $0$ w p.p. Jak widać ten estymator operuje na przestrzeni czasu $t$, tzn. każdy kolejny napotkany element ze strumienia wejściowego inkrementuje $t$. Dzięki takiemu podejściu, estymator zmienia wartość tylko wtedy, gdy hasz nowo napotkanego elementu modyfikuje szkic. Wykorzystanie dodatkowych informacji o zmianach w szkicu powoduję zmniejszenie wariancji estymatora o połowę względem klasycznego algorytmu \texttt{MinCount} \cite{ting}. Analiza tego estymatora wraz ze szczegółowym opisem i dowodem własności znajduje się w pracy \cite{streamed}. Poniżej przedstawiamy 
+gdzie $\tau_{t}$ to wartość największego spośród $k$ przechowywanych haszy po przetworzeniu $t$ elementów $\mathfrak{M}$, a $Z_t$ jest zmienną binarną przyjmującą wartość $1$ jeśli szkic zmienił się w momencie $t$ lub $0$ w p.p. Jak widać ten estymator operuje na przestrzeni czasu $t$, tzn. każdy kolejny napotkany element ze strumienia wejściowego inkrementuje $t$. Dzięki takiemu podejściu, estymator zmienia wartość tylko wtedy, gdy hasz nowo napotkanego elementu modyfikuje szkic. Wykorzystanie dodatkowych informacji o zmianach w szkicu powoduję zmniejszenie wariancji estymatora o połowę względem klasycznego algorytmu \texttt{MinCount} \cite{ting}. Analiza tego estymatora wraz ze szczegółowym opisem i dowodem własności znajduje się w pracy \cite{streamed}. Poniżej przedstawiamy 
 pseudokod dla algorytmu \texttt{Streaming MinCount}:
 \newline
 \begin{algorithm}
@@ -176,7 +176,7 @@ pseudokod dla algorytmu \texttt{Streaming MinCount}:
     \caption{Algorytm \texttt{Streaming MinCount}}
 \end{algorithm}
 
-Na wykresie \ref{fig:str_mincount_hist} zamieszczamy również histogram prezentujący rozkład błędu względnego tego algorytmu dla ok. $10^5$ eksperymentów, z parametrem $k=100$. Jak możemy wnioskowac z wykresu, dla dużej liczby eksperymentów błąd względny zaczna mieć rozkład bardzo zbliżony do rozkładu normalnego. Ta obserwacja przyda nam się w dalszej części pracy do uzasadnienia pewnych założeń dotyczących nowych metod estymacji.
+Na wykresie \ref{fig:str_mincount_hist} zamieszczamy również histogram prezentujący rozkład błędu względnego tego algorytmu dla ok. $10^5$ eksperymentów, z parametrem $k=100$. Jak możemy wnioskować z wykresu, dla dużej liczby eksperymentów błąd względny zaczna mieć rozkład bardzo zbliżony do rozkładu normalnego. Ta obserwacja przyda nam się w dalszej części pracy do uzasadnienia pewnych założeń dotyczących nowych metod estymacji.
 
 \begin{figure}[h!]
 	\includegraphics[width=0.5\textwidth]{StreamingMinCountErrHist.png}
@@ -197,7 +197,7 @@ dla  podstrumienia $\mathfrak{M}_i$:
 \end{equation}
 gdzie $Q(x)$ jest funkcją zwracającą  pozycję pierwszej jedynki w haszu elementu $x$.
  Korzystając z tych rejestrów algorytm wylicza estymację liczby różnych elementów $\hat{n}$
- jako średnią harmoniczną, skorygowaną o współczynniki ${\alpha}_{m}$ usuwający obciążenie estymatora:
+ jako średnią harmoniczną, skorygowaną o współczynnik ${\alpha}_{m}$ usuwający obciążenie estymatora:
 \begin{equation}
     \hat{n} = {\alpha}_m{m}^{2}(\sum_{i=1}^{m} 2^{-M[i]}),
 \end{equation}
@@ -224,7 +224,7 @@ gdzie $|{\delta}_1(n)| < 5 \times 10^{-5}$ dla $m \geq 16$, wariancja natomiast 
  \end{itemize}
  Funkcje ${\delta}_1(n)$ oraz ${\delta}_1(n)$ są funkcjami oscylującymi o małej amplitudzie i mogą zostać bezpiecznie pominięte w zastosowaniach praktycznych.
 
-Wyniki eksperymentalne pokazały jednak, że przedstawiona powyżej wersja algorytmu nie sprawdza się dla wszystkich zakresów wartości $n$, dlatego twórców wprowadzili do algorytmu pewne poprawki:
+Wyniki eksperymentalne pokazały jednak, że przedstawiona powyżej wersja algorytmu nie sprawdza się dla wszystkich zakresów wartości $n$, dlatego twórcy wprowadzili do algorytmu pewne korekcje:
 \begin{enumerate}
     \item Poprawka dla małych liczności - symulacje przeprowadzone przez autorów algorytmu wykazały, że jeśli liczba rożnych elementów $n \le \frac{5}{2}m$, 
     to pojawiają się istotne zaburzenia. Dlatego dla tego zakresu liczności $n$ autorzy sugerują użycie  algorytmu \texttt{Linear Counting} \cite{linear} jako estymatora:
@@ -244,7 +244,7 @@ Szczegółowo algorytm oraz powyższe korekcje zostały opisane przez twórców 
 
 \subsubsection{Szkic danych}
 \label{HLL_sketch}
-Parametrami wejściowymi dla szkicu są $p$ oraz $q$, gdzie $p + q$ określa liczbę używanych bitów funkcji hazsującej. Parametr $p$ wyznacza liczbę rejestrów, a więc tym samym kontroluje błąd względny, natomiast $q$ wyznacza maksymalny zakres wartości dla rejestrów. Warto zauważyć, że jeśli liczność zbioru zbliża się do $2^{p+q}$ kolizje haszy stają się coraz częstsze i błąd znacznie wzrasta. 
+Parametrami wejściowymi dla szkicu są $p$ oraz $q$, gdzie $p + q$ określa liczbę używanych bitów funkcji haszującej. Parametr $p$ wyznacza liczbę rejestrów, a więc tym samym kontroluje błąd względny, natomiast $q$ wyznacza maksymalny zakres wartości dla rejestrów. Warto zauważyć, że jeśli liczność zbioru zbliża się do $2^{p+q}$ kolizje haszy stają się coraz częstsze i błąd znacznie wzrasta. 
 Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ przechowujących największą napotkaną pozycję pierwszej jedynki w haszach podstrumienia $\mathfrak{M}_i$, gdzie $i = 1 ... m$, $m = 2^p$ wyznacza liczbę rejestrów. Szkic ten możemy w naturalny sposób wykorzystać do wyznaczenia estymatora \texttt{Linear Counting} potrzebnego do zastosowania korekcji $1.$ Zauważmy, że szkic, dla którego parametr $q = 0$ jest równoważny tablicy bitowej używanej w algorytmie \texttt{Linear Counting}. Wystarczy zatem, że zliczymy ile spośród rejestrów jest równych $0$ (oznaczmy liczbę pustych rejestrów przez $V$) ignorując wartości pozostałych rejestrów i zastosujemy wzór (\ref{LC}).
 
  Poniżej przedstawiamy pseudokod algorytmu \texttt{HyperLogLog} z zastosowaniem opisanych wcześniej korekcji:

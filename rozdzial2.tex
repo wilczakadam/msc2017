@@ -5,7 +5,7 @@ W tym rozdziale wprowadzimy pojęcie \textit{podobieństwa Jaccarda} zbiorów or
  Następnie omówimy podstawowe metody estymacji liczności zbiorów powstałych w wyniku wykonania operacji teoriomnogościowych w przypadku, gdy nie są znane bezpośrednio zbiory na jakich wykonywane są te operacje, a jedynie ich szkice. 
 
 \subsubsection{Podobieństwo Jaccarda}
-Podobieństwo Jaccarda definiujemy jako:
+Podobieństwo Jaccarda dwóch zbiorów definiujemy jako:
 \begin{equation}
     J(A, B) = \frac{|A \cap B|}{|A \cup B|}.
 \end{equation}
@@ -14,11 +14,10 @@ Definicję tę możemy także uogólnić  na $n$ zbiorów \cite{adroll}:
     J(A_1, A_2, ..., A_n) = \frac{|A_1 \cap A_2 \cap ... \cap A_n|}{|A_1 \cup A_2 \cup ... \cup A_n|}.
     \label{jacc_multi}
 \end{equation}
- W tej pracy zaproponujemy wykorzystanie do tego, jako narzędzia pomocniczego - algorytmu \texttt{MinHash}, który wykorzystywany jest m.in. do estymacji podobieństwa \textit{Jaccarda} dwóch zbiorów danych.
 
 \subsubsection{Algorytm MinHash}
 \label{minhash}
-W tym podrozdziale opiszemy działanie algorytmu \texttt{MinHash} oraz wyjaśnimy w jaki sposób możemy go zastosować do estymacji \textit{podobieństwa Jaccarda} wbiorów.
+W tym podrozdziale opiszemy działanie algorytmu \texttt{MinHash} oraz wyjaśnimy w jaki sposób możemy go zastosować do estymacji \textit{podobieństwa Jaccarda} zbiorów.
 Algorytm \texttt{MinHash} korzysta z techniki tzw. \textit{min-wise hashing}. Schemat ten został po raz pierwszy zaproponowany przez Andrei Brodera \cite{broder}, jako narzędzie do określania podobieństwa stron internetowych.
 
 Niech $h$ będzie funkcją haszującą.
@@ -97,8 +96,8 @@ Bardziej formalnie, możemy zdefiniować taką operację $\dot{\cup}$, że dla d
 %\JL{zamienilem znaczek $\hat{\cup}$ na $\dot{\cup}$}
 gdzie $S$ to funkcja generująca szkic danych dla zbioru.
 
-W przeciwieństwie do operacji sumy, dla szkicach rozważanych przez nas algorytmów nie istnieje naturalna operacja przekroju. Istnieją metody umożliwiające
-oszacowanie mocy przekroju, ale nie zwracają one wyniku nowego szkicu, tak jak operacja sumy. Jedną z takich podstawowych metod jest zastosowanie zasady \textit{włączeń i wyłączeń}: 
+W przeciwieństwie do operacji sumy, dla szkiców rozważanych przez nas algorytmów nie istnieje naturalna operacja przekroju. Istnieją metody umożliwiające
+oszacowanie mocy przekroju, ale nie zwracają one w wyniku nowego szkicu, tak jak operacja sumy. Jedną z takich podstawowych metod jest zastosowanie zasady \textit{włączeń i wyłączeń}: 
 \begin{equation}
     |A_1 \cap A_2| = |A_1| + |A_2| - |A_1 \cup A_2|
     \label{incexc}
@@ -138,7 +137,7 @@ Następnie korzystając z faktu (\ref{incexc}) otrzymujemy:
 	\frac{|A_1 \cap A_2|(|A_1| + |A_2|)}{|A_1 \cup A_2| + |A_1 \cap A_2|} = |A_1 \cap A_2|.
 \end{equation}
 
-Powyższe metody estymacji nie są jednak zbyt dokładne. Zwłaszcza w przypadku przekroju, gdzie błąd jest z mniej więcej proporcjonalny do wielkości sumy lub większego zbioru, a oczekiwalibyśmy błędu ograniczony rozmiarem mniejszego zbioru \cite{ting}. W skutek użycia powyższych formuł często dochodzi również do anomalii w wyniku których oszacowanie liczności jest ujemne. Dlatego w dalszej części pracy zajmiemy się analizą innych metod szacowania wyników operacji teoriomnogościowych, które dają dokładniejsze wyniki i pozbawione są tego rodzaju anomalii. Ponadto, przynajmniej w przypadku algorytmu \texttt{MinCount}, pozawalają na zdefiniowanie zamkniętej operacji przekroju.
+Powyższe metody estymacji nie są jednak zbyt dokładne. Zwłaszcza w przypadku przekroju, gdzie błąd jest mniej więcej proporcjonalny do wielkości sumy lub większego zbioru, a oczekiwalibyśmy błędu ograniczonego rozmiarem mniejszego zbioru \cite{ting}. Wskutek użycia powyższych formuł często dochodzi również do anomalii w wyniku których oszacowanie liczności jest ujemne. Dlatego w dalszej części pracy zajmiemy się analizą innych metod szacowania wyników operacji teoriomnogościowych, które dają dokładniejsze wyniki i pozbawione są tego rodzaju anomalii. Ponadto, przynajmniej w przypadku algorytmu \texttt{MinCount}, pozawalają na zdefiniowanie zamkniętej operacji przekroju.
 
 
 % JL - chyba to jest niepotrzebne:
@@ -163,7 +162,7 @@ Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach
 		\State $p, q, M $ - parametry oraz kolekcja rejestrów kompresowanego szkicu
 		\State $p', q' $ - parametry wejściowe szkicu docelowego
 		\State Założenie: $ p' \leq p$ oraz $p' + q' \leq p + q$
-		\State $Q(s) $ -  funkcja zwracając pozycję pierwszej jedynki w ciągu bitów $s$ 
+		\State $Q(s) $ -  funkcja zwracająca pozycję pierwszej jedynki w ciągu bitów $s$ 
 		\newline
 		\Function{Compress}{$M$}
 		\State $m' = 2^{p'}$
@@ -196,7 +195,7 @@ Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach
 
 \subsection{Operacja przekroju i różnicy}
 
-Operacji sumy na szkicach algorytmu \texttt{HyperLogLog} sprawdza się całkiem dobrze i jest  łatwa w implementacji. Niestety nie są znane naturalne i zamknięte operacje przekroju oraz różnicy na tych szkicach. Oczywiście stosunkowo łatwo możemy estymować liczność przekroju zbiorów korzystając z zasady włączeń i wyłączeń lub podobieństwa Jaccarda.
+Operacja sumy na szkicach algorytmu \texttt{HyperLogLog} sprawdza się całkiem dobrze i jest  łatwa w implementacji. Niestety nie są znane naturalne i zamknięte operacje przekroju oraz różnicy na tych szkicach. Oczywiście stosunkowo łatwo możemy estymować liczność przekroju zbiorów korzystając z zasady włączeń i wyłączeń lub podobieństwa Jaccarda.
 
 O ile metoda oparta na zasadzie włączeń i wyłączeń nie sprawdza się w tym przypadku i prowadzi do anomalii, to metoda wykorzystująca podobieństwo \textit{Jaccarda} (\ref{jacc_1}) do estymacji przekroju jest stosunkowo dokładna, co potwierdzają wykonane przez nas eksperymenty. Wymaga ona jednak dodatkowej struktury danych pozwalającej na estymację indeksu \textit{Jaccarda} zbiorów. Częstą praktyką jest wykorzystanie do tego algorytmu \texttt{MinHash} \cite{adroll}. Wyniki związane z tym podejściem zostaną jeszcze omówione w kolejnym rozdziale.
 
@@ -208,7 +207,7 @@ O ile metoda oparta na zasadzie włączeń i wyłączeń nie sprawdza się w tym
 \label{impr_sum}
 
 Przyjrzyjmy się teraz operacji sumy dla algorytmu \texttt{MinCount}. Załóżmy, że posiadamy dwa szkice danych $S_1 = (H_1, {\tau}_1)$ oraz $S_2 = (H_2, {\tau}_2)$ dla zbiorów $A_1$ i $A_2$. Chcemy otrzymać szkic $(H_u, {\tau}_u)$ zbioru $A_1 \cup A_2$. W tym przypadku naturalne wydaje się być wykonanie sumy zbiorów haszy $H_1$ oraz $H_2$ i utworzenie z nich nowego zbioru $H_u$ zawierającego, $k$ najmniejszych haszy z sumy $H_1 \cup H_2$. Takie podejście  odrzuca jednak dużą ilość informacji. Weźmy jako przykład dwa zbiory $A_1$ oraz $A_2$, które są rozłączne i o tej samej liczności.
-Posiadając $2k$ haszy ze zbiorów $H_1$ i $H_2$ odrzucamy połowę z nich - prowadzi to nawet do dwukrotnego zwiększenia wariancji estymatora. 
+Posiadając $2k$ haszy ze zbiorów $H_1$ i $H_2$ odrzucamy połowę z nich - prowadzi to do nawet dwukrotnego zwiększenia wariancji estymatora. 
  Najlepszym estymatorem byłby w tym przypadku $\hat{N}(S_1 \cup S_2) = \hat{N}(S_1) + \hat{N}(S_2)$. Jego wariancja - zgodnie ze wzorem (\ref{mincount_var}) wynosi $$Var(\hat{N}(S_1 \cup S_2)) \approx \frac{|A_1|^2}{k} + \frac{|A_2|^2}{k} = \frac{|A_1|^2 + |A_2|^2}{k}.$$ Ponieważ zbiory $A_1$ i $A_2$ posiadają tyle samo elementów, możemy skorzystać z tożsamości $x^2 + x^2  = \frac{(2x)^2}{2}$ oraz faktu, iż zbiory $A_1$ oraz $A_2$ są rozłączne, aby przedstawić wariancję w postaci $$\frac{|A_1|^2 + |A_2|^2}{k} = \frac{|A_1 \cup A_2|^2}{2k}.$$ Jednak pamiętajmy, że nasza dotychczasowa operacja sumy odrzuca $k$ haszy co powoduje dwukrotny wzrost wariancji do $\frac{|A_1 \cup A_2|^2}{k}$.
 %\JL{OK. Tylko mam taką uwagę, żeby w całej pracy po wzorach dawać kropki lub przecinki, tak jakby to były normalne zdania. To jest w dobrym tonie. I najlepiej jeszcze odwołania do wzorów brać w nawiasy, tzn. ''ze wzoru (3.1) mamy''.}
 
@@ -243,7 +242,7 @@ Jedną z największych zalet takiej definicji jest fakt, że otrzymujemy tutaj o
 \begin{equation}
     {\hat{N}}_{impr}(S_1 \dot{\cap} S_2) = \frac{|h(S_1 \dot{\cap} S_2)| - \alpha(S_1, S_2)}{{\tau}_{min}}.
 \end{equation}
-Pamiętajmy, że aby zachować właściwą postać wzoru estymaora (\ref{mincount_est}) jedynkę w liczniku musimy odjąć tylko jeśli $\tau_{min}$ znajduje się w przekroju szkiców. Stąd we wzorze pojawia się funkcja $\alpha(S_1, S_2)$ zdefiniowana jako:
+Pamiętajmy, że aby zachować właściwą postać wzoru estymatora (\ref{mincount_est}) jedynkę w liczniku musimy odjąć tylko jeśli $\tau_{min}$ znajduje się w przekroju szkiców. Stąd we wzorze pojawia się funkcja $\alpha(S_1, S_2)$ zdefiniowana jako:
 %\JL{To zdanie jest jakos nieskladne, postac jakiego wzoru chcemy zachowac?}
 %\AW{Poprawilem nieco to zdanie}
 $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
@@ -256,7 +255,7 @@ $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
        
        Przyjmijmy, że dysponujemy szkicami dla pewnych zbiorów $A_1$ i $A_2$. Estymacja liczności dla zbiorów $A_1 \cup A_2$ czy 
        $A_1 \cap A_2$ w oparciu o te szkice, jest problemem estymacji parametru rozkładu \cite{ting}. Rozsądnym może więc wydawać się wyprowadzenie estymatorów dla wyników operacji teoriomnogościowych metodą \textit{największej wiarygodności} (NW).
-       Estymator wyprowadzony tą metodą ma szereg istotnych własności. Wraz ze wzrostem rozmiary próby jest asymptotycznie nieobciążony, asymptotycznie najefektywniejszy, ma asymptotycznie rozkład normalny, a także jest zgodny. Estymator $T_n$ parametru $\theta$ nazywamy \textit{zgodnym} jeśli ciąg $\{T_n\}$ \textit{zbiega według prawdopodobieństwa} 
+       Estymator wyprowadzony tą metodą ma szereg istotnych własności. Wraz ze wzrostem rozmiaru próby jest asymptotycznie nieobciążony, asymptotycznie najefektywniejszy, ma asymptotycznie rozkład normalny, a także jest zgodny. Estymator $T_n$ parametru $\theta$ nazywamy \textit{zgodnym} jeśli ciąg $\{T_n\}$ \textit{zbiega według prawdopodobieństwa} 
         do prawdziwej wartości parametru gdy $n \rightarrow \infty$, czyli inaczej mówiąc - jeśli spełniona jest równość:
        \begin{equation}
      		\lim_{n \to \infty} Pr[|T_n - \theta| < \epsilon] = 1

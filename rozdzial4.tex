@@ -86,7 +86,7 @@ Ostatnimi eksperymentami przeprowadzonymi dla algorytmu \texttt{MinCount} było 
     \label{fig:KMV_2_sets_diff}
 \end{figure}
 
-Zauważmy ze metoda \textit{estymatora ważonego} po raz kolejny wypada znacznie lepiej od metody naiwnej i utrzymuje mniej więcej stały błąd niezależnie od wartości \textit{indeksu Jaccarda} zbiorów. Nie możemy tego powiedzieć o metodzie naiwnej, której błąd znacznie rośnie wzrast z wzrostem podobieństwa zbiorów.
+Zauważmy że metoda \textit{estymatora ważonego} po raz kolejny wypada znacznie lepiej od metody naiwnej i utrzymuje mniej więcej stały błąd niezależnie od wartości \textit{indeksu Jaccarda} zbiorów. Nie możemy tego powiedzieć o metodzie naiwnej, której błąd znacznie rośnie wraz z wzrostem podobieństwa zbiorów.
 
 \newpage
 \section{Wyniki dla algorytmu HyperLogLog}
@@ -157,7 +157,7 @@ W tym podrozdziale przedstawiamy wyniki porównania algorytmów \texttt{Streamin
 	\caption{Porównanie algorytmów dla sumy 10 zbiorów przy $n=10^5$}
 	\label{fig:HLL_KMV_10_sets_unions}
 \end{figure}
-W przypadku operacji sumowania zbiorów, algorytm \texttt{HyperLogLog} wypada zdecydowanie lepiej, zwłaszcza dla większej liczby zbiorów. Ta obserwacja utwierdza nas w przekonaniu że naturalna operacjia sumy, którą posiada szkic algorytmu \texttt{HyperLogLog} jest najefektywniejsza i jak wynika z naszych eksperymentów - sprawdza sie lepiej niż algorytm \texttt{Streaming MinCount}, przy takim samym wykorzystaniu pamięci.
+W przypadku operacji sumowania zbiorów, algorytm \texttt{HyperLogLog} wypada zdecydowanie lepiej, zwłaszcza dla większej liczby zbiorów. Ta obserwacja utwierdza nas w przekonaniu że naturalna operacja sumy, którą posiada szkic algorytmu \texttt{HyperLogLog} jest najefektywniejsza i jak wynika z naszych eksperymentów - sprawdza sie lepiej niż algorytm \texttt{Streaming MinCount}, przy takim samym wykorzystaniu pamięci.
 
 Na wykresach \ref{fig:HLL_KMV_2_sets_inter} oraz \ref{fig:HLL_KMV_10_sets_inter} przedstawiamy porównanie wartości $\eta = \frac{\hat{n}}{n}$ najlepszych metod dla poszczególnych algorytmów w kontekście operacji przekroju, przy liczności testowych zbiorów $n=10^5$:
 \begin{enumerate}
@@ -179,5 +179,5 @@ Na wykresach \ref{fig:HLL_KMV_2_sets_inter} oraz \ref{fig:HLL_KMV_10_sets_inter}
 	\label{fig:HLL_KMV_10_sets_inter}
 \end{figure}
 
-W przypadku przekrojów sytuacja nie jest tak oczywista jak dla sumy. Dla dwóch zbiorów, wyniki sugerują, że algorytmy sprawują się porównywalnie - z niewielką przewaga algorytmu \texttt{Streaming MinCount} na przedziale indeksów \textit{Jaccarda} od ok $0.20$ do $0.85$. Jednak symulacje dla 10 zbiorów już wykazują, że algorytmy zachowuja się podobnie gdy podobieństwo zbiorów jest mniejsze niż $0.50$. Jednak dla większych indeksów \textit{Jaccarda} przewagę uzyskuje algorytm \texttt{HyperLogLog}.
+W przypadku przekrojów sytuacja nie jest tak oczywista jak dla sumy. Dla dwóch zbiorów, wyniki sugerują, że algorytmy sprawują się porównywalnie - z niewielką przewaga algorytmu \texttt{Streaming MinCount} na przedziale indeksów \textit{Jaccarda} od ok $0.20$ do $0.85$. Jednak symulacje dla 10 zbiorów już wykazują, że algorytmy zachowują się podobnie gdy podobieństwo zbiorów jest mniejsze niż $0.50$. Jednak dla większych indeksów \textit{Jaccarda} przewagę uzyskuje algorytm \texttt{HyperLogLog}.
 
