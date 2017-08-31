@@ -24,7 +24,7 @@ gdzie
     ${\sigma}_{ij} = Cov(X_i, X_j)$.
 
 %Warto dodać, że macierz kowariancji $\Sigma$ jest macierzą symetryczną, a jej wyznacznik jest nieujemny (jeżeli wektor zmiennych losowych jest niezdegenerowany). \JL{czy powyższa uwaga jest do czegokolwiek przydatna, a jesli tak to co to znaczy wektor niezdegenerowany?} 
-\AW{Usunałem tę uwagę, chyba faktycznie nic nie wnosi}
+%\AW{Usunałem tę uwagę, chyba faktycznie nic nie wnosi}
 
 Przedstawimy najpierw ogólną postać \textit{estymatora ważonego}, którego analizą zajemiemy się w tym podrozdziale. Załóżmy, że posiadamy ciąg zgodnych estymatorów $\hat{N_1}, ..., \hat{N_n}$ jakiegoś szkicu $S$. \textit{Estymatorem ważonym} $\hat{N}_w$ nazywac będziemy estymator powstały przez zsumowanie estymatorów składowych przemnożonych przez nadane im wagi:
 \begin{equation}
@@ -46,8 +46,8 @@ Poniżej prezentujemy treść tego lematu:
 %\AW{Przepisalem ten akapit w formie lematu}
 %\JL{Ta czesc pracy dalej nie ma sensu. W lemacie mowimy o minimalizowaniu wariancji, ale czego?
 %Estymator ni jest jeszcze zdefiniowany? Wszystko nie układa sie w spojna całosc.}
-\AW{Zmienilem aranzację tego podrozdzialu - mysle ze jest troche lepiej? Zmienilem tez troche tresc przytaczanego lematu zeby sie zgadzala z tym co dopisalem, mysle ze to nie jakis duzy grzech, zwlaszcza ze z oryginalnej wersji tez ciezko cos zrozumiec}
-\JL{Jest OK, poza powyzszą uwagą o słowie 'bądz'}
+%\AW{Zmienilem aranzację tego podrozdzialu - mysle ze jest troche lepiej? Zmienilem tez troche tresc przytaczanego lematu zeby sie zgadzala z tym co dopisalem, mysle ze to nie jakis duzy grzech, zwlaszcza ze z oryginalnej wersji tez ciezko cos zrozumiec}
+%\JL{Jest OK, poza powyzszą uwagą o słowie 'bądz'}
 W praktyce jednak macierz kowariancji $\Sigma$ rzadko jest znana i potrzebna jest jakaś jej aproksymacja.
 Jeśli przyjemy, że estymatory składowe są niezależne
 lub prawie niezależne, możemy poprzestać na wyliczeniu przekątnej macierzy kowariancji, czyli wariancji estymatorów składowych \cite{ting}. Wówczas naszymi wagami są $$w_i = \frac{1}{Var(\hat{N_i}(S))},$$ a zatem \textit{estymator ważony} $\hat{N}_w$, zgodnie ze wzorem \ref{weighted_est_general}, ma następującą postać:
@@ -83,8 +83,8 @@ mamy zatem:
     \hat{{\beta}_{i}} = \frac{|h(S_1 \dot{\cup} S_2)|}{|h(S_i, {\tau}_{min})|}.
 \end{flalign}
 Zauważmy, że $\alpha_i$ oraz $\beta_i$ możemy interpretować jako stosunek mocy przekroju (i odpowiednio sumy) do mocy pojedynczego zbioru $A_i$. Ten stosunek estymujemy zatem korzystając z mocy zbiorów haszy dostępnych w naszych szkicach $S_1$ oraz $S_2$. $|h(S_1 \dot{\cap} S_2)|$ reprezentuje liczbę haszy w przekroju dwóch szkiców (zauważmy uzycie operacji $\dot{\cap}$ zdefiniowanej w (\ref{sketch-cut})), natomiast $|h(S_i, {\tau}_{min})|$ reprezentuje liczbę haszy w szkicu $S_i$. Stosunek tych dwóch wartości jest zatem estymatorem stosunku $\frac{|A_1 \cap A_2|}{|A_i|}$. Analogicznie zdefiniowany jest estymator dla $\beta_i$.
-\AW{Proponuję takie wyjasnienie, ktore wydaje mi sie jest najbardziej sensowne}
-\JL{Poprawic oznaczenia we wzorach, operacja sumy i przekroju na szkicach}
+%\AW{Proponuję takie wyjasnienie, ktore wydaje mi sie jest najbardziej sensowne}
+%\JL{Poprawic oznaczenia we wzorach, operacja sumy i przekroju na szkicach}
 %\JL{zrobic odwolanie do wzoru \ref{sketch-cut} }
 Powyższe estymatory są estymatorami zgodnymi \cite{ting}. 
 
@@ -175,9 +175,9 @@ Powyższe przybliżenia wariancji możemy  zastosować do wzoru (\ref{var_inter}
 \end{flalign}
 gdzie $\hat{n_i}$ jest kroczącą estymatą liczności szkicu $S_i$ dla algorytmu \texttt{Streaming MinCount} przedstawioną wcześniej we wzorze (\ref{streaming_est}). Jego wariancja jest nam znana \cite{streamed} i wynosi:
 $$Var(\hat{n_i}) = \frac{{{n}_i}^2}{2(k_i - 1)} \approx \frac{{\hat{n}_i}^2}{2k_i}.$$
-\JL{wyjasnic czym jest $\hat{n_i}$ i skad sie wzielo przyblizenie wariancji dla estymatora licznosci}
-\AW{".. skad sie wzielo przyblizenie wariancji dla estymatora licznosci" - ma Pan na mysli wariancję $\hat{n}_i$? - jesli tak to dodalem ją cytując zrodlo powyzej}
-\JL{jest OK}
+%\JL{wyjasnic czym jest $\hat{n_i}$ i skad sie wzielo przyblizenie wariancji dla estymatora licznosci}
+%\AW{".. skad sie wzielo przyblizenie wariancji dla estymatora licznosci" - ma Pan na mysli wariancję $\hat{n}_i$? - jesli tak to dodalem ją cytując zrodlo powyzej}
+%\JL{jest OK}
 Ostatecznie:
 \begin{equation}
     \hat{Var}(\hat{N_i}(S_1 \dot{\cap} S_2)) \approx \hat{N_i}(S_1 \dot{\cap} S_2)^{2}(\frac{1}{2{k}_i} + \frac{(1 - \hat{{\alpha}_i})}{\hat{{\alpha}_i}|h(S_i, {\tau}_{min}|}).
@@ -192,7 +192,7 @@ Mamy zatem wszystkie informacje potrzebne, by zastosować estymator ważony w po
 szkice algorytmu \texttt{Streaming MinCount}.
 Właściwości statystyczne tego estymatora w porównaniu do estymatorów naiwnych, zweryfikujmy empirycznie w ostatnim rozdziale pracy.
 
-\JL{Tutaj skonczylem}
+%\JL{Tutaj skonczylem}
 \section{Aproksymacja różnicy zbiorów metodą estymatora ważonego}
 \label{diff_weighted}
 
@@ -231,7 +231,7 @@ Ostatecznie, przeprowadzając analogiczne obliczenia jak w (\ref{var_sum_final})
 \begin{equation}
     \hat{Var}(\hat{N_i}(S_1 \dot{\setminus} S_2)) \approx \hat{N_i}(S_1 \dot{\setminus} S_2)^{2}(\frac{1}{2{k}_i} + \frac{(1 - \hat{{\gamma}_i})}{\hat{{\gamma}_i}|h(S_i, {\tau}_{min}|}).
 \end{equation}
-\JL{zmienić $\setminus$ nad $\dot{\setminus}$, choc głupio wyglada}
+%\JL{zmienić $\setminus$ nad $\dot{\setminus}$, choc głupio wyglada}
 
 
 \section{Metoda estymatora ważonego dla algorytmu HyperLogLog}
@@ -254,12 +254,12 @@ Zatem, aby oszacować ${\alpha}_i$ oraz ${\beta}_i$, możemy posłużyć się es
 \end{flalign}
 które z kolei możemy łatwo uzyskać korzystając z algorytmu \texttt{MinHash} zaprezentowanego
 w rozdziale \ref{minhash}. Zwróćmy, również uwagę, iż dzięki zastosowaniu techniki \textit{stochastycznego uśredniania}
-algorytm \texttt{HyperLogLog} wykorzystuje jedynie jedną funkcję skrótu. W praktycznych zastosowaniach
-użyteczne byłoby zatem oprzeć  również algorytm \texttt{MinHash} na jednej, a nie na $k$ niezależnych funkcjach skrótu.
+algorytm \texttt{HyperLogLog} wykorzystuje jedynie jedną funkcję haszującą. W praktycznych zastosowaniach
+użyteczne byłoby zatem oprzeć  również algorytm \texttt{MinHash} na jednej, a nie na $k$ niezależnych funkcjach haszujących.
 Umożliwi nam to wersja tego algorytmu zaprezentowana na końcu rozdziału \ref{minhash}.
-\AW{Tutaj użył Pan okreslenia ''funkcja skrótu'' natomiast w pozostalych miejscach w pracy uzywalismy dotychczas ''funkcja haszująca'' - czy powinienem przejsc wszedzie na ''funkcje skrótu''? Troche dziwnie brzmi, ale jesli to jest oficjalna naukowa nazwa to moze trzeba sie przerzucic :)}
-\JL{Nie, to nie ma znaczenia żadnego :-) Może Pan zrobić, jak Pan uważa.}
-\AW{ok, to zostane przy ''funkcji haszujacej''}
+%\AW{Tutaj użył Pan okreslenia ''funkcja skrótu'' natomiast w pozostalych miejscach w pracy uzywalismy dotychczas ''funkcja haszująca'' - czy powinienem przejsc wszedzie na ''funkcje skrótu''? Troche dziwnie brzmi, ale jesli to jest oficjalna naukowa nazwa to moze trzeba sie przerzucic :)}
+%\JL{Nie, to nie ma znaczenia żadnego :-) Może Pan zrobić, jak Pan uważa.}
+%\AW{ok, to zostane przy ''funkcji haszujacej''}
 
 Wariancję powyższych estymatorów możemy przybliżyć używając następujących wzorów. Dla $\hat{{\alpha}_i}$ będzie to po prostu wariancja estymatora $\hat{J}(A_1 \cap A_2, A_i)$, którą znamy dla algorytmu \texttt{MinHash}:
 

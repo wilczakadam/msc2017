@@ -74,7 +74,7 @@ Przy czym, dla $n \rightarrow \infty$ możemy zapisać:
 
 \subsubsection{Szkic danych}
 Zdefiniujemy szkic danych algorytmu \texttt{MinCount}. Szkic $S$ określamy jako parę $(H, {\tau})$, gdzie $H$ to zbiór $k$ najmniejszych (i unikalnych) haszy spośród wszystkich wartości $h(\mathfrak{M})$. Natomiast ${\tau}$ to wartość k-tej statystyki pozycyjnej, czyli największa wartość w zbiorze haszy $H$.
-\AW{Zmienilem oznaczenie zbioru haszy z S na H, żeby nie myliło się ze szkicem - czyli szkic $S = (H, \tau)$}
+%\AW{Zmienilem oznaczenie zbioru haszy z S na H, żeby nie myliło się ze szkicem - czyli szkic $S = (H, \tau)$}
 \subsubsection{Algorytm \texttt{MinCount}}
 
 Algorytm \texttt{MinCount} opisany w poniższym pseudokodzie działa w następujący sposób.
@@ -119,12 +119,12 @@ W oparciu o szkic $(H, {\tau})$ jesteśmy w stanie w dowolnym momencie wyliczyć
     \caption{Algorytm \texttt{MinCount}}
 \end{algorithm}
 
-\AW{Dla zwyklego MinCounta tez wrzucic histogram? jesli tak to jak go skomentowac - ze niespecjalnie podchodzi pod rozklad normalny? czy ze troche podchodzi ale nie tak dobrze jak streamingMC?}
-\JL{Prosze sprobowac tak zrobic, zobaczymy jak to bedzie wygladac.}
+%\AW{Dla zwyklego MinCounta tez wrzucic histogram? jesli tak to jak go skomentowac - ze niespecjalnie podchodzi pod rozklad normalny? czy ze troche podchodzi ale nie tak dobrze jak streamingMC?}
+%\JL{Prosze sprobowac tak zrobic, zobaczymy jak to bedzie wygladac.}
 
 Na wykresie \ref{fig:mincount_hist} zamieszczamy histogram prezentujący rozkład błędu względnego tego algorytmu dla ok. $10^5$ eksperymentów, z parametrem $k=100$. Jak możemy zauważyć, rozkład wartości błędu na histogramie nie jest tak podobny do krzywej rozkładu normalnego, jak w przypadku algorytmów, które omówimy w następnej kolejności: \texttt{Streaming MinCount} oraz \texttt{HyperLogLog}. Fakt ten jest dosyć istotny i uzasadnia wybór \texttt{Streaming MinCount} jako algorytmu, którym docelowo będziemy posługiwać się w rozdziale \ref{weighted_method}.
-\AW{Moze cos takiego? Nie umiem tego zbyt ladnie sformulowac..}
-\JL{Jest OK}
+%\AW{Moze cos takiego? Nie umiem tego zbyt ladnie sformulowac..}
+%\JL{Jest OK}
 \begin{figure}[h!]
 	\includegraphics[width=0.5\textwidth]{MinCountErrHist.png}
 	\centering
@@ -288,8 +288,8 @@ Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ pr
 \end{algorithm}
 
 %\JL{Najlepiej wygenerować samemu, ale można napisać że jest też w pracy z HLL i najlepiej to zdanie, że to wynika z usredniania- tzn. liczenia sredniej harmonicznej i CTG}
-\AW{Dodalem histogram + komentarz}
-\JL{OK}
+%\AW{Dodalem histogram + komentarz}
+%\JL{OK}
 Na wykresie \ref{fig:hll_hist} prezentujemy histogram z rozkładem błędu względnego dla algorytmu \texttt{HyperLogLog} dla ok. $10^5$ przeprowadzonych eksperymentów, przy $m=2^{10}$. Jak sugerują autorzy \cite{hll}, oczekiwany rozkład powinien być zbliżony o rozkładu normalnego, ze względu na efekt \textit{uśredniania} oraz w oparciu o \textit{Centralne Twierdzenie Graniczne}, co potwierdzają przeprowadzone przez nas (oraz przez autorów) empiryczne testy.
 
 \begin{figure}[h!]

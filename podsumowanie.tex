@@ -1,9 +1,13 @@
 \chapter{Podsumowanie}
 \thispagestyle{chapterBeginStyle}
 
-W naszej pracy zajęliśmy się problemem zliczania unikalnych elementów w strumieniach danych, a konkretnie metodami efektywnego wykonywania operacji teoriomnogościowych na szkichach danych algorytmów \texttt{MinCount} oraz \texttt{HyperLogLog}.
+W naszej pracy zajęliśmy się problemem zliczania unikalnych elementów w strumieniach danych, a konkretnie metodami efektywnego wykonywania operacji teoriomnogościowych na szkicach danych algorytmów \texttt{MinCount} oraz \texttt{HyperLogLog}.
 
-CDN ...
+Omówiliśmy i przedstawiliśmy naiwne metody estymacji dla operacji teoriomngościowych jak i nowe metody zaproponowane w pracy \cite{ting} dla algorytmu \texttt{MinCount}, skupiając się na metodzie \textit{estymatora ważonego}, która zdaniem autorów pod względem efektywności jest zbliżona do estymatora wyprowadzonego metodą \textit{największej wiarygodności}. Następnie rozwinęlismy definicję \textit{estymatora ważonego} dla operacji różnicy oraz przedstawiliśmy pomysł generalizacji tej metody dla algorytmu \texttt{HyperLogLog}, wykorzystując do tego algorytm pomocniczy \texttt{MinHash}.
+
+Nasze teoretyczne rozważania podsumowaliśmy przedstawiając wyniki eksperymentów mających na celu weryfikację powyższych metod w praktyce. Nasze eksperymenty potwierdziły, że metoda \textit{estymatora ważonego} w większości przypadków posiada najmniejszy błąd. Eksperymenty pokazały również, że nasza idea zastosowania meody \textit{estymatora ważonego} w algorytmie \texttt{HyperLogLog} poprawia wyniki estymacji przekroju dla tego algorytmu, czego nie można powiedzieć o operacji sumy, która będąc naturalnie wbudowana w szkic algorytmu \texttt{HyperLogLog}, skutkuje największa dokładnością.
+
+Na koniec porównaliśmy ze sobą oba algorytmy \texttt{MinCount} oraz \texttt{HyperLogLog} w kontekście operacji teoriomnogosciowych, dla każdego z nich wybierając najefektywniejszą metodę estymacji dla danej operacji. Wyniki wykazały, że dla większej liczby zbiorów, zarówno dla operacji sumy jak i przekroju - algorytm \texttt{HyperLogLog} korzystający z metody \textit{estymatora ważonego} posiada najlepszą dokładność estymacji.
 
 
 

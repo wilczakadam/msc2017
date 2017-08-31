@@ -24,9 +24,9 @@ Algorytm \texttt{MinHash} korzysta z techniki tzw. \textit{min-wise hashing}. Sc
 Niech $h$ będzie funkcją haszującą.
 %., która mapuje elementy ze zbiorów na liczby.
  %całkowite. 
- \JL{czy to ma isitotne znaczenie, ze calkowite?}
- \AW{chyba niekoniecznie - przetlumaczylem doslownie z "integer"}
- \JL{Może tak jak teraz?}
+ %\JL{czy to ma isitotne znaczenie, ze calkowite?}
+ %\AW{chyba niekoniecznie - przetlumaczylem doslownie z "integer"}
+ %\JL{Może tak jak teraz?}
  Dla dowolnego zbioru $X$ zdefiniujmy $h_{min}(X)$ jako minimalny element z $X$ względem funkcji $h$ , to jest taki element $x \in X$ dla którego $h(x)$ osiąga najmniejszą wartość.
 
 Zastosujemy funkcję $h_{min}$ na zbiorach $A$ i $B$. Zakładając że nie wystąpią żadne kolizje haszy, otrzymamy dokładnie tę samą wartość, jeśli element $x$ należący do sumy zbiorów $A \cup B$ osiągający minimalną wartość $h(x)$ znajduje się także w przecięciu tych zbiorów $A \cap B$. Prawdopodobieństwo zajścia takiego zdarzenia jest równe właśnie indeksowi \textit{Jaccarda} tych zbiorów:
@@ -94,7 +94,7 @@ Bardziej formalnie, możemy zdefiniować taką operację $\dot{\cup}$, że dla d
 \begin{equation}
     S(A_1) \dot{\cup} S(A_2) = S(A_1 \cup A_2),
 \end{equation}
-\JL{zamienilem znaczek $\hat{\cup}$ na $\dot{\cup}$}
+%\JL{zamienilem znaczek $\hat{\cup}$ na $\dot{\cup}$}
 gdzie $S$ to funkcja generująca szkic danych dla zbioru.
 
 W przeciwieństwie do operacji sumy, dla szkicach rozważanych przez nas algorytmów nie istnieje naturalna operacja przekroju. Istnieją metody umożliwiające
@@ -156,8 +156,8 @@ W poprzedniej sekcji wyjaśniliśmy, że algorytm \texttt{HyperLogLog} posiada n
 
 Pamiętajmy, że w ten sposób możemy sumować szkice o tych samych parametrach $p$ i $q$ (patrz rozdział \ref{HLL_sketch}). Istnieje jednak możliwość sumowania dwóch szkiców o różnych parametrach parach $(p, q)$ oraz $(p',q')$, albowiem każdy szkic \texttt{HyperLogLog} opisany przez parę $(p, q)$ może zostać zredukowany do szkicu opisanego przez $(p', q')$, jeśli spełniony jest warunek $p' \leq p$ oraz $p' + q' \leq p + q$. Taka transformacja jest bezstratna, tj. powstały szkic jest taki sam jak szkic który powstałby przez dodawanie tych wszystkich elementów od początku do szkicu opisanego przez $(p', q')$ \cite{oertl}. Algorytm \ref{HLL_compress} przedstawia pseudokod procedury wykonującej taką transformację.
 %\JL{opisac doklanie jak tak redukacja sie odbywa!
-\AW{Czy wystarczy pseudokod z pracki w której go znalazłem? Nawet tam nie jest dokładnie opisane co tu się dzieje, więc nie wiem czy jest sens sie nad tym rozpisywac - ten fakt o kompresji chcialem tutaj podac tak bardziej informacyjnie zeby bylo wiadomo ze mozna sumowac szkice o roznych p i q}
-\JL{Na razie, niech tak zostanie}
+%\AW{Czy wystarczy pseudokod z pracki w której go znalazłem? Nawet tam nie jest dokładnie opisane co tu się dzieje, więc nie wiem czy jest sens sie nad tym rozpisywac - ten fakt o kompresji chcialem tutaj podac tak bardziej informacyjnie zeby bylo wiadomo ze mozna sumowac szkice o roznych p i q}
+%\JL{Na razie, niech tak zostanie}
 \begin{algorithm}
 	\begin{algorithmic}
 		\State $p, q, M $ - parametry oraz kolekcja rejestrów kompresowanego szkicu
@@ -210,12 +210,11 @@ O ile metoda oparta na zasadzie włączeń i wyłączeń nie sprawdza się w tym
 Przyjrzyjmy się teraz operacji sumy dla algorytmu \texttt{MinCount}. Załóżmy, że posiadamy dwa szkice danych $S_1 = (H_1, {\tau}_1)$ oraz $S_2 = (H_2, {\tau}_2)$ dla zbiorów $A_1$ i $A_2$. Chcemy otrzymać szkic $(H_u, {\tau}_u)$ zbioru $A_1 \cup A_2$. W tym przypadku naturalne wydaje się być wykonanie sumy zbiorów haszy $H_1$ oraz $H_2$ i utworzenie z nich nowego zbioru $H_u$ zawierającego, $k$ najmniejszych haszy z sumy $H_1 \cup H_2$. Takie podejście  odrzuca jednak dużą ilość informacji. Weźmy jako przykład dwa zbiory $A_1$ oraz $A_2$, które są rozłączne i o tej samej liczności.
 Posiadając $2k$ haszy ze zbiorów $H_1$ i $H_2$ odrzucamy połowę z nich - prowadzi to nawet do dwukrotnego zwiększenia wariancji estymatora. 
  Najlepszym estymatorem byłby w tym przypadku $\hat{N}(S_1 \cup S_2) = \hat{N}(S_1) + \hat{N}(S_2)$. Jego wariancja - zgodnie ze wzorem (\ref{mincount_var}) wynosi $$Var(\hat{N}(S_1 \cup S_2)) \approx \frac{|A_1|^2}{k} + \frac{|A_2|^2}{k} = \frac{|A_1|^2 + |A_2|^2}{k}.$$ Ponieważ zbiory $A_1$ i $A_2$ posiadają tyle samo elementów, możemy skorzystać z tożsamości $x^2 + x^2  = \frac{(2x)^2}{2}$ oraz faktu, iż zbiory $A_1$ oraz $A_2$ są rozłączne, aby przedstawić wariancję w postaci $$\frac{|A_1|^2 + |A_2|^2}{k} = \frac{|A_1 \cup A_2|^2}{2k}.$$ Jednak pamiętajmy, że nasza dotychczasowa operacja sumy odrzuca $k$ haszy co powoduje dwukrotny wzrost wariancji do $\frac{|A_1 \cup A_2|^2}{k}$.
-\JL{OK. Tylko mam taką uwagę, żeby w całej pracy po wzorach dawać kropki lub przecinki, tak jakby to były normalne zdania. To jest w dobrym tonie.
-I najlepiej jeszcze odwołania do wzorów brać w nawiasy, tzn. ''ze wzoru (3.1) mamy''.}
+%\JL{OK. Tylko mam taką uwagę, żeby w całej pracy po wzorach dawać kropki lub przecinki, tak jakby to były normalne zdania. To jest w dobrym tonie. I najlepiej jeszcze odwołania do wzorów brać w nawiasy, tzn. ''ze wzoru (3.1) mamy''.}
 
 W pracy \cite{ting} zaproponowana została modyfikacja, która zamiast ograniczać nowo powstały szkic do $k$ wartości, tworzy największy możliwy szkic, dzięki czemu nie następuje utrata informacji.
 Oznaczmy przez ${\tau}(S)$ największy przechowywany hasz w szkicu $S$, przez $h(S)$ zbiór haszy przechowywanych w szkicu $S$ oraz $h(S, \tau)$ niech będzie zbiorem haszy w szkicu $S$ których wartości są mniejsze bądź równe $\tau$. Nowy operator sumy $\dot{\cup}$ na szkicach \texttt{MinCount} wygląda następująco:
-\JL{wprowadzić osobne oznaczenie $\dot{\cup} $ dla sumy na szkicach, rozumiem, że poniżej $S_1$ i $S_2$ to są szkice a nie zbiory haszy?}
+%\JL{wprowadzić osobne oznaczenie $\dot{\cup} $ dla sumy na szkicach, rozumiem, że poniżej $S_1$ i $S_2$ to są szkice a nie zbiory haszy?}
 \begin{flalign}
         {\tau}_{min} = \tau(S_1 \dot{\cup} S_2) = min({\tau}_1, {\tau}_2) \\
         h(S_1 \dot{\cup} S_2) = h(S_1, {\tau}_{min}) \cup h(S_2, {\tau}_{min})
@@ -245,8 +244,8 @@ Jedną z największych zalet takiej definicji jest fakt, że otrzymujemy tutaj o
     {\hat{N}}_{impr}(S_1 \dot{\cap} S_2) = \frac{|h(S_1 \dot{\cap} S_2)| - \alpha(S_1, S_2)}{{\tau}_{min}}.
 \end{equation}
 Pamiętajmy, że aby zachować właściwą postać wzoru estymaora (\ref{mincount_est}) jedynkę w liczniku musimy odjąć tylko jeśli $\tau_{min}$ znajduje się w przekroju szkiców. Stąd we wzorze pojawia się funkcja $\alpha(S_1, S_2)$ zdefiniowana jako:
-\JL{To zdanie jest jakos nieskladne, postac jakiego wzoru chcemy zachowac?}
-\AW{Poprawilem nieco to zdanie}
+%\JL{To zdanie jest jakos nieskladne, postac jakiego wzoru chcemy zachowac?}
+%\AW{Poprawilem nieco to zdanie}
 $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
  1 &\mbox{ jeśli ${\tau}_{min} \in h(S_1 \dot{\cap} S_2)$}, \\
   0 &\mbox{ w p.p.}
@@ -264,10 +263,10 @@ $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
      		\label{consistent_def}
        \end{equation}
        dla każdego $\epsilon > 0$.
-       \AW{może być cos takiego? taką definicję udalo mi sie znalezc i wyglada najsensowniej}
-       \JL{Zgrubsza OK, tylko chyba nie estymator $T_n$ zbiega, a ciag estymatorow $(T_n)_{n\geq1}$ zbiega, prosze zobaczyc np na angielska wikipedie}
-       \AW{updated}
-       \JL{OK}
+       %\AW{może być cos takiego? taką definicję udalo mi sie znalezc i wyglada najsensowniej}
+       %\JL{Zgrubsza OK, tylko chyba nie estymator $T_n$ zbiega, a ciag estymatorow $(T_n)_{n\geq1}$ zbiega, prosze zobaczyc np na angielska wikipedie}
+       %\AW{updated}
+       %\JL{OK}
 %      
 %       Estymator nazywamy zgodnym jeśli prawdopodobieństwo, że jego wartość będzie bliska wartości szacowanego przez niego parametru, wzrasta wraz z podniesieniem liczności próby \cite{cons}.
       

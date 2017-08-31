@@ -4,18 +4,16 @@
 W tym rozdziale przyjrzymy się wynikom  eksperymentów przeprowadzonych dla omawianych wcześniej algorytmów i ich modyfikacji. Na początku rozważymy rozwiązania oparte o algorytm \texttt{Streaming MinCount}. 
 Porównamy podejście naiwne, podejście wykorzystujące ulepszenia przedstawione w rozdziale \ref{impr_mincount} oraz metodę \textit{estymatora ważonego}. Pokażemy również wyniki dla zaproponowanego przez nas w rozdziale \ref{diff_weighted} estymatora operacji różnicy.
 
- Następnie dla algorytmu \texttt{HyperLogLog}, skupimy się głównie na operacji przekroju
-  \JL{Dlaczego niby tylko na przekroju,  to podejrzane tak pisac, nawet jesli my wiemy o co chodzi}
-  \AW{ok, poprawie to zdanie}
- - porównamy podejście naiwne, korzystające z indeksu \textit{Jaccarda} i metodę estymatora \textit{ważonego} dla tegoż algorytmu, zaprezentowaną w rozdziale \ref{hll_weighted}. %Na koniec porównamy efektywność obu algorytmów w kontekście operacji teoriomnogościowych i postaramy się określić które z nich sprawdzą się najefektywniej w praktyce. 
-\AW{Nie jestem pewien czy porównywac ze soba wprost te dwa algorytmy (MinCount i HLL) - nie mam do tego jakichs sensownych eksperymentów, trzebaby je jakos zbadac przy wykorzystaniu podobnej ilosci pamieci albo cos w tym stylu - moglibysmy to pozostawic moze jako otwarta kwestię do sprawdzenia w ''przyszlosci''? Jak Pan sądzi?}
-\JL{Ja bym napisal, ze HLL bedzie potrzebowala znacznie mniej pamieci zeby uzyskac tą samą dokladnosc, 
-wiec nie bedziemy ich tutaj porownywac, no chyba, że wymysli Pan jakis sensowny eksperyment}
+ Następnie dla algorytmu \texttt{HyperLogLog}, 
+  %\JL{Dlaczego niby tylko na przekroju,  to podejrzane tak pisac, nawet jesli my wiemy o co chodzi}
+ porównamy podejście naiwne, korzystające z indeksu \textit{Jaccarda} i metodę estymatora \textit{ważonego} dla tegoż algorytmu, zaprezentowaną w rozdziale \ref{hll_weighted}. Na koniec porównamy efektywność obu algorytmów w kontekście operacji teoriomnogościowych i postaramy się określić które z nich sprawdzą się najefektywniej w praktyce. 
+%\AW{Nie jestem pewien czy porównywac ze soba wprost te dwa algorytmy (MinCount i HLL) - nie mam do tego jakichs sensownych eksperymentów, trzebaby je jakos zbadac przy wykorzystaniu podobnej ilosci pamieci albo cos w tym stylu - moglibysmy to pozostawic moze jako otwarta kwestię do sprawdzenia w ''przyszlosci''? Jak Pan sądzi?}
+%\JL{Ja bym napisal, ze HLL bedzie potrzebowala znacznie mniej pamieci zeby uzyskac tą samą dokladnosc, wiec nie bedziemy ich tutaj porownywac, no chyba, że wymysli Pan jakis sensowny eksperyment}
 
 Eksperymenty przeprowadzone w tym rozdziale badają dokładność estymacji dla różnych wartości indeksów \textit{Jaccarda} dla zbiorów, na których wykonywane są operacje. Dokładność algorytmu mierzymy przez $\frac{\hat{n}}{n}$, czyli stosunek estymacji liczności danego zbioru wyznaczonej do prawdziwej liczności zbioru.
 
 \section{Wyniki dla algorytmu Streaming MinCount}
-\AW{Wstawilem nowe wykresy dla MC}
+%\AW{Wstawilem nowe wykresy dla MC}
 Na początek przedstawiamy wyniki dla trzech metod estymacji dla algorytmu \texttt{Streaming MinCount}:
 \begin{enumerate}
 	\item metoda naiwna (z \textit{zasady włączeń i wyłączeń}),
@@ -23,7 +21,7 @@ Na początek przedstawiamy wyniki dla trzech metod estymacji dla algorytmu \text
 	\item metoda \textit{estymatora ważonego}.
 \end{enumerate}
 We wszystkich eksperymentach dla tego algorytmu, ustaliliśmy parametr $k = 100$, czyli szkice przetrzymywały 100 najmniejszych haszy.
-Na wykresach przedstawiamy wartości $\frac{\hat{n}}{n}$ dla poszczególnych metod, oznaczone na legendzie przez odpowiednio:
+Na wykresach przedstawiamy wartości $\eta = \frac{\hat{n}}{n}$ dla poszczególnych metod, oznaczone na legendzie przez odpowiednio:
 \begin{enumerate}
 	\item \textbf{err\_naive}
 	\item \textbf{err\_impr}
@@ -92,14 +90,14 @@ Zauważmy ze metoda \textit{estymatora ważonego} po raz kolejny wypada znacznie
 
 \newpage
 \section{Wyniki dla algorytmu HyperLogLog}
-\AW{przez noc wygeneruje jeszcze dokladniejsze wykresy dla HLL}
+%\AW{przez noc wygeneruje jeszcze dokladniejsze wykresy dla HLL}
 W tym podrozdziale przedstawimy wyniki dla algorytmu \texttt{HyperLogLog}. Zestawiliśmy ze sobą dwie metody:
 \begin{enumerate}
 	\item metoda naiwna z użyciem indeksu \textit{Jaccarda} (wzór (\ref{jacc_1}))
 	\item metoda \textit{estymatora ważonego}
 \end{enumerate}
 Obydwie metody korzystają z pomocniczej struktury dla każdego ze szkiców, przechowującej $k$ najmniejszych wartości (czyli zasadniczo z podstawowej wersji szkicu \texttt{MinCount}), pozwalającej na estymację indeksu \textit{Jaccarda} \cite{adroll}, potrzebnego zarówno do estymacji metodą naiwną jak i metodą \textit{estymatora ważonego}. W przeprowadzanych eksperymentach ustaliliśmy parametry $k = 80$ oraz $p = 8$.
-Na wykresach przedstawiamy wartości $\frac{\hat{n}}{n}$ dla poszczególnych metod, oznaczone na legendzie przez odpowiednio:
+Na wykresach przedstawiamy wartości $\eta = \frac{\hat{n}}{n}$ dla poszczególnych metod, oznaczone na legendzie przez odpowiednio:
 \begin{enumerate}
 	\item \textbf{err\_naive}
 	\item \textbf{err\_reweigh}
@@ -137,3 +135,49 @@ Na wykresach \ref{fig:HLL_2_sets_unions}, \ref{fig:HLL_2_sets_unions}, \ref{fig:
 \end{figure}
 
 Wnioski wynikające z tych eksperymentów sugerują, że metoda \textit{estymatora ważonego} w kontekście algorytmu \texttt{HyperLogLog} dla operacji sumy niestety nie dorównuje pod względem dokładności podejściu naiwnemu. W przypadku sumy jest to dosyć oczywiste, ponieważ jak wspominaliśmy w rozdziale 2 - \texttt{HyperLogLog} posiada naturalną operację sumy. W przypadku operacji przekroju metoda naiwna wykorzystująca indeks \textit{Jaccarda} i wzór (\ref{jacc_1}) posiada większy błąd niż estymacja z użyciem \textit{estymatora ważonego}, zwłaszcza dla zbiorów o niskim podobieństwie. Zauważmy że obie metody wykorzystują tyle samo pamięci, bowiem obie wymagają dodatkowej struktury pozwalającej na estymację indeksu \textit{Jaccarda} przy wykorzystaniu algorytmu \texttt{MinHash}.
+
+\section{Porównanie algorytmów Streaming MinCount i HyperLogLog}
+
+W tym podrozdziale przedstawiamy wyniki porównania algorytmów \texttt{Streaming MinCount} oraz \texttt{HyperLogLog}. Aby porównać oba algorytmy, dopasowaliśmy ich parametry tak, aby oba algorytmy wykorzystywały tą sama ilość pamięci. Na wykresach \ref{fig:HLL_KMV_2_sets_unions} oraz \ref{fig:HLL_KMV_10_sets_unions} przedstawiamy porównanie wartości $\eta = \frac{\hat{n}}{n}$ najlepszych metod dla poszczególnych algorytmów w kontekście operacji sumowania, przy liczności testowych zbiorów $n=10^5$:
+\begin{enumerate}
+	\item metoda \textit{estymatora ważonego} dla algorytmu \texttt{Streaming MinCount} - \textbf{err\_MC}
+	\item naturalna metoda sumowania dla algorytmu \texttt{HyperLogLog} (zobacz \ref{HLL_sum}) - \textbf{err\_HLL}
+\end{enumerate}
+
+\begin{figure}[h!]
+	\includegraphics[width=0.6\textwidth]{HLL_KMV_2_sets_unions.png}
+	\centering
+	\caption{Porównanie algorytmów dla sumy 2 zbiorów przy $n=10^5$}
+	\label{fig:HLL_KMV_2_sets_unions}
+\end{figure}
+
+\begin{figure}[h!]
+	\includegraphics[width=0.6\textwidth]{HLL_KMV_10_sets_unions.png}
+	\centering
+	\caption{Porównanie algorytmów dla sumy 10 zbiorów przy $n=10^5$}
+	\label{fig:HLL_KMV_10_sets_unions}
+\end{figure}
+W przypadku operacji sumowania zbiorów, algorytm \texttt{HyperLogLog} wypada zdecydowanie lepiej, zwłaszcza dla większej liczby zbiorów. Ta obserwacja utwierdza nas w przekonaniu że naturalna operacjia sumy, którą posiada szkic algorytmu \texttt{HyperLogLog} jest najefektywniejsza i jak wynika z naszych eksperymentów - sprawdza sie lepiej niż algorytm \texttt{Streaming MinCount}, przy takim samym wykorzystaniu pamięci.
+
+Na wykresach \ref{fig:HLL_KMV_2_sets_inter} oraz \ref{fig:HLL_KMV_10_sets_inter} przedstawiamy porównanie wartości $\eta = \frac{\hat{n}}{n}$ najlepszych metod dla poszczególnych algorytmów w kontekście operacji przekroju, przy liczności testowych zbiorów $n=10^5$:
+\begin{enumerate}
+	\item metoda \textit{estymatora ważonego} dla algorytmu \texttt{Streaming MinCount} - \textbf{err\_MC}
+	\item metoda \textit{estymatora ważonego} dla algorytmu \texttt{HyperLogLog} - \textbf{err\_HLL}
+\end{enumerate}
+
+\begin{figure}[h!]
+	\includegraphics[width=0.6\textwidth]{HLL_KMV_2_sets_inter.png}
+	\centering
+	\caption{Porównanie algorytmów dla przekroju 2 zbiorów przy $n=10^5$}
+	\label{fig:HLL_KMV_2_sets_inter}
+\end{figure}
+
+\begin{figure}[h!]
+	\includegraphics[width=0.6\textwidth]{HLL_KMV_10_sets_inter.png}
+	\centering
+	\caption{Porównanie algorytmów dla przekroju 10 zbiorów przy $n=10^5$}
+	\label{fig:HLL_KMV_10_sets_inter}
+\end{figure}
+
+W przypadku przekrojów sytuacja nie jest tak oczywista jak dla sumy. Dla dwóch zbiorów, wyniki sugerują, że algorytmy sprawują się porównywalnie - z niewielką przewaga algorytmu \texttt{Streaming MinCount} na przedziale indeksów \textit{Jaccarda} od ok $0.20$ do $0.85$. Jednak symulacje dla 10 zbiorów już wykazują, że algorytmy zachowuja się podobnie gdy podobieństwo zbiorów jest mniejsze niż $0.50$. Jednak dla większych indeksów \textit{Jaccarda} przewagę uzyskuje algorytm \texttt{HyperLogLog}.
+
