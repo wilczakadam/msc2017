@@ -10,7 +10,7 @@ Porównamy podejście naiwne, podejście wykorzystujące ulepszenia przedstawion
 %\AW{Nie jestem pewien czy porównywac ze soba wprost te dwa algorytmy (MinCount i HLL) - nie mam do tego jakichs sensownych eksperymentów, trzebaby je jakos zbadac przy wykorzystaniu podobnej ilosci pamieci albo cos w tym stylu - moglibysmy to pozostawic moze jako otwarta kwestię do sprawdzenia w ''przyszlosci''? Jak Pan sądzi?}
 %\JL{Ja bym napisal, ze HLL bedzie potrzebowala znacznie mniej pamieci zeby uzyskac tą samą dokladnosc, wiec nie bedziemy ich tutaj porownywac, no chyba, że wymysli Pan jakis sensowny eksperyment}
 
-Eksperymenty przeprowadzone w tym rozdziale badają dokładność estymacji dla różnych wartości indeksów \textit{Jaccarda} dla zbiorów, na których wykonywane są operacje. Dokładność algorytmu mierzymy przez $\frac{\hat{n}}{n}$, czyli stosunek estymacji liczności danego zbioru wyznaczonej do prawdziwej liczności zbioru. Na każdy punkt na wykresie przypada 100 eksperymentów, z których następnie wyliczyliśmy średnią i tą wartość nanieśliśmy na wykres.
+Eksperymenty przeprowadzone w tym rozdziale badają dokładność estymacji dla różnych wartości indeksów \textit{Jaccarda} dla zbiorów, na których wykonywane są operacje. Dokładność algorytmu mierzymy przez $\frac{\hat{n}}{n}$, czyli stosunek estymacji liczności danego zbioru wyznaczonej do prawdziwej liczności zbioru. Na każdy punkt na wykresie przypada 100 eksperymentów, z których następnie wyliczyliśmy średnią i jej wartość nanieśliśmy na wykres.
 
 \section{Wyniki dla algorytmu Streaming MinCount}
 %\AW{Wstawilem nowe wykresy dla MC}
@@ -128,7 +128,7 @@ Na wykresach \ref{fig:HLL_2_sets_unions}, \ref{fig:HLL_2_sets_unions}, \ref{fig:
     \caption{Porównanie metod dla przekroju 10 zbiorów przy $n=10^5$}
     \label{fig:HLL_10_sets_inter}
 \end{figure}
-\AW{tutaj jest blad w legendzie na wykresie - powinno byc err\_naive zamiast err\_impr!}
+%\AW{tutaj jest blad w legendzie na wykresie - powinno byc err\_naive zamiast err\_impr!}
 
 \begin{figure}[h!]
     \includegraphics[width=0.6\textwidth]{HLL_10_sets_unions.png}
