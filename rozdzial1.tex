@@ -11,7 +11,7 @@ W tym rozdziale  opiszemy problem zliczania oraz trzy  algorytmy przybliżonego 
 Najpierw zdefiniujmy czym jest problem zliczania, którego dotyczy nasza praca.
 Zacznijmy od zdefiniowania pojęcia \textit{multizbioru}. Multizbiór $\mathfrak{M}$ definiujmy jako parę $(S, m)$, gdzie $S$ jest zbiorem nazywanym \textit{zbiorem fundamentalnym} , natomiast $m$ jest funkcją postaci $m : S \rightarrow \mathbb{N}_{\geq 1}$. Wartość $m(s)$ nazywamy mnogością elementu $s \in S$. Problem zliczania możemy zatem sformułować w taki sposób: mając multizbiór $\mathfrak{M}$, znaleźć moc $n$ zbioru fundamentalnego $S$.
 
-W ogólnym przypadku, nie posiadając żadnych informacji na temat danych, aby znaleźć dokładne rozwiązanie tego problemu potrzebujemy liniowej pamięci $O(n)$. Zatem, próba zmniejszenia zapotrzebowania pamięci algorytmu poniżej tego poziomu musi mieć wpływ na jego dokładność i skutkuje zmniejszeniem dokładności ostatecznego wyniku. Na szczęście jeśli jesteśmy w stanie kontrolować ten błąd i jest on stosunkowo niewielki - wówczas taki algorytm jest wystarczający w większości praktycznych zastosowań i daje nam satysfakcjonunjący wynik.
+W ogólnym przypadku, nie posiadając żadnych informacji na temat danych, aby znaleźć dokładne rozwiązanie tego problemu potrzebujemy liniowej pamięci $O(n)$. Zatem, próba zmniejszenia zapotrzebowania pamięci algorytmu poniżej tego poziomu musi mieć wpływ na jego dokładność i skutkuje zmniejszeniem dokładności ostatecznego wyniku. Na szczęście jeśli jesteśmy w stanie kontrolować ten błąd i jest on stosunkowo niewielki - wówczas taki algorytm jest wystarczający w większości praktycznych zastosowań i daje nam satysfakcjonujący wynik.
 
 
 \section{Algorytm MinCount}
@@ -26,7 +26,7 @@ zmienne $X_1, X_2, \dots X_n$ są niezależne i każda  ma rozkład jednostajny 
 
 Przyjmijmy, że istnieje funkcja haszująca 
 \begin{equation}
-    h \colon \mathfrak{M} \rightarrow (0, 1)
+    h \colon \mathfrak{M} \rightarrow (0, 1),
 \end{equation}
 taka, że jeśli $\mathfrak{M}$ posiada $n$ unikalnych elementów $a_1, a_2, \dots a_n$ to przyjmując, że
  $U_i = h(a_i)$ otrzymamy ciąg niezależnych zmiennych losowych o rozkładzie jednostajnym $U_1, U_2, \dots U_n \sim U(0,1)$. Zauważmy również, że jeśli element $a_i$ pojawia się w  $\mathfrak{M}$ wielokrotnie, to zawsze będzie zhaszowany do tej samej wartości.
@@ -35,7 +35,7 @@ Rozważmy statystyki pozycyjne  $U_{(1)}, U_{(2)}, \dots, U_{(n)}$ powstałe prz
 \begin{equation}
     f(x; \alpha, \beta) = \frac{x^{\alpha-1}{(1-x)}^{\beta-1}}{B(\alpha, \beta)},
 \end{equation} 
-gdzie $$B(\alpha, \beta) = \frac{\Gamma(\alpha)\Gamma(\beta)}{\Gamma(\alpha + \beta)}$$ przy czym funkcja $\Gamma(z)$ jest nazywana \textit{gammą Eulera} i definiuje się ją jako: $$\Gamma(z) = \int_0^\infty t^{z-1}e^{-t} dt$$
+gdzie $$B(\alpha, \beta) = \frac{\Gamma(\alpha)\Gamma(\beta)}{\Gamma(\alpha + \beta)},$$ przy czym funkcja $\Gamma(z)$ jest nazywana \textit{gammą Eulera} i definiuje się ją jako: $$\Gamma(z) = \int_0^\infty t^{z-1}e^{-t} dt.$$
 Łatwo pokazać, że wartość oczekiwana zmiennej losowej $X$ pochodzącej z rozkładu $Beta(\alpha, \beta)$ jest funkcją stosunku parametrów $\alpha$ i $\beta$:
 \begin{equation}
     E[X] = \int_0^1 xf(x; \alpha, \beta) dx = \int_0^1 x\frac{x^{\alpha-1}{(1-x)}^{\beta-1}}{B(\alpha, \beta)} dx = \frac{\alpha}{\alpha + \beta} .
@@ -50,25 +50,25 @@ E[\frac{1}{U_{(k)}}] = \int_0^1 \frac{1}{x}f(x; k, n + 1 - k) dx = \frac{n}{k-1}
  
  Wykorzystując formułę (\ref{OS-expexcation}) oraz metodę momentów, możemy  zdefiniować estymator liczności $\hat{n}$ naszego zbioru wejściowego $a_1, a_2, \dots a_n$ jako:
 \begin{equation}
-    \hat{n} = \frac{k - 1}{U_{(k)}}
+    \hat{n} = \frac{k - 1}{U_{(k)}}.
     \label{mincount_est}
 \end{equation}
 Pokażemy teraz, że estymator $\hat{n}$ jest estymatorem nieobciążonym, gdy $k \geq 2$:
 \begin{flalign}
     E[\hat{n}] = \int_0^1 \frac{k - 1}{x}f(x; k, n+1-k) dx \\
     = (k - 1)\int_0^1 \frac{1}{x}f(x; k, n+1-k) dx \\
-    = (k-1)\frac{n}{k-1} = n
+    = (k-1)\frac{n}{k-1} = n.
 \end{flalign}
 Podobnie, możemy policzyć wariancję estymatora \cite{mincount}, gdy $k \geq 3$:
 \begin{flalign}
     Var[\hat{n}] =  E[{\hat{n}}^2] - {E[\hat{n}]}^2 \\
     = \frac{k-1}{k-2}n(n-1) - n^2 \\
     = \frac{(k-1)n(n-1) - n^{2}(k-2)}{k-2}  \\
-    = \frac{n(n - k + 1)}{k - 2}
+    = \frac{n(n - k + 1)}{k - 2}.
 \end{flalign}
 Przy czym, dla $n \rightarrow \infty$ możemy zapisać:
 \begin{equation}
-	Var[\hat{n}] \approx \frac{n^2}{k-2}
+	Var[\hat{n}] \approx \frac{n^2}{k-2}.
 	\label{mincount_var}
 \end{equation}
 
@@ -138,7 +138,7 @@ Na wykresie \ref{fig:mincount_hist} zamieszczamy histogram prezentujący rozkła
 
 Jednym z mniej znanych algorytmów opartych na statystykach pozycyjnych, który będziemy rozważać w dalszej części pracy jest algorytm \texttt{Streaming MinCount} \cite{streamed}. Algorytm ten różni się od klasycznego \texttt{MinCounta} sposobem estymacji liczności. Wykorzystuje on taki sam szkic, ale wykonuje tzw. \textit{estymację kroczącą}. Tzn. wykorzystuje do estymacji również informacje o zmianach w szkicu, a nie tylko końcową postać szkicu:
 \begin{equation}
-    \hat{n} = \sum_{t \in T} \frac{Z_t}{\tau_{t}}
+    \hat{n} = \sum_{t \in T} \frac{Z_t}{\tau_{t}},
     \label{streaming_est}
 \end{equation}
 gdzie $\tau_{t}$ to wartość największego spośród $k$ przechowywanych haszy po przetworzeniu $t$ elementów $\mathfrak{M}$, a $Z_t$ jest zmienną binarną przyjmującą wartość $1$ jeśli szkic zmienił się w momencie $t$ lub $0$ w p.p. Jak widać ten estymator operuje na przestrzeni czasu $t$, tzn. każdy kolejny napotkany element ze strumienia wejściowego inkrementuje $t$. Dzięki takiemu podejściu, estymator zmienia wartość tylko wtedy, gdy hasz nowo napotkanego elementu modyfikuje szkic. Wykorzystanie dodatkowych informacji o zmianach w szkicu powoduję zmniejszenie wariancji estymatora o połowę względem klasycznego algorytmu \texttt{MinCount} \cite{ting}. Analiza tego estymatora wraz ze szczegółowym opisem i dowodem własności znajduje się w pracy \cite{streamed}. Poniżej przedstawiamy 
@@ -176,7 +176,7 @@ pseudokod dla algorytmu \texttt{Streaming MinCount}:
     \caption{Algorytm \texttt{Streaming MinCount}}
 \end{algorithm}
 
-Na wykresie \ref{fig:str_mincount_hist} zamieszczamy również histogram prezentujący rozkład błędu względnego tego algorytmu dla ok. $10^5$ eksperymentów, z parametrem $k=100$. Jak możemy wnioskować z wykresu, dla dużej liczby eksperymentów błąd względny zaczna mieć rozkład bardzo zbliżony do rozkładu normalnego. Ta obserwacja przyda nam się w dalszej części pracy do uzasadnienia pewnych założeń dotyczących nowych metod estymacji.
+Na wykresie \ref{fig:str_mincount_hist} zamieszczamy również histogram prezentujący rozkład błędu względnego tego algorytmu dla ok. $10^5$ eksperymentów, z parametrem $k=100$. Jak możemy wnioskować z wykresu, dla dużej liczby eksperymentów błąd względny zaczną mieć rozkład bardzo zbliżony do rozkładu normalnego. Ta obserwacja przyda nam się w dalszej części pracy do uzasadnienia pewnych założeń dotyczących nowych metod estymacji.
 
 \begin{figure}[h!]
 	\includegraphics[width=0.5\textwidth]{StreamingMinCountErrHist.png}
@@ -190,10 +190,10 @@ Na wykresie \ref{fig:str_mincount_hist} zamieszczamy również histogram prezent
 
 Trzecim algorytmem przybliżonego zliczania, który omówimy w tej pracy jest \texttt{HyperLogLog} zaprezentowany w pracy \cite{hll}. Podobnie jak w algorytmie \texttt{MinCount}  haszuje on elementy wejściowego  multizbioru $\mathfrak{M}$ w odcinek $(0,1)$. Jednak tym razem hasze są traktowane nie jak liczby w zapisie binarnym, a jak ciągi złożone z zer i jedynek. Algorytm na bieżąco śledzi maksymalną liczbę zer wiodących wśród wszystkich haszy. Idea algorytmu jest następująca: przy założeniu, że na każdej pozycji zero i jedynka pojawia się z jednakowym prawdopodobieństwem,  hasze które zawierają więcej zer wiodących są rzadziej spotykane. Wskazują zatem na większą liczność zbioru wejściowego. Innymi słowy, jeśli ciąg bitów postaci $0^{q-1}1$ pojawi się na początku hasza, wówczas przy założeniu, że funkcja $h$ zwraca wartości zgodnie z rozkładem jednostajnym, możemy estymować liczbę różnych elementów multizbioru wejściowego na $2^{q}$.
 
-Takie podejście oparte na pojedynczym eksperymencie posiada jednak dużą wariancję. Aby zmniejszyć warinację stosuję się technikę znaną jako stochastyczne uśrednianie (ang. \textit{stochastic averaging}). Strumień wejściowy $\mathfrak{M}$ dzielony jest na $m$ mniejszych podstrumieni $\mathfrak{M}_i$ podobnych rozmiarów. O tym, do którego podstrumienia należeć będzie dany element decyduje $p$ początkowych bitów z jego hasza, gdzie $m = 2^p$. Następnie te $p$ początkowych bitów jest usuwane z $h(x)$ i dla  każdego $x\in \mathfrak{M}_i$ wyznaczana jest pozycja $q$ pierwszej jedynki z tak powstałego $h(x)$. Największe ze znalezionych pozycji $q$ w każdym podstrumieniu przetrzymywane są w tablicy rejestrów $M$, tzn. w $M[i]$ jest największą  wartość $q$
-dla  podstrumienia $\mathfrak{M}_i$:
+Takie podejście oparte na pojedynczym eksperymencie posiada jednak dużą wariancję. Aby zmniejszyć wariancję stosuję się technikę znaną jako stochastyczne uśrednianie (ang. \textit{stochastic averaging}). Strumień wejściowy $\mathfrak{M}$ dzielony jest na $m$ mniejszych podstrumieni $\mathfrak{M}_i$ podobnych rozmiarów. O tym, do którego podstrumienia należeć będzie dany element decyduje $p$ początkowych bitów z jego hasza, gdzie $m = 2^p$. Następnie te $p$ początkowych bitów jest usuwane z $h(x)$ i dla  każdego $x\in \mathfrak{M}_i$ wyznaczana jest pozycja $q$ pierwszej jedynki z tak powstałego $h(x)$. Największe ze znalezionych pozycji $q$ w każdym podstrumieniu przetrzymywane są w tablicy rejestrów $M$, tzn. w $M[i]$ jest największą  wartość $q$
+dla podstrumienia $\mathfrak{M}_i$:
 \begin{equation}
-    M[i] = \max_{x \in \mathfrak{M}_i} Q(x)
+    M[i] = \max_{x \in \mathfrak{M}_i} Q(x),
 \end{equation}
 gdzie $Q(x)$ jest funkcją zwracającą  pozycję pierwszej jedynki w haszu elementu $x$.
  Korzystając z tych rejestrów algorytm wylicza estymację liczby różnych elementów $\hat{n}$
@@ -229,7 +229,7 @@ Wyniki eksperymentalne pokazały jednak, że przedstawiona powyżej wersja algor
     \item Poprawka dla małych liczności - symulacje przeprowadzone przez autorów algorytmu wykazały, że jeśli liczba rożnych elementów $n \le \frac{5}{2}m$, 
     to pojawiają się istotne zaburzenia. Dlatego dla tego zakresu liczności $n$ autorzy sugerują użycie  algorytmu \texttt{Linear Counting} \cite{linear} jako estymatora:
     \begin{equation}
-    \hat{n} = {m}\log(\frac{m}{V})
+    \hat{n} = {m}\log(\frac{m}{V}),
     \label{LC}
     \end{equation}
     gdzie $m = 2^p$, a $V$ to liczba rejestrów równych $0$.

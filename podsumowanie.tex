@@ -6,16 +6,16 @@ W pracy podjęliśmy problem
 %JL zajęliśmy się problemem zliczania unikalnych elementów w strumieniach danych 
 %JL a konkretnie
 efektywnego wykonywania operacji teoriomnogościowych na szkicach danych algorytmów \texttt{MinCount} oraz \texttt{HyperLogLog}.
-Omówiliśmy i przedstawiliśmy naiwne metody estymacji dla operacji teoriomngościowych jak i nowe metody zaproponowane w pracy \cite{ting} dla algorytmu \texttt{MinCount}, skupiając się na metodzie \textit{estymatora ważonego}, która zdaniem autorów pod względem efektywności jest zbliżona do estymatora wyprowadzonego metodą \textit{największej wiarygodności}. Następnie rozwinęliśmy 
+Omówiliśmy i przedstawiliśmy naiwne metody estymacji dla operacji teoriomnogościowych jak i nowe metody zaproponowane w pracy \cite{ting} dla algorytmu \texttt{MinCount}, skupiając się na metodzie \textit{estymatora ważonego}, która zdaniem autorów pod względem efektywności jest zbliżona do estymatora wyprowadzonego metodą \textit{największej wiarygodności}. Następnie rozwinęliśmy 
 %JL definicję 
 metodę
 \textit{estymatora ważonego} dla operacji różnicy oraz przedstawiliśmy pomysł generalizacji tej metody dla algorytmu \texttt{HyperLogLog}, wykorzystując do tego algorytm pomocniczy \texttt{MinHash}.
 
-Nasze teoretyczne rozważania podsumowaliśmy przedstawiając wyniki eksperymentów mających na celu weryfikację powyższych metod w praktyce. Nasze eksperymenty potwierdziły, że metoda \textit{estymatora ważonego} w większości przypadków posiada najmniejszy błąd. Eksperymenty pokazały również, że nasza idea zastosowania meody \textit{estymatora ważonego} w algorytmie \texttt{HyperLogLog} poprawia wyniki estymacji przekroju dla tego algorytmu.
+Nasze teoretyczne rozważania podsumowaliśmy przedstawiając wyniki eksperymentów mających na celu weryfikację powyższych metod w praktyce. Nasze eksperymenty potwierdziły, że metoda \textit{estymatora ważonego} w większości przypadków posiada najmniejszy błąd. Eksperymenty pokazały również, że nasza idea zastosowania metody \textit{estymatora ważonego} w algorytmie \texttt{HyperLogLog} poprawia wyniki estymacji przekroju dla tego algorytmu.
 %JL czego nie można powiedzieć o operacji sumy, która będąc naturalnie wbudowana w szkic algorytmu \texttt{HyperLogLog}, skutkuje największa dokładnością.
 
-Na koniec porównaliśmy ze sobą oba algorytmy \texttt{MinCount} oraz \texttt{HyperLogLog} w kontekście operacji teoriomnogosciowych, dla każdego z nich wybierając najefektywniejszą metodę estymacji dla danej operacji. Wyniki wykazały, że dla większej liczby zbiorów, zarówno dla operacji sumy jak i przekroju - algorytm \texttt{HyperLogLog} korzystający z metody \textit{estymatora ważonego} posiada najlepszą dokładność estymacji.
-\JL{Powyższe zdanie - myslałem, że dla sumy nie używamy estymatora ważonego??}
+Na koniec porównaliśmy ze sobą oba algorytmy \texttt{MinCount} oraz \texttt{HyperLogLog} w kontekście operacji teoriomnogościowych, dla każdego z nich wybierając najefektywniejszą metodę estymacji dla danej operacji. Wyniki wykazały, że dla większej liczby zbiorów, zarówno dla operacji sumy jak i przekroju - algorytm \texttt{HyperLogLog} posiada najlepszą dokładność estymacji.
+%\JL{Powyższe zdanie - myslałem, że dla sumy nie używamy estymatora ważonego??}
 
 
 

@@ -216,7 +216,7 @@ Oznaczmy przez ${\tau}(S)$ największy przechowywany hasz w szkicu $S$, przez $h
 %\JL{wprowadzić osobne oznaczenie $\dot{\cup} $ dla sumy na szkicach, rozumiem, że poniżej $S_1$ i $S_2$ to są szkice a nie zbiory haszy?}
 \begin{flalign}
         {\tau}_{min} = \tau(S_1 \dot{\cup} S_2) = min({\tau}_1, {\tau}_2) \\
-        h(S_1 \dot{\cup} S_2) = h(S_1, {\tau}_{min}) \cup h(S_2, {\tau}_{min})
+        h(S_1 \dot{\cup} S_2) = h(S_1, {\tau}_{min}) \cup h(S_2, {\tau}_{min}).
 \end{flalign}
 
 W tej modyfikacji algorytmu odrzucamy te wartości które są większe niż wartość graniczna ${\tau}_{min}$, a szkice są następnie łączone poprzez sumę teoriomnogościową na zbiorach pozostałych haszy.
@@ -258,7 +258,7 @@ $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
        Estymator wyprowadzony tą metodą ma szereg istotnych własności. Wraz ze wzrostem rozmiaru próby jest asymptotycznie nieobciążony, asymptotycznie najefektywniejszy, ma asymptotycznie rozkład normalny, a także jest zgodny. Estymator $T_n$ parametru $\theta$ nazywamy \textit{zgodnym} jeśli ciąg $\{T_n\}$ \textit{zbiega według prawdopodobieństwa} 
         do prawdziwej wartości parametru, gdy $n \rightarrow \infty$, czyli inaczej mówiąc - jeśli spełniona jest równość:
        \begin{equation}
-     		\lim_{n \to \infty} Pr[|T_n - \theta| < \epsilon] = 1
+     		\lim_{n \to \infty} Pr[|T_n - \theta| < \epsilon] = 1,
      		\label{consistent_def}
        \end{equation}
        dla każdego $\epsilon > 0$.

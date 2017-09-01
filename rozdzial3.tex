@@ -5,7 +5,7 @@
 
 
 
-W tym rozdziale zajmiemy się metodą estymacji operacji teoriomnogościowych opisaną w \cite{ting}. Estymatory oparte na tej metodzie są definiowane jako średnia ważonea pewnej liczby  tzw. estymatorów składowych. Opiszemy w jaki sposób można zdefiniować estymatory składowe oraz jaki jest optymalny sposób ich ważenia. 
+W tym rozdziale zajmiemy się metodą estymacji operacji teoriomnogościowych opisaną w \cite{ting}. Estymatory oparte na tej metodzie są definiowane jako średnia ważona pewnej liczby  tzw. estymatorów składowych. Opiszemy w jaki sposób można zdefiniować estymatory składowe oraz jaki jest optymalny sposób ich ważenia. 
 
 \section{Optymalne ważenie estymatorów}
 %JL W tej rozdziale wyjaśnimy ideę ważenia estymatorów.
@@ -72,7 +72,7 @@ Omówimy teraz metodę  definiowania estymatorów składowych. Naszym celem jest
 Aby zdefiniować estymatory składowe dla sumy i dla przekroju  zauważmy, że zarówno liczność sumy dwóch zbiorów, jak i ich przekroju możemy zapisać jako stosunek liczności sumy (analogicznie - przekroju) do liczności jednego z tych zbiorów pomnożonej przez liczność tegoż zbioru. Dla
 \begin{flalign}
        {\alpha}_{i} = \frac{|A_1 \cap A_2|}{|A_i|}, \\
-    {\beta}_{i} = \frac{|A_1 \cup A_2|}{|A_i|}
+    {\beta}_{i} = \frac{|A_1 \cup A_2|}{|A_i|},
 \end{flalign}
 mamy zatem:
 \begin{flalign}
@@ -85,7 +85,7 @@ mamy zatem:
      \label{var_alpha}
     \hat{{\beta}_{i}} = \frac{|h(S_1 \dot{\cup} S_2)|}{|h(S_i, {\tau}_{min})|}.
 \end{flalign}
-Zauważmy, że $\alpha_i$ oraz $\beta_i$ możemy interpretować jako stosunek mocy przekroju (i odpowiednio sumy) do mocy pojedynczego zbioru $A_i$. Ten stosunek estymujemy zatem korzystając z mocy zbiorów haszy dostępnych w naszych szkicach $S_1$ oraz $S_2$. $|h(S_1 \dot{\cap} S_2)|$ reprezentuje liczbę haszy w przekroju dwóch szkiców (zauważmy uzycie operacji $\dot{\cap}$ zdefiniowanej w (\ref{sketch-cut})), natomiast $|h(S_i, {\tau}_{min})|$ reprezentuje liczbę haszy w szkicu $S_i$. Stosunek tych dwóch wartości jest zatem estymatorem stosunku $\frac{|A_1 \cap A_2|}{|A_i|}$. Analogicznie zdefiniowany jest estymator dla $\beta_i$.
+Zauważmy, że $\alpha_i$ oraz $\beta_i$ możemy interpretować jako stosunek mocy przekroju (i odpowiednio sumy) do mocy pojedynczego zbioru $A_i$. Ten stosunek estymujemy zatem korzystając z mocy zbiorów haszy dostępnych w naszych szkicach $S_1$ oraz $S_2$. $|h(S_1 \dot{\cap} S_2)|$ reprezentuje liczbę haszy w przekroju dwóch szkiców (zauważmy użycie operacji $\dot{\cap}$ zdefiniowanej w (\ref{sketch-cut})), natomiast $|h(S_i, {\tau}_{min})|$ reprezentuje liczbę haszy w szkicu $S_i$. Stosunek tych dwóch wartości jest zatem estymatorem stosunku $\frac{|A_1 \cap A_2|}{|A_i|}$. Analogicznie zdefiniowany jest estymator dla $\beta_i$.
 %\AW{Proponuję takie wyjasnienie, ktore wydaje mi sie jest najbardziej sensowne}
 %\JL{Poprawic oznaczenia we wzorach, operacja sumy i przekroju na szkicach}
 %\JL{zrobic odwolanie do wzoru \ref{sketch-cut} }
@@ -95,7 +95,7 @@ Mając estymatory dla $\alpha_i$ i $\beta_i$ oraz estymatory liczności $\hat{N}
 \begin{flalign}
      \hat{N_i}(S_1 \dot{\cap} S_2) = \hat{{\alpha}_i}\hat{N}(S_i),
      \\
-    \hat{N_i}(S_1 \dot{\cup} S_2) = \hat{{\beta}_i}\hat{N}(S_i)
+    \hat{N_i}(S_1 \dot{\cup} S_2) = \hat{{\beta}_i}\hat{N}(S_i).
 \end{flalign}
 Są to estymatory zgodne dla, odpowiednio, $|A_1 \cap A_2|$ oraz $|A_1 \cup A_2|$ \cite{ting}.
 
@@ -268,7 +268,7 @@ Wariancję powyższych estymatorów możemy przybliżyć używając następując
 
 
 \begin{equation}
-    Var(\hat{{\alpha}_i}) = \frac{{\alpha}_i(1 - {\alpha}_i)}{k} \approx \frac{\hat{J}(A_1 \cap A_2, A_i)(1 - \hat{J}(A_1 \cap A_2, A_i))}{k} 
+    Var(\hat{{\alpha}_i}) = \frac{{\alpha}_i(1 - {\alpha}_i)}{k} \approx \frac{\hat{J}(A_1 \cap A_2, A_i)(1 - \hat{J}(A_1 \cap A_2, A_i))}{k}.
 \end{equation}
 Powyższy wzór wynika z rozumowania analogicznego do tego przedstawionego w wyprowadzeniu \ref{jacc_var2}.
 
