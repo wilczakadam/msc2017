@@ -43,12 +43,18 @@ Wykresy \ref{fig:KMV_2sets_inter} oraz \ref{fig:KMV_2sets_unions} przedstawiają
     \label{fig:KMV_2sets_unions}
 \end{figure}
 
-Zauważmy, że dla operacji sumy - praktycznie na całym przedziale indeksów \textit{Jaccarda} zbiorów - najmniejszy błąd posiada metoda \textit{estymatora ważonego}. W przypadku przekroju - metody $2.$ oraz $3.$ wypadają o wiele lepiej niż metoda naiwna. Na wykresie możemy zauważyć, że metoda \textit{estymatora ważonego} posiada podobną tendencję jak metoda $2.$, ale dla większości indeksów \textit{Jaccarda} posiada mniejszy błąd.
+Zauważmy, że dla operacji sumy - praktycznie na całym przedziale indeksów \textit{Jaccarda} zbiorów - najmniejszy błąd posiada metoda \textit{estymatora ważonego}. W przypadku przekroju - metody $2.$ oraz $3.$ wypadają o wiele lepiej niż metoda naiwna. Na wykresie możemy zauważyć, że metoda \textit{estymatora ważonego} posiada podobną tendencję
+jak metoda $2.$, ale dla większości indeksów \textit{Jaccarda} posiada mniejszy błąd.
+\JL{Ja bym napisał: że dla wiekszosci indeksow Jaccarda ważona ma nieco mniejsze obciążenie i podobną wariancję.
+Nie za bardzo wiem co to jest tendencja...}
 
 Na kolejnych wykresach: \ref{fig:KMV_10sets_inter}, \ref{fig:KMV_10sets_unions}, \ref{fig:KMV_100sets_inter} oraz \ref{fig:KMV_100sets_unions}, zestawiliśmy wyniki dla sum i przekrojów większej liczby zbiorów. Wykonaliśmy eksperymenty dla 10 oraz 50 zbiorów o mocach $n = 10^5$, porównując metody $2.$ oraz $3.$ Metodę naiwną pominęliśmy ze względu na jej znaczące wady opisane w rozdziale \ref{naive_est}. 
 
 Możemy zauważyć, że również jak na poprzednich wykresach dla dwóch zbiorów - metoda \textit{estymatora ważonego} posiada podobną tendencję jak metoda $2.$, ale również minimalizuje błąd - zwłaszcza dla dużych \textit{indeksów Jaccarda}.
+\JL{Zamiast tej tendencji tu bym napisał, że ważony ma widocznie mniejsze obciążenie i nieco mniejszą wariancję.}
 
+\JL{Gdzie jest napisane ile eksperymentów przypada na jeden punkt  na wykresie?
+Jak nie ma to by się przydało napisać.}
 \begin{figure}[h!]
     \includegraphics[width=0.6\textwidth]{KMV_10_sets_inter.png}
     \centering
@@ -161,8 +167,8 @@ W przypadku operacji sumowania zbiorów, algorytm \texttt{HyperLogLog} wypada zd
 
 Na wykresach \ref{fig:HLL_KMV_2_sets_inter} oraz \ref{fig:HLL_KMV_10_sets_inter} przedstawiamy porównanie wartości $\eta = \frac{\hat{n}}{n}$ najlepszych metod dla poszczególnych algorytmów w kontekście operacji przekroju, przy liczności testowych zbiorów $n=10^5$:
 \begin{enumerate}
-	\item metoda \textit{estymatora ważonego} dla algorytmu \texttt{Streaming MinCount} - \textbf{err\_MC}
-	\item metoda \textit{estymatora ważonego} dla algorytmu \texttt{HyperLogLog} - \textbf{err\_HLL}
+	\item metoda \textit{estymatora ważonego} dla algorytmu \texttt{Streaming MinCount} - \textbf{err\_MC},
+	\item metoda \textit{estymatora ważonego} dla algorytmu \texttt{HyperLogLog} - \textbf{err\_HLL}.
 \end{enumerate}
 
 \begin{figure}[h!]
@@ -179,5 +185,14 @@ Na wykresach \ref{fig:HLL_KMV_2_sets_inter} oraz \ref{fig:HLL_KMV_10_sets_inter}
 	\label{fig:HLL_KMV_10_sets_inter}
 \end{figure}
 
-W przypadku przekrojów sytuacja nie jest tak oczywista jak dla sumy. Dla dwóch zbiorów, wyniki sugerują, że algorytmy sprawują się porównywalnie - z niewielką przewaga algorytmu \texttt{Streaming MinCount} na przedziale indeksów \textit{Jaccarda} od ok $0.20$ do $0.85$. Jednak symulacje dla 10 zbiorów już wykazują, że algorytmy zachowują się podobnie gdy podobieństwo zbiorów jest mniejsze niż $0.50$. Jednak dla większych indeksów \textit{Jaccarda} przewagę uzyskuje algorytm \texttt{HyperLogLog}.
+W przypadku przekrojów sytuacja nie jest tak oczywista jak dla sumy. Dla dwóch zbiorów, wyniki sugerują, że algorytmy sprawują się porównywalnie. 
+%JL
+Algorytm \texttt{Streaming MinCount} daje wyniki o nieco mniejszej wariancji, ale widocznym obciążeniu. 
+\JL{To zdanie zmieniłem, bo było zbyt naciagane moim zdaniem} 
+%JL- z niewielką przewaga algorytmu \texttt{Streaming MinCount} na przedziale indeksów \textit{Jaccarda} od ok $0.20$ do $0.85$. 
+Symulacje dla 10 zbiorów potwierdzają, że wyniki \texttt{Streaming MinCount} są istotnie bardziej obciążone, 
+zwłaszcza dla większych wartości indeksu \textit{Jaccarda}.
+W tym scenariuszu wyniki dla algorytmu \texttt{HyperLogLog} wydają się prawie nieobciążone i mają stosunkowo niewielką wariancję.
+%JL - tutaj też trochę zmieniłem
+%że algorytmy zachowują się podobnie gdy podobieństwo zbiorów jest mniejsze niż $0.50$. Jednak dla większych indeksów \textit{Jaccarda} przewagę uzyskuje algorytm \texttt{HyperLogLog}.
 

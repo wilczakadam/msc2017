@@ -30,7 +30,7 @@ Niech $h$ będzie funkcją haszującą.
 
 Zastosujemy funkcję $h_{min}$ na zbiorach $A$ i $B$. Zakładając że nie wystąpią żadne kolizje haszy, otrzymamy dokładnie tę samą wartość, jeśli element $x$ należący do sumy zbiorów $A \cup B$ osiągający minimalną wartość $h(x)$ znajduje się także w przecięciu tych zbiorów $A \cap B$. Prawdopodobieństwo zajścia takiego zdarzenia jest równe właśnie indeksowi \textit{Jaccarda} tych zbiorów:
 \begin{equation}
-    Pr(h_{min}(A) = h_{min}(B)) = J(A, B)
+    Pr(h_{min}(A) = h_{min}(B)) = J(A, B).
     \label{jacc_prob}
 \end{equation}
 Łatwo zatem pokazać, że jeśli $I$ jest zmienną losową przyjmującą wartość $1$ gdy $h_{min}(A) = h_{min}(B)$ i $0$ w przeciwnym przypadku, wówczas $I$ jest nieobciążonym estymatorem dla $J(A, B)$ \cite{minhash}.
@@ -48,12 +48,12 @@ $$[x] = \left\{ \begin{array}{rl}
 \end{array} \right.$$ %\JL{uzupelnić}
 Tak zdefiniowany estymator jest nieobciążonym estymatorem $J(A, B)$ \cite{minhash}, a jego wariancja wynosi:
 \begin{equation}
-    Var(\hat{J}(A,B)) = \frac{J(A, B)(1 - J(A, B))}{k}
+    Var(\hat{J}(A,B)) = \frac{J(A, B)(1 - J(A, B))}{k}.
     \label{jacc_var}
 \end{equation}
-Ten wzór można łatwo wyprowadzić. Zauważmy, że estymator $\hat{J}(A, B)$ jest zmienną losową będącą sumą $k$ niezależnych prób \textit{Bernoulliego} postaci $[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$, a jak wiemy ze wzoru (\ref{jacc_prob}) prawdopodobieństwo sukcesu takiej jednej próby jest równe $J(A, B)$. Oznaczmy przez $X_i = [h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$. Wówczas możemy zapisać:
+Powyższy wzór można łatwo wyprowadzić. Zauważmy, że estymator $\hat{J}(A, B)$ jest zmienną losową będącą sumą $k$ niezależnych prób \textit{Bernoulliego} postaci $[h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$, a jak wiemy ze wzoru (\ref{jacc_prob}) prawdopodobieństwo sukcesu takiej jednej próby jest równe $J(A, B)$. Oznaczmy przez $X_i = [h_{min}^{(i)}(A) = h_{min}^{(i)}(B)]$. Wówczas możemy zapisać:
 \begin{equation}
-	\hat{J}(A,B) = \frac{1}{k}\sum_{i=1}^{k}X_i
+	\hat{J}(A,B) = \frac{1}{k}\sum_{i=1}^{k}X_i.
 \end{equation}
 Nakładając wariancję otrzymujemy:
 \begin{flalign}
@@ -65,7 +65,7 @@ Nakładając wariancję otrzymujemy:
 	\\
 	\frac{1}{k^2}\sum_{i=1}^{k}J(A, B)(1 - J(A, B)) =
 	\\
-	\frac{J(A, B)(1 - J(A, B))}{k}
+	\frac{J(A, B)(1 - J(A, B))}{k}.
 	\label{jacc_var2}
 \end{flalign}
 
@@ -74,12 +74,12 @@ Istnieje również drugi, mniej znany wariant algorytmu \texttt{MinHash}, który
  Używa on analogicznego estymatora jak \ref{jacc_est}, ale korzysta z tylko jednej funkcji haszującej. Zamiast generować $k$ różnych funkcji haszujących, przechowujemy $k$ najmniejszych wartości dla porównywanych zbiorów $A_1, A_2$ i korzystamy z tylko jednej funkcji haszującej (analogicznie jak w algorytmie \texttt{MinCount}) \cite{adroll}. Posiadamy zatem zbiór haszy, który możemy traktować jako losową próbkę z $\bigcup A_i$. Następnie dla $k$ najmniejszych wartości z tej próbki zliczamy ile z nich znajduje się również wśród $k$ najmniejszych wartości w próbkach poszczególnych zbiorów. Całość dzielimy przez $k$ i otrzymujemy alternatywną wersję estymatora indeksu \textit{Jaccarda} \cite{adroll}:
 
  \begin{equation}
- \hat{J}(A_1, A_2) = \frac{|min_{k}\{min_{k} \{ h(A_1) \} \cup min_{k} \{ h(A_2) \} \} \cap (min_{k}\{h(A_1)\} \cap min_{k}\{h(A_2)\})|}{k}
+ \hat{J}(A_1, A_2) = \frac{|min_{k}\{min_{k} \{ h(A_1) \} \cup min_{k} \{ h(A_2) \} \} \cap (min_{k}\{h(A_1)\} \cap min_{k}\{h(A_2)\})|}{k},
  \end{equation}
  gdzie $h(A_i)$ oznacza zbiór zhaszowanych elementów zbioru $A_i$, a $min_{k}\{S\}$ jest funkcją zwracającą $k$ najmniejszych elementów ze zbioru $S$ (w naszym przypadku są to hasze).
  Estymator ten możemy łatwo uogólnić dla \textit{indeksu Jaccarda} $n$ zbiorów, zdefiniowanego w (\ref{jacc_multi}):
 \begin{equation}
-    \hat{J}(A_1, A_2, ..., A_n) = \frac{|min_{k}\{\bigcup min_{k} \{ h(A_i) \} \} \cap (\bigcap min_{k}\{h(A_i)\})|}{k}
+    \hat{J}(A_1, A_2, ..., A_n) = \frac{|min_{k}\{\bigcup min_{k} \{ h(A_i) \} \} \cap (\bigcap min_{k}\{h(A_i)\})|}{k}.
 \end{equation}
 
 \section{Naiwna estymacja operacji teoriomnogościowych}
@@ -256,7 +256,7 @@ $$\alpha(S_1, S_2) = \left\{ \begin{array}{rl}
        Przyjmijmy, że dysponujemy szkicami dla pewnych zbiorów $A_1$ i $A_2$. Estymacja liczności dla zbiorów $A_1 \cup A_2$ czy 
        $A_1 \cap A_2$ w oparciu o te szkice, jest problemem estymacji parametru rozkładu \cite{ting}. Rozsądnym może więc wydawać się wyprowadzenie estymatorów dla wyników operacji teoriomnogościowych metodą \textit{największej wiarygodności} (NW).
        Estymator wyprowadzony tą metodą ma szereg istotnych własności. Wraz ze wzrostem rozmiaru próby jest asymptotycznie nieobciążony, asymptotycznie najefektywniejszy, ma asymptotycznie rozkład normalny, a także jest zgodny. Estymator $T_n$ parametru $\theta$ nazywamy \textit{zgodnym} jeśli ciąg $\{T_n\}$ \textit{zbiega według prawdopodobieństwa} 
-        do prawdziwej wartości parametru gdy $n \rightarrow \infty$, czyli inaczej mówiąc - jeśli spełniona jest równość:
+        do prawdziwej wartości parametru, gdy $n \rightarrow \infty$, czyli inaczej mówiąc - jeśli spełniona jest równość:
        \begin{equation}
      		\lim_{n \to \infty} Pr[|T_n - \theta| < \epsilon] = 1
      		\label{consistent_def}

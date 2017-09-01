@@ -72,7 +72,7 @@ Przy czym, dla $n \rightarrow \infty$ możemy zapisać:
 	\label{mincount_var}
 \end{equation}
 
-\subsubsection{Szkic danych}
+\subsubsection{Szkice danych}
 Zdefiniujemy szkic danych algorytmu \texttt{MinCount}. Szkic $S$ określamy jako parę $(H, {\tau})$, gdzie $H$ to zbiór $k$ najmniejszych (i unikalnych) haszy spośród wszystkich wartości $h(\mathfrak{M})$. Natomiast ${\tau}$ to wartość k-tej statystyki pozycyjnej, czyli największa wartość w zbiorze haszy $H$.
 %\AW{Zmienilem oznaczenie zbioru haszy z S na H, żeby nie myliło się ze szkicem - czyli szkic $S = (H, \tau)$}
 \subsubsection{Algorytm \texttt{MinCount}}
@@ -229,16 +229,18 @@ Wyniki eksperymentalne pokazały jednak, że przedstawiona powyżej wersja algor
     \item Poprawka dla małych liczności - symulacje przeprowadzone przez autorów algorytmu wykazały, że jeśli liczba rożnych elementów $n \le \frac{5}{2}m$, 
     to pojawiają się istotne zaburzenia. Dlatego dla tego zakresu liczności $n$ autorzy sugerują użycie  algorytmu \texttt{Linear Counting} \cite{linear} jako estymatora:
     \begin{equation}
-    \hat{n} = {m}log(\frac{m}{V})
+    \hat{n} = {m}\log(\frac{m}{V})
     \label{LC}
     \end{equation}
     gdzie $m = 2^p$, a $V$ to liczba rejestrów równych $0$.
     
-    \item Poprawka dla dużych liczności - gdy wartość $n$ zbliża się do $2^{32} \approx 4 \times 10^9$, kolizje haszy stają się coraz bardziej prawdopodobne (jeśli używamy standardowo 32-bitowej funkcji haszującej). Aby temu zapobiec zastosowano również stosowną korekcję. Jeśli wartość estymatora $\hat{n}$ jest większa niż $\frac{2^{32}}{30}$ wówczas jego ostateczna wartość zostaje zastąpiona przez:
+    \item Poprawka dla dużych liczności - gdy wartość $n$ zbliża się do $2^{32} \approx 4 \times 10^9$, kolizje haszy stają się coraz bardziej prawdopodobne (jeśli używamy standardowo 32-bitowej funkcji haszującej). 
+    %JL Aby temu zapobiec zastosowano również stosowną korekcję. 
+    W związku z tym stosujemy następującą korekcję. Jeśli wartość estymatora $\hat{n}$ jest większa niż $\frac{2^{32}}{30}$ wówczas jego ostateczna wartość zostaje zastąpiona przez:
     \begin{equation}
-	    \hat{n} = {-2}^{32}log(1 - \frac{\hat{n}}{2^{32}})
+	    \hat{n} = {-2}^{32}\log(1 - \frac{\hat{n}}{2^{32}}).
     \end{equation}
-    Wzór ten wynika z podstawienia do wzoru (\ref{LC}) wartości $m = 2^{32}$ oraz $V = 2^{32} - \hat{n}$ oraz odwrócenia zawartości logarytmu.
+    Wzór ten wynika również z zastosowania algorytmu \texttt{Linear Counting} i podstawienia do wzoru (\ref{LC}) wartości $m = 2^{32}$, to jest liczby różnych haszy  oraz $V = 2^{32} - \hat{n}$ oraz odwrócenia zawartości logarytmu.
 \end{enumerate}
 Szczegółowo algorytm oraz powyższe korekcje zostały opisane przez twórców w \cite{hll} wraz ze wszystkimi własnościami.
 
