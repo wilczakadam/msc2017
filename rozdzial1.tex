@@ -229,7 +229,7 @@ gdzie $|{\delta}_1(n)| < 5 \times 10^{-5}$ dla $m \geq 16$, wariancja natomiast 
 
 Wyniki eksperymentalne pokazały jednak, że przedstawiona powyżej wersja algorytmu nie sprawdza się dla wszystkich zakresów wartości $n$, dlatego twórcy wprowadzili do algorytmu pewne korekcje:
 \begin{enumerate}
-    \item Poprawka dla małych liczności - symulacje przeprowadzone przez autorów algorytmu wykazały, że jeśli liczba rożnych elementów $n \le \frac{5}{2}m$, 
+    \item \label{corr_1} Poprawka dla małych liczności - symulacje przeprowadzone przez autorów algorytmu wykazały, że jeśli liczba rożnych elementów $n \le \frac{5}{2}m$, 
     to pojawiają się istotne zaburzenia. Dlatego dla tego zakresu liczności $n$ autorzy sugerują użycie  algorytmu \texttt{Linear Counting} \cite{linear} jako estymatora:
     \begin{equation}
     \hat{n} = {m}\log(\frac{m}{V}),
@@ -237,7 +237,8 @@ Wyniki eksperymentalne pokazały jednak, że przedstawiona powyżej wersja algor
     \end{equation}
     gdzie $m = 2^p$, a $V$ to liczba rejestrów równych $0$.
     
-    \item Poprawka dla dużych liczności - gdy wartość $n$ zbliża się do $2^{32} \approx 4 \times 10^9$, kolizje haszy stają się coraz bardziej prawdopodobne (jeśli używamy standardowo 32-bitowej funkcji haszującej). 
+    
+    \item \label{corr_2} Poprawka dla dużych liczności - gdy wartość $n$ zbliża się do $2^{32} \approx 4 \times 10^9$, kolizje haszy stają się coraz bardziej prawdopodobne (jeśli używamy standardowo 32-bitowej funkcji haszującej). 
     %JL Aby temu zapobiec zastosowano również stosowną korekcję. 
     W związku z tym stosujemy następującą korekcję. Jeśli wartość estymatora $\hat{n}$ jest większa niż $\frac{2^{32}}{30}$ wówczas jego ostateczna wartość zostaje zastąpiona przez:
     \begin{equation}
@@ -252,9 +253,7 @@ Własności algorytmu oraz powyższe korekcje zostały szczegółowo opisane prz
 Parametrami wejściowymi dla szkicu są $p$ oraz $q$, gdzie $p + q$ określa liczbę używanych bitów funkcji haszującej. Parametr $p$ wyznacza liczbę rejestrów, a więc tym samym kontroluje błąd względny, natomiast $q$ wyznacza maksymalny zakres wartości dla rejestrów. Warto zauważyć, że jeśli liczność zbioru zbliża się do $2^{p+q}$ kolizje haszy stają się coraz częstsze i błąd znacznie wzrasta. 
 Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja $m = 2^p$ rejestrów $M[1,\ldots,m]$, gdzie $M[i]$  przechowuje największą napotkaną pozycję pierwszej jedynki w haszach podstrumienia $\mathfrak{M}_i$. Zakładając użycie 32-bitowej funkcji haszującej, górnym ograniczeniem na liczbę unikalnych elementów w strumieniu  $\mathfrak{M}$, które możemy zliczyć będzie $N=2^{32}$. Omawiany szkic danych potrzebuje nie więcej niż $m\log{\log{N}}$ bitów pamięci, w szczególności dla $N=2^{32}$ potrzeba co najwyżej $5$ bitów na każdy rejestr.
 
-Powyższy szkic możemy w naturalny sposób wykorzystać do wyznaczenia wartości  estymatora \texttt{Linear Counting} potrzebnego do zastosowania korekcji $1.$ Zauważmy, że szkic, dla którego parametr $q = 1$ 
-%\JL{a to nie powinno być $q=1$?}
-jest równoważny tablicy bitowej używanej w algorytmie \texttt{Linear Counting}. Wystarczy zatem, że zliczymy ile spośród rejestrów jest równych $0$ (oznaczmy liczbę pustych rejestrów przez $V$) ignorując wartości pozostałych rejestrów i zastosujemy wzór (\ref{LC}).
+Powyższy szkic możemy w naturalny sposób wykorzystać do wyznaczenia wartości  estymatora \texttt{Linear Counting} potrzebnego do zastosowania korekcji \ref{corr_1}. Wystarczy, że zliczymy ile spośród  $m$ rejestrów jest równych $0$ i oznaczymy tę liczbę przez $V$, a następnie zastosujemy wzór (\ref{LC}).
 
 Poniżej przedstawiamy pseudokod algorytmu \texttt{HyperLogLog} z zastosowaniem opisanych wcześniej korekcji.
 
