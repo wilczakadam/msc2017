@@ -73,7 +73,9 @@ Przy czym, dla $n \rightarrow \infty$ możemy zapisać:
 \end{equation}
 
 \subsubsection{Szkice danych}
-Zdefiniujemy szkic danych algorytmu \texttt{MinCount}. Szkic $S$ określamy jako parę $(H, {\tau})$, gdzie $H$ to zbiór $k$ najmniejszych (i unikalnych) haszy spośród wszystkich wartości $h(\mathfrak{M})$. Natomiast ${\tau}$ to wartość k-tej statystyki pozycyjnej, czyli największa wartość w zbiorze haszy $H$. Zakładając użycie 32-bitowej funkcji haszującej, ustalmy $N=2^{32}$ jako górne ograniczenie na liczbę unikalnych elementów w strumieniu wejściowym $\mathfrak{M}$. Wówczas taki szkic danych zajmuje ${k}\log{N}$ bitów - w każdej chwili przetrzymujemy maksymalnie $k$ haszy w pamięci.  
+Zdefiniujemy szkic danych algorytmu \texttt{MinCount}. Szkic $S$ określamy jako parę $(H, {\tau})$, gdzie $H$ to zbiór $k$ najmniejszych (i unikalnych) haszy spośród wszystkich wartości $h(\mathfrak{M})$. Natomiast ${\tau}$ to wartość k-tej statystyki pozycyjnej, czyli największa wartość w zbiorze haszy $H$. Zakładając użycie 32-bitowej funkcji haszującej
+i biorąc pod uwagę możliwe kolizje na haszach,  
+górnym ograniczeniem na liczbę unikalnych elementów w strumieniu $\mathfrak{M}$, które będziemy mogli zliczyć jest $N=2^{32}$. Wówczas szkic danych zajmuje ${k}\log{N}$ bitów - w każdej chwili przetrzymujemy maksymalnie $k$ haszy w pamięci.  
 %\AW{Zmienilem oznaczenie zbioru haszy z S na H, żeby nie myliło się ze szkicem - czyli szkic $S = (H, \tau)$}
 \subsubsection{Algorytm \texttt{MinCount}}
 
@@ -122,11 +124,12 @@ W oparciu o szkic $(H, {\tau})$ jesteśmy w stanie w dowolnym momencie wyliczyć
 %\AW{Dla zwyklego MinCounta tez wrzucic histogram? jesli tak to jak go skomentowac - ze niespecjalnie podchodzi pod rozklad normalny? czy ze troche podchodzi ale nie tak dobrze jak streamingMC?}
 %\JL{Prosze sprobowac tak zrobic, zobaczymy jak to bedzie wygladac.}
 
+\newpage 
 Na wykresie \ref{fig:mincount_hist} zamieszczamy histogram prezentujący rozkład błędu względnego tego algorytmu dla ok. $10^5$ eksperymentów, z parametrem $k=100$. Jak możemy zauważyć, rozkład wartości błędu na histogramie nie jest tak podobny do krzywej rozkładu normalnego, jak w przypadku algorytmów, które omówimy w następnej kolejności: \texttt{Streaming MinCount} oraz \texttt{HyperLogLog}. Fakt ten jest dosyć istotny i uzasadnia wybór \texttt{Streaming MinCount} jako algorytmu, którym docelowo będziemy posługiwać się w rozdziale \ref{weighted_method}.
 %\AW{Moze cos takiego? Nie umiem tego zbyt ladnie sformulowac..}
 %\JL{Jest OK}
 \begin{figure}[h!]
-	\includegraphics[width=0.5\textwidth]{MinCountErrHist.png}
+	\includegraphics[width=0.7\textwidth]{MinCountErrHist.png}
 	\centering
 	\caption{Rozkład błędu względnego dla algorytmu \texttt{MinCount} przy $10^5$ eksperymentach}
 	\label{fig:mincount_hist}
@@ -178,8 +181,8 @@ pseudokod dla algorytmu \texttt{Streaming MinCount}:
 
 Na wykresie \ref{fig:str_mincount_hist} zamieszczamy również histogram prezentujący rozkład błędu względnego tego algorytmu dla ok. $10^5$ eksperymentów, z parametrem $k=100$. Jak możemy wnioskować z wykresu, dla dużej liczby eksperymentów błąd względny zaczną mieć rozkład bardzo zbliżony do rozkładu normalnego. Ta obserwacja przyda nam się w dalszej części pracy do uzasadnienia pewnych założeń dotyczących nowych metod estymacji.
 
-\begin{figure}[h!]
-	\includegraphics[width=0.5\textwidth]{StreamingMinCountErrHist.png}
+\begin{figure}[H]
+	\includegraphics[width=0.7\textwidth]{StreamingMinCountErrHist.png}
 	\centering
 	\caption{Rozkład błędu względnego dla algorytmu \texttt{StreamingMinCount} przy $10^5$ eksperymentach}
 	\label{fig:str_mincount_hist}
@@ -242,19 +245,20 @@ Wyniki eksperymentalne pokazały jednak, że przedstawiona powyżej wersja algor
     \end{equation}
     Wzór ten wynika również z zastosowania algorytmu \texttt{Linear Counting} i podstawienia do wzoru (\ref{LC}) wartości $m = 2^{32}$, to jest liczby różnych haszy  oraz $V = 2^{32} - \hat{n}$ oraz odwrócenia zawartości logarytmu.
 \end{enumerate}
-Szczegółowo algorytm oraz powyższe korekcje zostały opisane przez twórców w \cite{hll} wraz ze wszystkimi własnościami.
+Własności algorytmu oraz powyższe korekcje zostały szczegółowo opisane przez twórców w \cite{hll}.
 
 \subsubsection{Szkic danych}
 \label{HLL_sketch}
 Parametrami wejściowymi dla szkicu są $p$ oraz $q$, gdzie $p + q$ określa liczbę używanych bitów funkcji haszującej. Parametr $p$ wyznacza liczbę rejestrów, a więc tym samym kontroluje błąd względny, natomiast $q$ wyznacza maksymalny zakres wartości dla rejestrów. Warto zauważyć, że jeśli liczność zbioru zbliża się do $2^{p+q}$ kolizje haszy stają się coraz częstsze i błąd znacznie wzrasta. 
-Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ przechowujących największą napotkaną pozycję pierwszej jedynki w haszach podstrumienia $\mathfrak{M}_i$, gdzie $i = 1 ... m$, $m = 2^p$ wyznacza liczbę rejestrów. Zakładając użycie 32-bitowej funkcji haszującej, górnym ograniczeniem na liczbę unikalnych elementów w strumieniu $\mathfrak{M}$ będzie $N=2^{32}$. Taki szkic danych potrzebuje zatem $m\log{\log{N}}$ bitów pamięci, czyli potrzebujemy 5 bitów na każdy rejestr.
+Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja $m = 2^p$ rejestrów $M[1,\ldots,m]$, gdzie $M[i]$  przechowuje największą napotkaną pozycję pierwszej jedynki w haszach podstrumienia $\mathfrak{M}_i$. Zakładając użycie 32-bitowej funkcji haszującej, górnym ograniczeniem na liczbę unikalnych elementów w strumieniu  $\mathfrak{M}$, które możemy zliczyć będzie $N=2^{32}$. Omawiany szkic danych potrzebuje nie więcej niż $m\log{\log{N}}$ bitów pamięci, w szczególności dla $N=2^{32}$ potrzeba co najwyżej $5$ bitów na każdy rejestr.
 
-Szkic ten możemy w naturalny sposób wykorzystać do wyznaczenia estymatora \texttt{Linear Counting} potrzebnego do zastosowania korekcji $1.$ Zauważmy, że szkic, dla którego parametr $q = 0$ jest równoważny tablicy bitowej używanej w algorytmie \texttt{Linear Counting}. Wystarczy zatem, że zliczymy ile spośród rejestrów jest równych $0$ (oznaczmy liczbę pustych rejestrów przez $V$) ignorując wartości pozostałych rejestrów i zastosujemy wzór (\ref{LC}).
+Powyższy szkic możemy w naturalny sposób wykorzystać do wyznaczenia wartości  estymatora \texttt{Linear Counting} potrzebnego do zastosowania korekcji $1.$ Zauważmy, że szkic, dla którego parametr $q = 0$ 
+\JL{a to nie powinno być $q=1$?}
+jest równoważny tablicy bitowej używanej w algorytmie \texttt{Linear Counting}. Wystarczy zatem, że zliczymy ile spośród rejestrów jest równych $0$ (oznaczmy liczbę pustych rejestrów przez $V$) ignorując wartości pozostałych rejestrów i zastosujemy wzór (\ref{LC}).
 
+Poniżej przedstawiamy pseudokod algorytmu \texttt{HyperLogLog} z zastosowaniem opisanych wcześniej korekcji.
 
- Poniżej przedstawiamy pseudokod algorytmu \texttt{HyperLogLog} z zastosowaniem opisanych wcześniej korekcji:
-\newline
-\begin{algorithm}
+\begin{algorithm}[H]
     \begin{algorithmic}
     \State $p $ - parametr wejściowy sterujący liczbą rejestrów
     \State $q $ - parametr wejściowy wyznaczający zakres wartości rejestrów
@@ -295,10 +299,18 @@ Szkic ten możemy w naturalny sposób wykorzystać do wyznaczenia estymatora \te
 %\JL{Najlepiej wygenerować samemu, ale można napisać że jest też w pracy z HLL i najlepiej to zdanie, że to wynika z usredniania- tzn. liczenia sredniej harmonicznej i CTG}
 %\AW{Dodalem histogram + komentarz}
 %\JL{OK}
-Na wykresie \ref{fig:hll_hist} prezentujemy histogram z rozkładem błędu względnego dla algorytmu \texttt{HyperLogLog} dla ok. $10^5$ przeprowadzonych eksperymentów, przy $m=2^{10}$. Jak sugerują autorzy \cite{hll}, oczekiwany rozkład powinien być zbliżony o rozkładu normalnego, ze względu na efekt \textit{uśredniania} oraz w oparciu o \textit{Centralne Twierdzenie Graniczne}, co potwierdzają przeprowadzone przez nas (oraz przez autorów) empiryczne testy.
+
+
+
+
+
+\newpage
+
+Na wykresie \ref{fig:hll_hist} prezentujemy histogram z rozkładem błędu względnego dla algorytmu \texttt{HyperLogLog} dla ok. $10^5$ przeprowadzonych eksperymentów, przy $m=2^{10}$. Jak sugerują autorzy \cite{hll}, oczekiwany rozkład powinien być zbliżony o rozkładu normalnego, ze względu na efekt \textit{uśredniania} oraz w oparciu o \textit{Centralne Twierdzenie Graniczne}, co potwierdzają przeprowadzone przez nas testy.
+%JL (oraz przez autorów) empiryczne
 
 \begin{figure}[h!]
-	\includegraphics[width=0.5\textwidth]{HLLErrHist.png}
+	\includegraphics[width=0.7\textwidth]{HLLErrHist.png}
 	\centering
 	\caption{Rozkład błędu względnego dla algorytmu \texttt{HyperLogLog} przy $10^5$ eksperymentach}
 	\label{fig:hll_hist}

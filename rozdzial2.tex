@@ -82,6 +82,7 @@ Istnieje również drugi, mniej znany wariant algorytmu \texttt{MinHash}, który
     \hat{J}(A_1, A_2, ..., A_n) = \frac{|min_{k}\{\bigcup min_{k} \{ h(A_i) \} \} \cap (\bigcap min_{k}\{h(A_i)\})|}{k}.
 \end{equation}
 
+
 \section{Naiwna estymacja operacji teoriomnogościowych}
 \label{naive_est}
 
@@ -199,7 +200,7 @@ Operacja sumy na szkicach algorytmu \texttt{HyperLogLog} sprawdza się całkiem 
 
 O ile metoda oparta na zasadzie włączeń i wyłączeń nie sprawdza się w tym przypadku i prowadzi do anomalii, to metoda wykorzystująca podobieństwo \textit{Jaccarda} (\ref{jacc_1}) do estymacji przekroju jest stosunkowo dokładna, co potwierdzają wykonane przez nas eksperymenty. Wymaga ona jednak dodatkowej struktury danych pozwalającej na estymację indeksu \textit{Jaccarda} zbiorów. Częstą praktyką jest wykorzystanie do tego algorytmu \texttt{MinHash} \cite{adroll}. Wyniki związane z tym podejściem zostaną jeszcze omówione w kolejnym rozdziale.
 
-
+\newpage 
 \section{MinCount}
 \label{impr_mincount}
 
