@@ -73,7 +73,7 @@ Przy czym, dla $n \rightarrow \infty$ możemy zapisać:
 \end{equation}
 
 \subsubsection{Szkice danych}
-Zdefiniujemy szkic danych algorytmu \texttt{MinCount}. Szkic $S$ określamy jako parę $(H, {\tau})$, gdzie $H$ to zbiór $k$ najmniejszych (i unikalnych) haszy spośród wszystkich wartości $h(\mathfrak{M})$. Natomiast ${\tau}$ to wartość k-tej statystyki pozycyjnej, czyli największa wartość w zbiorze haszy $H$. Taki szkic danych zajmuje $O(k)$ pamięci - w każdej chwili przetrzymujemy maksymalnie $k$ haszy w pamięci.
+Zdefiniujemy szkic danych algorytmu \texttt{MinCount}. Szkic $S$ określamy jako parę $(H, {\tau})$, gdzie $H$ to zbiór $k$ najmniejszych (i unikalnych) haszy spośród wszystkich wartości $h(\mathfrak{M})$. Natomiast ${\tau}$ to wartość k-tej statystyki pozycyjnej, czyli największa wartość w zbiorze haszy $H$. Zakładając użycie 32-bitowej funkcji haszującej, ustalmy $N=2^{32}$ jako górne ograniczenie na liczbę unikalnych elementów w strumieniu wejściowym $\mathfrak{M}$. Wówczas taki szkic danych zajmuje ${k}\log{N}$ bitów - w każdej chwili przetrzymujemy maksymalnie $k$ haszy w pamięci.  
 %\AW{Zmienilem oznaczenie zbioru haszy z S na H, żeby nie myliło się ze szkicem - czyli szkic $S = (H, \tau)$}
 \subsubsection{Algorytm \texttt{MinCount}}
 
@@ -247,7 +247,7 @@ Szczegółowo algorytm oraz powyższe korekcje zostały opisane przez twórców 
 \subsubsection{Szkic danych}
 \label{HLL_sketch}
 Parametrami wejściowymi dla szkicu są $p$ oraz $q$, gdzie $p + q$ określa liczbę używanych bitów funkcji haszującej. Parametr $p$ wyznacza liczbę rejestrów, a więc tym samym kontroluje błąd względny, natomiast $q$ wyznacza maksymalny zakres wartości dla rejestrów. Warto zauważyć, że jeśli liczność zbioru zbliża się do $2^{p+q}$ kolizje haszy stają się coraz częstsze i błąd znacznie wzrasta. 
-Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ przechowujących największą napotkaną pozycję pierwszej jedynki w haszach podstrumienia $\mathfrak{M}_i$, gdzie $i = 1 ... m$, $m = 2^p$ wyznacza liczbę rejestrów. Taki szkic danych zajmuje $O(\epsilon^{-2}\log{\log{n}} + \log{n})$ pamięci, gdzie $\epsilon = \frac{1.04}{\sqrt{m}}$ to błąd standardowy algorytmu \cite{hll}.
+Szkicem danych algorytmu \texttt{HyperLogLog} jest kolekcja rejestrów $M[i]$ przechowujących największą napotkaną pozycję pierwszej jedynki w haszach podstrumienia $\mathfrak{M}_i$, gdzie $i = 1 ... m$, $m = 2^p$ wyznacza liczbę rejestrów. Zakładając użycie 32-bitowej funkcji haszującej, górnym ograniczeniem na liczbę unikalnych elementów w strumieniu $\mathfrak{M}$ będzie $N=2^{32}$. Taki szkic danych potrzebuje zatem $m\log{\log{N}}$ bitów pamięci, czyli potrzebujemy 5 bitów na każdy rejestr.
 
 Szkic ten możemy w naturalny sposób wykorzystać do wyznaczenia estymatora \texttt{Linear Counting} potrzebnego do zastosowania korekcji $1.$ Zauważmy, że szkic, dla którego parametr $q = 0$ jest równoważny tablicy bitowej używanej w algorytmie \texttt{Linear Counting}. Wystarczy zatem, że zliczymy ile spośród rejestrów jest równych $0$ (oznaczmy liczbę pustych rejestrów przez $V$) ignorując wartości pozostałych rejestrów i zastosujemy wzór (\ref{LC}).
 
