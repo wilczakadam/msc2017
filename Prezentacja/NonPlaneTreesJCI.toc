@@ -1,0 +1,6 @@
+\beamer@endinputifotherversion {3.36pt}
+\beamer@sectionintoc {1}{Wprowadzenie}{2}{0}{1}
+\beamer@sectionintoc {2}{Basic properties}{4}{0}{2}
+\beamer@sectionintoc {3}{Gererating Functions}{7}{0}{3}
+\beamer@sectionintoc {4}{Extraction}{10}{0}{4}
+\beamer@sectionintoc {5}{Applications}{13}{0}{5}

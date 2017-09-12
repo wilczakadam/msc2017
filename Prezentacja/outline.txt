@@ -1,0 +1,55 @@
+slajd 0:
+ - strumieñ danych z powtarzaj¹cymi siê elementami
+ - chcemy znaæ liczbê unikalnych elementów w strumieniu
+ - mo¿emy szacowaæ z kontrolowanym b³êdem
+
+ - podejœcie naiwne - prztrzymujemy kazdy unikalny napotkany element - O(n) pamiêci, gdy du¿o unikalnych elementów pamiêæ roœnie bardzo szybko
+ - podejœcie praktyczne - szacujemy n z pewnym kontrolowanym b³êdem, ale dzieki temu zajmujemy du¿o mniej pamiêci 
+ - algorytmy szacuj¹ce n które omawiamy w pracy - HLL i MC
+
+slajd 1:
+ - czym jest szkic danych - struktura reprezentuj¹ca dane ze strumienia
+ - zazwyczaj dane s¹ haszowane i w szkicu przetrzymujemy hasze
+ - ró¿ni¹ sie w zaleznosci od algorytmu
+
+slajd 2:
+ - operacje teoriomnogosciowe na szkicach (po co? przyklad ze szkicacmi z okreslona granulacja i mergowanie)
+ - zastosowanie w srodowisku rozproszonym
+ - naiwne metody i dlaczego z³e??
+
+slajd 3:
+ - MinCount - kto, co, kiedy
+ - oparty na statystykach pozycyjnych (proporcja blabla)
+ - jak wyglada szkic (zbiór k najmniejszych haszy, najwiekszy zhasz ze zbioru)
+ - k*logN pamiêci zajmuje taki szkic
+ - estymator wygl¹da tak i tak
+
+slajd 4:
+ - HyperLogLog - kto, co, kiedy (rozwiniecie algorytmów PC i LogLog)
+ - oparty na obserwacji ze zhaszowane uniformly elementy pojawiaja sie z pewna czestotliwoscia (pozycja pierwzej jedynki)
+ - szkic (parametry p i q, kolekcja m=2^p rejestrów)
+ - m*loglogN pamiêci zajmuje
+ - estymator taki i taki (uœrednianie stochastyczne)
+ - korekcje dla niskich i wysokich zakresów wartoœci (wykminione przez autorów; bo kolizje coraz czêstsze)
+
+slajd 5:
+ - praca Tinga, oparta na algorytmie MC
+ - standardowe "ulepszenia" dla MC w konteksæie sumy i przekroju
+ - metoda estymatora wa¿onego dla MC (z grubsza o co chodzi, ze tworzymy estymatory skladowe a potem wa¿ymy ich wariancj¹)
+
+slajd 6:
+ - suma w HLL (naturalna wiêc spoko)
+ - przekrój w HLL (z u¿yciem MinHasha i naiwn¹ metod¹)
+
+slajd 7:
+ - co zrobiliœmy?
+ - zdefiniowanie operacji ró¿nicy dla MC z u¿yciem estymatora wa¿onego
+ - generalizacja estymatora wa¿onego na HLL (z u¿yciem MinHasha)
+
+slajd 8:
+ - co z tego wysz³o? (wyniki eksperymentów)
+ - jak badaliœmy (dla ró¿nych indeksów jaccarda i liczby zbiorów)
+ - dla MC wa¿ony wypada ogólnie najlepiej (tak¿e ten dla ró¿nicy)
+ - dla HLL wypada lepiej dla przekroju
+ - ogólnie dla takiej samej pamiêci HLL wypada troszkê lepiej
+
